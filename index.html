@@ -662,6 +662,17 @@ input,button{font-family:inherit}
               </div>
             </sc-for>
             <sc-if value="{{ d.rules.hasOverrides }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ d.rules.clearOv }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;color:#FF8A8A">HAPUS SEMUA OVERRIDE CABOR INI</span></sc-if>
+            <sc-if value="{{ d.rules.hasPens }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#B8C4E6">PENALTI MENURUT RULEBOOK (klik nama = tambah, − = batalkan)</span>
+                <sc-for list="{{ d.rules.pens }}" as="pe" hint-placeholder-count="2">
+                  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                    <span style="min-width:170px;font-size:13px">{{ pe.name }}</span>
+                    <sc-for list="{{ pe.list }}" as="pn" hint-placeholder-count="4"><span style="display:inline-flex;gap:2px"><span sc-camel-on-click="{{ pn.add }}" style="cursor:pointer;font-size:11px;padding:4px 8px;border-radius:8px 0 0 8px;background:{{ pn.bg }};color:#fff">{{ pn.label }}</span><span sc-camel-on-click="{{ pn.sub }}" style="cursor:pointer;font-size:12px;padding:4px 7px;border-radius:0 8px 8px 0;background:rgba(255,255,255,.2);color:#fff">−</span></span></sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
             <sc-if value="{{ d.rules.hasEnts }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <sc-for list="{{ d.rules.ents }}" as="en" hint-placeholder-count="2">
@@ -1503,7 +1514,7 @@ function makeLive(sp) {
     const r = rng(hash(sp.id + 'x')); const pick = n => [...CODES].sort(() => r() - .5).slice(0, n);
     const R = liveRules(sp.id); const d = DEMO[sp.id]; const P = R.params;
     const mode = viewOf(sp, P);
-    const e = { id: sp.id, sport: sp.id, mode, title: d.title, up, upLabel: up ? (nxt ? 'STARTS ' + (nxt[0] === 'FRI' ? 'FRI 16' : 'SAT 17') + ' · ' + nxt[1].toUpperCase() : 'FINISHED') : '', feed: up ? [] : [{ txt: d.first || 'Under way', t: 0 }], statuses: {}, wait: 0, P, needs: [] };
+    const e = { id: sp.id, sport: sp.id, mode, title: d.title, up, upLabel: up ? (nxt ? 'STARTS ' + (nxt[0] === 'FRI' ? 'FRI 16' : 'SAT 17') + ' · ' + nxt[1].toUpperCase() : 'FINISHED') : '', feed: up ? [] : [{ txt: d.first || 'Under way', t: 0 }], statuses: {}, pens: {}, wait: 0, P, needs: [] };
     try {
       if (mode === 'race' || mode === 'climb') {
         Object.assign(e, { unit: d.unit, u: d.u, teams: !!d.teams, done: 0, T: 0, dtSec: d.secs / 28, lanes: pick(d.lanes).map(x => ({ c: x, p: up ? 0 : 15 + r() * 30, v: 2.4 + r() * 1.4, place: 0, t: null })) });
@@ -1559,7 +1570,7 @@ function step(e, T) {
   if (e.mode === 'race' || e.mode === 'climb') {
     if (e.done) {
       e.done++;
-      if (e.done > 4) { e.lanes.forEach(l => { l.p = 0; l.place = 0; l.t = null; l.v = 2.4 + R() * 1.4; }); e.T = 0; e.statuses = {}; e.done = 0; push('Next heat is under way'); }
+      if (e.done > 4) { e.lanes.forEach(l => { l.p = 0; l.place = 0; l.t = null; l.v = 2.4 + R() * 1.4; }); e.T = 0; e.statuses = {}; e.pens = {}; e.done = 0; push('Next heat is under way'); }
       return e;
     }
     e.T += e.dtSec;
@@ -1798,6 +1809,18 @@ class Component extends DCLogic {
   setStatus(id, key, code) {
     this.setState(s => ({ live: s.live.map(e => { if (e.id !== id) return e; const st = { ...e.statuses }; if (code) st[key] = code; else delete st[key]; return { ...e, statuses: st }; }) }));
   }
+  addPenalty(id, key, code, delta) {
+    this.setState(s => ({ live: s.live.map(e => { if (e.id !== id) return e; const pens = { ...e.pens }; const cur = { ...(pens[key] || {}) }; const n = Math.max(0, (cur[code] || 0) + delta); if (n) cur[code] = n; else delete cur[code]; pens[key] = cur; return { ...e, pens }; }) }));
+  }
+  // klasemen lomba: waktu + penalti rulebook (SC.rankTimed), lalu yang masih berjalan, lalu status DNS/DNF/DQ
+  raceTable(e) {
+    const rows = SC.rankTimed(e.lanes.map(l => ({ id: l.c, seconds: l.place ? l.t : null, status: e.statuses[l.c], penalties: (e.pens || {})[l.c] })), e.P);
+    const by = Object.fromEntries(e.lanes.map(l => [l.c, l]));
+    const fin = rows.filter(r => r.rank != null).map(r => ({ lane: by[r.id], row: r }));
+    const run = rows.filter(r => r.rank == null && !r.status).map(r => ({ lane: by[r.id], row: r })).sort((a, b) => b.lane.p - a.lane.p);
+    const out = rows.filter(r => r.status).map(r => ({ lane: by[r.id], row: r }));
+    return [...fin, ...run, ...out];
+  }
   manualAdd(id, code, delta) {
     this.setState(s => ({ live: s.live.map(e => e.id !== id ? e : { ...e, players: e.players.map(p => p.c === code ? { ...p, pts: Math.max(0, p.pts + delta) } : p) }) }));
   }
@@ -1861,6 +1884,8 @@ class Component extends DCLogic {
       ents: codes.length ? ents.map(en => ({ name: en.name, current: e.statuses[en.key] ? STATUS_LABEL[e.statuses[en.key]] : '',
         btns: [{ label: 'OK', bg: e.statuses[en.key] ? 'rgba(255,255,255,.12)' : '#38D200', fg: e.statuses[en.key] ? '#fff' : '#05103F', go: () => this.setStatus(e.id, en.key, null) },
           ...codes.map(c => ({ label: STATUS_LABEL[c], bg: e.statuses[en.key] === c ? '#D6243A' : 'rgba(255,255,255,.12)', fg: '#fff', go: () => this.setStatus(e.id, en.key, c) }))] })) : [],
+      pens: (e.mode === 'race' || e.mode === 'climb') ? ents.map(en => ({ name: en.name, list: (P.penalties || []).map(pn => { const n = ((e.pens || {})[en.key] || {})[pn.code] || 0; return { label: `${pn.code.replace(/_/g, ' ').toLowerCase()}${pn.seconds != null ? ` +${pn.seconds}s` : ' (wasit)'}${pn.first_is_warning ? ' · 1x peringatan' : ''}${pn.per === 'race' ? ' · 1x/lomba' : ''}${n ? ` ×${n}` : ''}`, bg: n ? '#D6243A' : 'rgba(255,255,255,.12)', add: () => this.addPenalty(e.id, en.key, pn.code, 1), sub: () => this.addPenalty(e.id, en.key, pn.code, -1), n }; }) })) : [],
+      hasPens: (e.mode === 'race' || e.mode === 'climb') && !!(P.penalties && P.penalties.length),
       hasEnts: codes.length > 0 && ents.length > 0,
     };
   }
@@ -1894,8 +1919,8 @@ class Component extends DCLogic {
     const row = (c, name, val, pctv, lead) => ({ code: c, name, val, pct: pct(pctv), chip: lead ? '#38D200' : '#0473EA', bar: lead ? '#38D200' : '#0473EA' });
     if (e.needs && e.needs.length) { status = 'MENUNGGU ATURAN'; summary = 'Parameter belum ditetapkan'; }
     else if (e.mode === 'race' || e.mode === 'climb') {
-      const sorted = [...e.lanes].sort((a, b) => (a.place || 99) - (b.place || 99) || b.p - a.p);
-      rows = sorted.slice(0, 3).map((l, i) => row(l.c, nameOf(e, l.c), (l.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u, l.p, i === 0));
+      const tbl = this.raceTable(e); const sorted = tbl.map(x => x.lane);
+      rows = tbl.slice(0, 3).map((x, i) => row(x.lane.c, nameOf(e, x.lane.c), x.row.rank != null ? x.row.display : (x.lane.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u, x.lane.p, i === 0));
       status = e.done ? 'FINISHED' : `${rows[0].val} / ${e.unit}${e.u}`;
       summary = `${sorted[0].c} leads · ${rows[0].val}`;
     } else if (e.mode === 'racket' || e.mode === 'sets') {
@@ -1952,14 +1977,14 @@ class Component extends DCLogic {
     let codes = [];
     if (e.needs && e.needs.length) { codes = []; d.status = 'MENUNGGU ATURAN'; }
     else if (e.mode === 'race' || e.mode === 'climb') {
-      const rank = [...e.lanes].sort((a, b) => (a.place || 99) - (b.place || 99) || b.p - a.p).map(l => l.c);
+      const tbl = this.raceTable(e); const rank = tbl.map(x => x.lane.c); const adj = Object.fromEntries(tbl.map(x => [x.lane.c, x.row]));
       const prec = e.P.time_precision || 0.01;
       d.lanes = e.lanes.map((l, i) => {
         const r = rank.indexOf(l.c) + 1; const dist = l.p * e.unit / 100;
         const xy = d.isSwim ? swimXY(i, dist) : d.isTrack ? trackXY(i, dist) : d.isBoat ? boatXY(i, dist) : [0, 0];
         const vw = d.isSwim ? 54 : d.isTrack ? 190 : 560, vh = d.isSwim ? 24 : d.isTrack ? 106 : 82;
         const st = e.statuses[l.c];
-        const pos = st ? STATUS_LABEL[st] : l.place ? `${ord(l.place).toUpperCase()} · ${SC.formatTime(l.t, prec)}` : 'P' + r;
+        const ar = adj[l.c]; const pos = st ? STATUS_LABEL[st] : l.place ? `${ord(r).toUpperCase()} · ${ar.display}${ar.penaltySeconds ? ` (+${ar.penaltySeconds}s penalti)` : ''}${ar.unknownPenalties.length ? ' · penalti menunggu wasit' : ''}` : 'P' + r;
         return { tx: xy[0].toFixed(2), ty: xy[1].toFixed(2), lx: pct(xy[0] / vw * 100), ly: pct(xy[1] / vh * 100), lxl: pct((xy[0] - 9) / vw * 100), lane: d.isSwim ? i + 2 : i + 1, code: l.c, name: nameOf(e, l.c), pct: pct(l.p), pos, mk: st ? '#D6243A' : r === 1 ? '#38D200' : '#fff', distLabel: (l.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u };
       });
       const ld = e.lanes.find(l => l.c === rank[0]);

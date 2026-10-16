@@ -344,7 +344,10 @@
       let add = 0; const unknown = [];
       for (const [code, count] of Object.entries(e.penalties || {})) {
         const def = pen[code];
-        if (!def || def.seconds == null) unknown.push(code); else add += def.seconds * count;
+        if (!def || def.seconds == null) { unknown.push(code); continue; }
+        let n = def.per === 'race' ? Math.min(count, 1) : count;   // per: race = satu kali per lomba
+        if (def.first_is_warning) n = Math.max(0, n - 1);          // pelanggaran pertama hanya peringatan
+        add += def.seconds * n;
       }
       const adjusted = e.seconds == null ? null : Math.round((e.seconds + add) * f) / f;
       return { ...e, penaltySeconds: add, adjusted, unknownPenalties: unknown };

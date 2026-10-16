@@ -491,3 +491,17 @@ test('Cage Cricket: tidak ada mesin skor, input manual panitia', () => {
   assert.equal(r.params.manual_input_required, true);
   assert.throws(() => S.createMatch(r.params));
 });
+
+test('rankTimed: pelanggaran pertama berstatus peringatan (Hyrox first_is_warning) tidak menambah waktu', () => {
+  const P = R('hyrox').params;
+  const one = S.rankTimed([{ id: 'A', seconds: 3600, penalties: { ROWING_AFTER_FIRST_WARNING: 1 } }], P)[0];
+  assert.equal(one.penaltySeconds, 0);
+  const two = S.rankTimed([{ id: 'A', seconds: 3600, penalties: { ROWING_AFTER_FIRST_WARNING: 2 } }], P)[0];
+  assert.equal(two.penaltySeconds, 15);
+});
+
+test('rankTimed: penalti per: race hanya dihitung satu kali', () => {
+  const P = R('hyrox').params;
+  const r = S.rankTimed([{ id: 'A', seconds: 3600, penalties: { RUN_SHORT_2_LAPS: 3 } }], P)[0];
+  assert.equal(r.penaltySeconds, 420);
+});
