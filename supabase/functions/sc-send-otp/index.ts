@@ -1,6 +1,6 @@
 // Kirim kode OTP SC Games lewat Resend. Tidak mengubah auth settings project:
 // kode dibuat dengan auth.admin.generateLink (tidak mengirim email), email dikirim dari sini.
-// Secrets: RESEND_API_KEY, OTP_FROM (mis. "SC Games 2027 <otp@20fit.id>"). SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY disediakan runtime.
+// Secrets: SC_RESEND_API_KEY (atau RESEND_API_KEY bila tidak ada), OTP_FROM (mis. "SC Games 2027 <otp@20fit.id>"). SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY disediakan runtime.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
 const ALLOWED_ORIGINS = [
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
   try { email = String((await req.json()).email ?? "").trim().toLowerCase(); } catch { /* body kosong */ }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return reply(400, { ok: false, error: "EMAIL_INVALID" });
 
-  const key = Deno.env.get("RESEND_API_KEY"); const from = Deno.env.get("OTP_FROM");
+  const key = Deno.env.get("SC_RESEND_API_KEY") ?? Deno.env.get("RESEND_API_KEY"); const from = Deno.env.get("OTP_FROM");
   if (!key || !from) return reply(500, { ok: false, error: "NOT_CONFIGURED" });
 
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
