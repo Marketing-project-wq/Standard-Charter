@@ -38,6 +38,7 @@
     for (const [k, val] of Object.entries(opts.overrides || {})) { setPath(p, k, val); overridden.push(k); }
     if (opts.useOptionFallbacks) {
       for (const [k, list] of Object.entries(p.options || {})) {
+        if (k.startsWith('league_points')) continue; // poin liga tidak dipakai simulasi live
         if (list.length && getPath(p, k) === null) { setPath(p, k, list[0]); assumed.push(k); }
       }
     }
@@ -404,6 +405,30 @@
     return { frames, total, complete: frames.length === params.frames && !blocked };
   }
 
+  // Posisi lemparan berikutnya dalam satu game: { frame, ball, standing, complete }
+  function bowlingProgress(params, rolls) {
+    let i = 0;
+    for (let f = 1; f <= params.frames; f++) {
+      const last = f === params.frames; const r1 = rolls[i];
+      if (r1 === undefined) return { frame: f, ball: 1, standing: 10, complete: false };
+      if (r1 === 10) {
+        if (!last) { i += 1; continue; }
+        const r2 = rolls[i + 1];
+        if (r2 === undefined) return { frame: f, ball: 2, standing: 10, complete: false };
+        if (rolls[i + 2] === undefined) return { frame: f, ball: 3, standing: r2 === 10 ? 10 : 10 - r2, complete: false };
+        return { frame: f, ball: 3, standing: 0, complete: true };
+      }
+      const r2 = rolls[i + 1];
+      if (r2 === undefined) return { frame: f, ball: 2, standing: 10 - r1, complete: false };
+      if (last && r1 + r2 === 10) {
+        if (rolls[i + 2] === undefined) return { frame: f, ball: 3, standing: 10, complete: false };
+        return { frame: f, ball: 3, standing: 0, complete: true };
+      }
+      i += 2;
+    }
+    return { frame: params.frames, ball: 2, standing: 0, complete: true };
+  }
+
   // ================================================================ klasemen
   // rows: [{ id, ...angka }]; keys: urutan tiebreaker dari rulebook; ctx.h2h(a, b) > 0 jika a mengalahkan b
   const TB = {
@@ -434,7 +459,7 @@
     createCricket, cricketBall, oversLabel, runRate, netRunRate,
     formatTime, rankTimed,
     stablefordPoints, golfToPar, countBack,
-    scoreBowling,
+    scoreBowling, bowlingProgress,
     rankTable, compareTable,
   };
 });

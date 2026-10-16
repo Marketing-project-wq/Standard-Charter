@@ -38,6 +38,8 @@ Rulebook di `rulebook/*.md` adalah sumber kebenaran scoring. Ubah aturan dengan 
 - Parameter mesin scoring ada di frontmatter YAML tiap file cabor. Isi hanya dari teks rulebook; kalau tidak disebut, tulis `null` dan masukkan ke `unverified_fields`. Jangan mengarang angka.
 - Setelah mengedit MD: jalankan `node scripts/build-rulebook.mjs` (validasi schema + regenerate), lalu `node --test`, lalu commit hasil generate bersama MD-nya.
 - Penanda `⚠️ Verifikasi` di MD jangan dihapus sebelum nilainya benar-benar dicek ke sumber resmi.
+- Live scoring di `index.html` tidak boleh punya angka aturan hardcode. Satu-satunya nilai buatan adalah `DEMO_ASSUMED` (agar simulasi jalan saat rulebook belum menetapkan angka) dan skenario demo di `DEMO`; keduanya ditandai di panel aturan.
+- Mode operator (`?operator=1`) menyimpan override hanya di browser itu (`localStorage`), belum ada penyimpanan bersama.
 
 ## Alur deploy: SEMUA perubahan wajib lewat staging
 

@@ -29,7 +29,7 @@ A web portal for Standard Chartered staff taking part in, or following, the SC G
 ### Non-goals (v1)
 - Payments, merchandise and ticketing.
 - Native mobile apps. The portal is responsive web only.
-- Referee or official score-entry tools. Scores come from an admin feed (§9).
+- Official score-entry tools and a shared score feed. Live scores are simulated for now. The scoring engine and the local operator panel (rule overrides, result status codes) read their rules from the rulebook (§6.1). The real results source is still open (§14).
 
 ---
 
@@ -130,7 +130,7 @@ Corporate & Investment Banking · Wealth & Retail Banking · Ventures · Technol
 
 ## 5. Sports and schedule
 
-### 5.1 Sports (20 confirmed, 2 still to be supplied)
+### 5.1 Sports (20 scheduled; Padel and Hyrox are in the rulebook but not yet scheduled)
 
 | Sport | Type | Visual mode | Sessions | Venue |
 |---|---|---|---|---|
@@ -138,7 +138,7 @@ Corporate & Investment Banking · Wealth & Retail Banking · Ventures · Technol
 | Basketball (M) | Team | Match | Fri 9am–9pm · Sat 9am–3pm | Jurong West Centre |
 | Basketball (W) | Team | Match | Fri 9am–9pm · Sat 9am–3pm | Jurong West Centre |
 | Bowling | Individual | Target | Fri 10am–7pm | Orchid Country Club |
-| Cage Cricket | Team | Match | Sat 8am–2pm | CBP1 (SCB Office) |
+| Cage Cricket | Individual (6 per cage) | Manual | Sat 8am–2pm | CBP1 (SCB Office) |
 | Cricket | Team | Match | Fri 8am–6pm | Ceylon Sports Club |
 | Darts | Individual | Target | Fri 9am–6pm | Good Vibes |
 | Dragon Boat | Team | Race | Sat 8am–12pm | Water Sports Ctr |
@@ -178,9 +178,18 @@ Every sport has a live detail view. Sports not currently in session show **UPCOM
 |---|---|---|
 | **Race** | Swimming, Running, Dragon Boat | Horizontal lanes with position markers (P1… / 1ST once finished), progress trail and finish line |
 | **Climb** | Rock Climbing | Vertical climbing wall. Each climber's marker rises with their height. Top line at 15 m |
-| **Match** | Basketball M/W, Netball, Football, Futsal, Cricket, Cage Cricket, Volleyball | Scoreboard plus a static court showing each side's live score in large type, period and clock, and a momentum bar. **No moving ball** |
+| **Match** | Basketball M/W, Netball, Football, Futsal, Cricket, Volleyball | Scoreboard plus a static court showing each side's live score in large type, period and clock, and a momentum bar. **No moving ball** |
 | **Racket** | Badminton, Pickleball, Table Tennis, Tennis | Static court showing the current game points for each player and the game number, plus a table of completed game scores and serve indicator. **No moving shuttle** |
-| **Target** | Bowling, Darts, Golf, Pool | Score grid per player (frames, rounds, holes or racks) with highlights for strikes, 140+, birdies and cleared racks. Bowling also shows a pin deck. Golf ranks lowest score first |
+| **Target** | Bowling, Darts, Golf, Pool | Score grid per player (frames with marks and running total, darts visits with remaining score, holes with par, frames won) with highlights for strikes, 140+, birdies and frame wins. Bowling also shows a lane and a pin deck. Golf ranks lowest score first |
+| **Manual** | Cage Cricket | Rulebook has no readable scoring rules. Players and points are entered manually by the organisers (operator mode) |
+
+### 6.1 Rulebook and scoring
+
+- `rulebook/*.md` is the source of truth for scoring. Each sport file has YAML frontmatter with the parameters the live scoring engine reads (points to win, sets, periods, penalties, status codes, tie-breakers). Values the rulebook does not state are `null` and listed in `unverified_fields`. Nothing is guessed.
+- The public rulebook (`/rulebook/`, no login) renders the same Markdown with a sidebar of all 22 sports and full-text search.
+- Each live view shows a rules panel: the rules in force, the source and check date, a warning for anything unverified, the meaning of each result status (DNS, DNF, DQ, W/O, RET) taken from the rulebook, and a link to the rulebook page.
+- **Operator mode** (toggle in the rules panel, or `?operator=1`) lets organisers set an unverified parameter, mark a competitor with a result status, and enter Cage Cricket points. These changes apply in that browser only until a shared score store exists.
+- Badminton keeps the 21-point game until BWF Laws v6.0 takes effect on 4 January 2027, then switches to 15 points by match date. The v6.0 details the rulebook does not state stay flagged.
 
 Every detail view also includes:
 - **Live report:** a timestamped feed of the latest events, up to 6.
@@ -304,7 +313,7 @@ Otp         { email, codeHash, expiresAt, attempts }
 
 ## 14. Open questions
 
-1. **2 more sports:** the brief says 22, but the schedule lists 20. Names, sessions and venues are needed.
+1. **Padel and Hyrox:** the rulebook has 22 sports but the schedule lists 20. Sessions and venues for Padel and Hyrox are needed before they appear on Live and Schedule.
 2. **Joining a team:** do teammates join with the team code during registration, or does the captain add them?
 3. **Roster limits:** minimum and maximum players per team sport, and the number of sports one person can enter.
 4. **Email domains:** which domains are allowed (`@sc.com` only, or others)?

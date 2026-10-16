@@ -2,6 +2,8 @@
 <html><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="assets/rulebook-data.js"></script>
+<script src="assets/scoring-engine.js"></script>
 <script src="assets/7b1fb203-a601-4d88-9622-4493dd800cda.js"></script>
 <script src="assets/53fe02ec-ff00-40b1-980a-20d2d266fcb2.js"></script>
 <script src="assets/88f5f119-3c2a-4c44-a618-682fa6e4203d.js"></script>
@@ -623,7 +625,74 @@ input,button{font-family:inherit}
         <div style="font-family:'JetBrains Mono',monospace;font-size:15px;color:#fff;background:rgba(255,255,255,.08);border-radius:10px;padding:10px 14px">{{ d.status }}</div>
       </div>
 
+      <div style="margin:0 28px 14px;border-radius:16px;background:rgba(255,255,255,.06);padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#B8C4E6">{{ d.rules.title }} · {{ d.rules.source }} · dicek {{ d.rules.checked }}</span>
+          <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <a href="{{ d.rulebookHref }}" target="_blank" rel="noopener" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#38D200;text-decoration:none">LIHAT RULEBOOK ↗</a>
+            <span sc-camel-on-click="{{ d.rules.toggleOp }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.12em;padding:4px 10px;border-radius:999px;background:{{ d.rules.opBg }};color:{{ d.rules.opFg }}">{{ d.rules.opLabel }}</span>
+          </span>
+        </div>
+        <sc-for list="{{ d.rules.lines }}" as="l" hint-placeholder-count="2"><span style="font-size:14px;color:#D5DEF5">{{ l.t }}</span></sc-for>
+        <sc-if value="{{ d.rules.variant }}" hint-placeholder-val="{{ false }}"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#B8C4E6">{{ d.rules.variant }}</span></sc-if>
+        <sc-if value="{{ d.rules.hasWarn }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FFF3C4;color:#5C4400;border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;font-size:13px">
+            <sc-for list="{{ d.rules.warns }}" as="w" hint-placeholder-count="1"><span>⚠️ {{ w.t }}</span></sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ d.rules.hasStatus }}" hint-placeholder-val="{{ false }}">
+          <details>
+            <summary style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#B8C4E6">ARTI STATUS HASIL (DNS, DNF, DQ, W/O, RET) MENURUT RULEBOOK</summary>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
+              <sc-for list="{{ d.rules.statusList }}" as="s" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:54px minmax(0,1fr);gap:8px;font-size:13px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#38D200">{{ s.code }}</span><span style="color:#B8C4E6">{{ s.meaning }}</span></div>
+              </sc-for>
+            </div>
+          </details>
+        </sc-if>
+        <sc-if value="{{ d.rules.opOn }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:1px dashed rgba(255,255,255,.25);padding-top:10px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-size:12px;color:#8FA3D9">Override dan status dari panitia hanya berlaku di browser ini (belum ada penyimpanan bersama).</span>
+            <sc-for list="{{ d.rules.ovs }}" as="o" hint-placeholder-count="1">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <code style="font-size:12px;color:#fff">{{ o.field }}</code>
+                <span style="font-size:12px;color:#8FA3D9">{{ o.hint }}</span>
+                <input value="{{ o.value }}" sc-camel-on-change="{{ o.onChange }}" style="width:120px;padding:6px 8px;border-radius:8px;border:1px solid #3B4A7A;background:#0A1A4F;color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px">
+                <span sc-camel-on-click="{{ o.apply }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;padding:5px 12px;border-radius:8px;background:#0473EA;color:#fff">TERAPKAN</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ d.rules.hasOverrides }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ d.rules.clearOv }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;color:#FF8A8A">HAPUS SEMUA OVERRIDE CABOR INI</span></sc-if>
+            <sc-if value="{{ d.rules.hasEnts }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <sc-for list="{{ d.rules.ents }}" as="en" hint-placeholder-count="2">
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <span style="min-width:170px;font-size:13px">{{ en.name }}</span>
+                    <sc-for list="{{ en.btns }}" as="b" hint-placeholder-count="5"><span sc-camel-on-click="{{ b.go }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;padding:4px 10px;border-radius:8px;background:{{ b.bg }};color:{{ b.fg }}">{{ b.label }}</span></sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+
       <div style="padding:4px 28px 28px">
+        <sc-if value="{{ d.hasNeeds }}" hint-placeholder-val="{{ false }}"><div style="background:#FFF3C4;color:#5C4400;border-radius:12px;padding:16px;font-size:15px">{{ d.needsMsg }}</div></sc-if>
+        <sc-if value="{{ d.isManual }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px;color:#D5DEF5">Rulebook belum memuat aturan skor Cage Cricket. Panitia memasukkan poin tiap pemain secara manual (aktifkan MODE OPERATOR).</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ d.manualPlayers }}" as="p" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:12px;padding:10px 14px">
+                <span style="width:28px;font-family:'JetBrains Mono',monospace;color:#8FA3D9">{{ p.rank }}</span>
+                <span style="width:42px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;background:#0473EA">{{ p.code }}</span>
+                <span style="flex:1;min-width:0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;text-transform:uppercase">{{ p.name }}</span>
+                <sc-if value="{{ p.opOn }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ p.minus }}" style="cursor:pointer;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:20px">−</span></sc-if>
+                <span style="min-width:56px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:32px">{{ p.pts }}</span>
+                <sc-if value="{{ p.opOn }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ p.plus }}" style="cursor:pointer;width:34px;height:34px;border-radius:8px;background:#38D200;color:#05103F;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">+</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
         <sc-if value="{{ d.isRace }}" hint-placeholder-val="{{ false }}">
           <sc-if value="{{ d.isSwim }}" hint-placeholder-val="{{ false }}"><div style="position:relative;border-radius:16px;overflow:hidden"><svg viewBox="0 0 54 24" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto"><rect x="0" y="0" width="54" height="24" fill="#13307A"/><rect x="2" y="2" width="50" height="20" fill="#1C8FD8"/><rect x="2" y="4.5" width="50" height="2.5" fill="#2399E3"/><rect x="2" y="9.5" width="50" height="2.5" fill="#2399E3"/><rect x="2" y="14.5" width="50" height="2.5" fill="#2399E3"/><rect x="2" y="19.5" width="50" height="2.5" fill="#2399E3"/><line x1="2" y1="2" x2="52" y2="2" stroke="#fff" stroke-width="0.2"/><line x1="2" y1="4.5" x2="52" y2="4.5" stroke="#E63946" stroke-width="0.22" stroke-dasharray="0.5 0.5"/><line x1="2" y1="4.5" x2="52" y2="4.5" stroke="#fff" stroke-width="0.22" stroke-dasharray="0.5 0.5" stroke-dashoffset="0.5"/><line x1="2" y1="7" x2="52" y2="7" stroke="#E63946" stroke-width="0.22" stroke-dasharray="0.5 0.5"/><line x1="2" y1="7" x2="52" y2="7" stroke="#fff" stroke-width="0.22" stroke-dasharray="0.5 0.5" stroke-dashoffset="0.5"/><line x1="2" y1="9.5" x2="52" y2="9.5" stroke="#E63946" stroke-width="0.22" stroke-dasharray="0.5 0.5"/><line x1="2" y1="9.5" x2="52" y2="9.5" stroke="#fff" stroke-width="0.22" stroke-dasharray="0.5 0.5" stroke-dashoffset="0.5"/><line x1="2" y1="12" x2="52" y2="12" stroke="#E63946" stroke-width="0.22" stroke-dasharray="0.5 0.5"/><line x1="2" y1="12" x2="52" y2="12" stroke="#fff" stroke-width="0.22" stroke-dasharray="0.5 0.5" stroke-dashoffset="0.5"/><line x1="2" y1="14.5" x2="52" y2="14.5" stroke="#E63946" stroke-width="0.22" stroke-dasharray="0.5 0.5"/><line x1="2" y1="14.5" x2="52" y2="14.5" stroke="#fff" stroke-width="0.22" stroke-dasharray="0.5 0.5" stroke-dashoffset="0.5"/><line x1="2" y1="17" x2="52" y2="17" stroke="#E63946" stroke-width="0.22" stroke-dasharray="0.5 0.5"/><line x1="2" y1="17" x2="52" y2="17" stroke="#fff" stroke-width="0.22" stroke-dasharray="0.5 0.5" stroke-dashoffset="0.5"/><line x1="2" y1="19.5" x2="52" y2="19.5" stroke="#E63946" stroke-width="0.22" stroke-dasharray="0.5 0.5"/><line x1="2" y1="19.5" x2="52" y2="19.5" stroke="#fff" stroke-width="0.22" stroke-dasharray="0.5 0.5" stroke-dashoffset="0.5"/><line x1="2" y1="22" x2="52" y2="22" stroke="#fff" stroke-width="0.2"/><line x1="4" y1="3.25" x2="50" y2="3.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="2.75" x2="4" y2="3.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="2.75" x2="50" y2="3.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="2" x2="7" y2="4.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="2" x2="47" y2="4.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="2.5" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="3.63" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">1</text><text x="52.9" y="3.63" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">1</text><line x1="4" y1="5.75" x2="50" y2="5.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="5.25" x2="4" y2="6.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="5.25" x2="50" y2="6.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="4.5" x2="7" y2="7" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="4.5" x2="47" y2="7" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="5" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="6.13" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">2</text><text x="52.9" y="6.13" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">2</text><line x1="4" y1="8.25" x2="50" y2="8.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="7.75" x2="4" y2="8.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="7.75" x2="50" y2="8.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="7" x2="7" y2="9.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="7" x2="47" y2="9.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="7.5" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="8.63" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">3</text><text x="52.9" y="8.63" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">3</text><line x1="4" y1="10.75" x2="50" y2="10.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="10.25" x2="4" y2="11.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="10.25" x2="50" y2="11.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="9.5" x2="7" y2="12" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="9.5" x2="47" y2="12" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="10" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="11.13" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">4</text><text x="52.9" y="11.13" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">4</text><line x1="4" y1="13.25" x2="50" y2="13.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="12.75" x2="4" y2="13.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="12.75" x2="50" y2="13.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="12" x2="7" y2="14.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="12" x2="47" y2="14.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="12.5" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="13.63" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">5</text><text x="52.9" y="13.63" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">5</text><line x1="4" y1="15.75" x2="50" y2="15.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="15.25" x2="4" y2="16.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="15.25" x2="50" y2="16.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="14.5" x2="7" y2="17" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="14.5" x2="47" y2="17" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="15" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="16.13" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">6</text><text x="52.9" y="16.13" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">6</text><line x1="4" y1="18.25" x2="50" y2="18.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="17.75" x2="4" y2="18.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="17.75" x2="50" y2="18.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="17" x2="7" y2="19.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="17" x2="47" y2="19.5" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="17.5" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="18.63" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">7</text><text x="52.9" y="18.63" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">7</text><line x1="4" y1="20.75" x2="50" y2="20.75" stroke="#0B1B44" stroke-width="0.2"/><line x1="4" y1="20.25" x2="4" y2="21.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="50" y1="20.25" x2="50" y2="21.25" stroke="#0B1B44" stroke-width="0.2"/><line x1="7" y1="19.5" x2="7" y2="22" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><line x1="47" y1="19.5" x2="47" y2="22" stroke="#fff" stroke-width="0.1" stroke-dasharray="0.25 0.2" stroke-opacity="0.8"/><rect x="0.5" y="20" width="1.5" height="1.5" fill="#B8C4E6" rx="0.15"/><text x="1.25" y="21.13" fill="#05103F" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">8</text><text x="52.9" y="21.13" fill="#fff" font-size="1.1" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">8</text><text x="2.2" y="1.45" fill="#B8C4E6" font-size="0.9" font-family="JetBrains Mono,monospace">0m</text><text x="27" y="1.45" fill="#B8C4E6" font-size="0.9" text-anchor="middle" font-family="JetBrains Mono,monospace">25m</text><text x="51.8" y="1.45" fill="#B8C4E6" font-size="0.9" text-anchor="end" font-family="JetBrains Mono,monospace">50m</text></svg><sc-for list="{{ d.lanes }}" as="l" hint-placeholder-count="6"><div style="position:absolute;left:{{ l.lx }};top:{{ l.ly }};width:46px;height:26px;border-radius:13px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#05103F;border:2px solid #05103F;box-shadow:0 0 0 3px rgba(255,255,255,.25);transition:left 1.9s linear,top 1.9s linear;background:{{ l.mk }}">{{ l.code }}</div></sc-for></div></sc-if>
           <sc-if value="{{ d.isTrack }}" hint-placeholder-val="{{ false }}"><div style="position:relative;max-width:960px;margin:0 auto"><svg viewBox="0 0 190 106" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto"><rect x="0" y="0" width="190" height="106" fill="#0F5A2B"/><path d="M52.805 5.54 H137.195 A47.46 47.46 0 0 1 137.195 100.46 H52.805 A47.46 47.46 0 0 1 52.805 5.54 Z" fill="#0A3F1E"/><path d="M52.805 6.74 H137.195 A46.26 46.26 0 0 1 137.195 99.26 H52.805 A46.26 46.26 0 0 1 52.805 6.74 Z" fill="#C4533A"/><path d="M52.805 16.5 H137.195 A36.5 36.5 0 0 1 137.195 89.5 H52.805 A36.5 36.5 0 0 1 52.805 16.5 Z" fill="#17803D"/><rect x="43" y="23" width="104" height="60" fill="none" stroke="#fff" stroke-width="0.35" stroke-opacity="0.55"/><line x1="95" y1="23" x2="95" y2="83" stroke="#fff" stroke-width="0.35" stroke-opacity="0.55"/><circle cx="95" cy="53" r="9.15" fill="none" stroke="#fff" stroke-width="0.35" stroke-opacity="0.55"/><path d="M52.805 16.5 H137.195 A36.5 36.5 0 0 1 137.195 89.5 H52.805 A36.5 36.5 0 0 1 52.805 16.5 Z" fill="none" stroke="#fff" stroke-width="0.35"/><path d="M52.805 15.28 H137.195 A37.72 37.72 0 0 1 137.195 90.72 H52.805 A37.72 37.72 0 0 1 52.805 15.28 Z" fill="none" stroke="#fff" stroke-width="0.22"/><path d="M52.805 14.06 H137.195 A38.94 38.94 0 0 1 137.195 91.94 H52.805 A38.94 38.94 0 0 1 52.805 14.06 Z" fill="none" stroke="#fff" stroke-width="0.22"/><path d="M52.805 12.84 H137.195 A40.16 40.16 0 0 1 137.195 93.16 H52.805 A40.16 40.16 0 0 1 52.805 12.84 Z" fill="none" stroke="#fff" stroke-width="0.22"/><path d="M52.805 11.62 H137.195 A41.38 41.38 0 0 1 137.195 94.38 H52.805 A41.38 41.38 0 0 1 52.805 11.62 Z" fill="none" stroke="#fff" stroke-width="0.22"/><path d="M52.805 10.4 H137.195 A42.6 42.6 0 0 1 137.195 95.6 H52.805 A42.6 42.6 0 0 1 52.805 10.4 Z" fill="none" stroke="#fff" stroke-width="0.22"/><path d="M52.805 9.18 H137.195 A43.82 43.82 0 0 1 137.195 96.82 H52.805 A43.82 43.82 0 0 1 52.805 9.18 Z" fill="none" stroke="#fff" stroke-width="0.22"/><path d="M52.805 7.96 H137.195 A45.04 45.04 0 0 1 137.195 98.04 H52.805 A45.04 45.04 0 0 1 52.805 7.96 Z" fill="none" stroke="#fff" stroke-width="0.22"/><path d="M52.805 6.74 H137.195 A46.26 46.26 0 0 1 137.195 99.26 H52.805 A46.26 46.26 0 0 1 52.805 6.74 Z" fill="none" stroke="#fff" stroke-width="0.35"/><rect x="136.695" y="89.5" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="89.5" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="90.11" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="90.11" width="0.5" height="0.61" fill="#fff"/><rect x="136.695" y="90.72" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="90.72" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="91.33" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="91.33" width="0.5" height="0.61" fill="#fff"/><rect x="136.695" y="91.94" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="91.94" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="92.55" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="92.55" width="0.5" height="0.61" fill="#fff"/><rect x="136.695" y="93.16" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="93.16" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="93.77" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="93.77" width="0.5" height="0.61" fill="#fff"/><rect x="136.695" y="94.38" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="94.38" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="94.99" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="94.99" width="0.5" height="0.61" fill="#fff"/><rect x="136.695" y="95.6" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="95.6" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="96.21" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="96.21" width="0.5" height="0.61" fill="#fff"/><rect x="136.695" y="96.82" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="96.82" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="97.43" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="97.43" width="0.5" height="0.61" fill="#fff"/><rect x="136.695" y="98.04" width="0.5" height="0.61" fill="#fff"/><rect x="137.195" y="98.04" width="0.5" height="0.61" fill="#05103F"/><rect x="136.695" y="98.65" width="0.5" height="0.61" fill="#05103F"/><rect x="137.195" y="98.65" width="0.5" height="0.61" fill="#fff"/><text x="139.395" y="87.3" fill="#fff" font-size="3" font-weight="800" font-family="Barlow Condensed,sans-serif" letter-spacing="0.15">FINISH</text><text x="58.805" y="90.452" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">1</text><text x="58.805" y="91.672" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">2</text><text x="58.805" y="92.892" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">3</text><text x="58.805" y="94.112" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">4</text><text x="58.805" y="95.332" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">5</text><text x="58.805" y="96.552" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">6</text><text x="58.805" y="97.772" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">7</text><text x="58.805" y="98.992" fill="#fff" font-size="1.05" font-weight="700" text-anchor="middle" font-family="JetBrains Mono,monospace">8</text><text x="95" y="56" fill="#fff" fill-opacity="0.55" font-size="9" font-weight="800" text-anchor="middle" font-family="Barlow Condensed,sans-serif">400m</text></svg><sc-for list="{{ d.lanes }}" as="l" hint-placeholder-count="6"><div style="position:absolute;left:{{ l.lx }};top:{{ l.ly }};width:26px;height:26px;border-radius:13px;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;color:#05103F;border:2px solid #05103F;box-shadow:0 0 0 3px rgba(255,255,255,.25);transition:left 1.9s linear,top 1.9s linear;background:{{ l.mk }}">{{ l.code }}</div></sc-for></div></sc-if>
@@ -713,7 +782,7 @@ input,button{font-family:inherit}
             <sc-if value="{{ d.cv.tabletennis }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 354 252.5" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto"><rect x="0" y="0" width="354" height="252.5" fill="#0A1F55"/><rect x="40" y="50" width="274" height="152.5" fill="#1F4E9E" rx="2"/><rect x="40" y="50" width="274" height="152.5" fill="none" stroke="#fff" stroke-width="2"/><line x1="40" y1="126.25" x2="314" y2="126.25" stroke="#fff" stroke-width="0.8"/><line x1="177" y1="34.75" x2="177" y2="217.75" stroke="#05103F" stroke-width="3"/><line x1="177" y1="34.75" x2="177" y2="217.75" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 2"/><rect x="174" y="31" width="6" height="4" fill="#B8C4E6"/><rect x="174" y="217.5" width="6" height="4" fill="#B8C4E6"/><line x1="62" y1="202.5" x2="62" y2="224.5" stroke="#8FA3D9" stroke-width="4"/><line x1="292" y1="202.5" x2="292" y2="224.5" stroke="#8FA3D9" stroke-width="4"/></svg></sc-if>
             <sc-if value="{{ d.cv.tennis }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 26.77 13.97" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto"><rect x="0" y="0" width="26.77" height="13.97" fill="#2F7D4F"/><rect x="1.5" y="1.5" width="23.77" height="10.97" fill="#2F6DB8"/><rect x="1.5" y="1.5" width="23.77" height="10.97" fill="none" stroke="#fff" stroke-width="0.08"/><line x1="1.5" y1="2.87" x2="25.27" y2="2.87" stroke="#fff" stroke-width="0.08"/><line x1="1.5" y1="11.1" x2="25.27" y2="11.1" stroke="#fff" stroke-width="0.08"/><line x1="6.985" y1="2.87" x2="6.985" y2="11.1" stroke="#fff" stroke-width="0.08"/><line x1="19.785" y1="2.87" x2="19.785" y2="11.1" stroke="#fff" stroke-width="0.08"/><line x1="6.985" y1="6.985" x2="19.785" y2="6.985" stroke="#fff" stroke-width="0.08"/><line x1="1.5" y1="6.985" x2="1.8" y2="6.985" stroke="#fff" stroke-width="0.08"/><line x1="25.27" y1="6.985" x2="24.97" y2="6.985" stroke="#fff" stroke-width="0.08"/><line x1="13.385" y1="0.586" x2="13.385" y2="13.384" stroke="#05103F" stroke-width="0.14"/><line x1="13.385" y1="0.586" x2="13.385" y2="13.384" stroke="#fff" stroke-width="0.06" stroke-dasharray="0.12 0.1"/><circle cx="13.385" cy="0.586" r="0.14" fill="#fff"/><circle cx="13.385" cy="13.384" r="0.14" fill="#fff"/></svg></sc-if>
             <div style="position:absolute;left:{{ d.scoreL }};top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;line-height:1;background:rgba(5,16,63,.62);border-radius:clamp(8px,1.6vw,16px);padding:clamp(4px,1vw,10px) clamp(8px,2vw,20px)"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(10px,1.6vw,15px);letter-spacing:.14em;color:rgba(255,255,255,.75)">{{ d.p0code }}</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(26px,6.2vw,68px);color:#fff">{{ d.p0cur }}</span></div><div style="position:absolute;left:{{ d.scoreR }};top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;line-height:1;background:rgba(5,16,63,.62);border-radius:clamp(8px,1.6vw,16px);padding:clamp(4px,1vw,10px) clamp(8px,2vw,20px)"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(10px,1.6vw,15px);letter-spacing:.14em;color:rgba(255,255,255,.75)">{{ d.p1code }}</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(26px,6.2vw,68px);color:#fff">{{ d.p1cur }}</span></div>
-            <span style="position:absolute;right:12px;bottom:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#fff;background:rgba(5,16,63,.7);padding:4px 10px;border-radius:6px">GAME {{ d.gameNo }}</span>
+            <span style="position:absolute;right:12px;bottom:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#fff;background:rgba(5,16,63,.7);padding:4px 10px;border-radius:6px">{{ d.gameLabel }} {{ d.gameNo }}</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px">
             <sc-for list="{{ d.players }}" as="p" hint-placeholder-count="2">
@@ -747,9 +816,9 @@ input,button{font-family:inherit}
           <div style="display:flex;flex-direction:column;gap:6px;overflow-x:auto">
             <sc-for list="{{ d.players }}" as="p" hint-placeholder-count="4">
               <div style="display:grid;gap:4px;align-items:center;min-width:560px;grid-template-columns:{{ d.cols }}">
-                <div style="display:flex;gap:8px;align-items:center;min-width:0"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#38D200">{{ p.code }}</span><span style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</span></div>
+                <div style="display:flex;gap:8px;align-items:center;min-width:0"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#38D200">{{ p.code }}</span><span style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8FA3D9;flex-shrink:0">{{ p.extra }}</span></div>
                 <sc-for list="{{ p.cells }}" as="f" hint-placeholder-count="10">
-                  <span style="height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;background:{{ f.bg }};color:{{ f.fg }}">{{ f.v }}</span>
+                  <span style="height:44px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.15;background:{{ f.bg }};color:{{ f.fg }}"><span>{{ f.v }}</span><span style="font-size:10px;opacity:.75">{{ f.sub }}</span></span>
                 </sc-for>
                 <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-align:right">{{ p.total }}</span>
               </div>
@@ -1299,7 +1368,7 @@ const SPORTS = [
   S('basketball-m', 'Basketball (M)', 'team', 'match', [['FRI', '9am–9pm'], ['SAT', '9am–3pm']], 'Jurong West Centre'),
   S('basketball-w', 'Basketball (W)', 'team', 'match', [['FRI', '9am–9pm'], ['SAT', '9am–3pm']], 'Jurong West Centre'),
   S('bowling', 'Bowling', 'individual', 'target', [['FRI', '10am–7pm']], 'Orchid Country Club'),
-  S('cage-cricket', 'Cage Cricket', 'team', 'match', [['SAT', '8am–2pm']], 'CBP1 (SCB Office)'),
+  S('cage-cricket', 'Cage Cricket', 'individual', 'target', [['SAT', '8am–2pm']], 'CBP1 (SCB Office)'),
   S('cricket', 'Cricket', 'team', 'match', [['FRI', '8am–6pm']], 'Ceylon Sports Club'),
   S('darts', 'Darts', 'individual', 'target', [['FRI', '9am–6pm']], 'Good Vibes'),
   S('dragon-boat', 'Dragon Boat', 'team', 'race', [['SAT', '8am–12pm']], 'Water Sports Ctr'),
@@ -1344,31 +1413,9 @@ const pct = v => Math.max(0, Math.min(100, v)).toFixed(1) + '%';
 const mmss = s => { s = Math.max(0, s); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const sessionsLabel = sp => sp.sessions.map(([d, t]) => `${d === 'FRI' ? 'Fri 16' : 'Sat 17'} · ${t}`).join('  /  ');
 
-const CFG = {
-  'swimming': { title: '200m Freestyle · Heat 2', unit: 200, u: 'm', lanes: 6, first: 'Swimmers through the first turn' },
-  'running': { title: '400m · Heat 1', unit: 400, u: 'm', lanes: 8, first: 'Runners away cleanly' },
-  'dragon-boat': { title: '500m · Final', unit: 500, u: 'm', lanes: 5, teams: true, first: 'Boats away on the horn' },
-  'rock-climbing': { mode: 'climb', title: 'Speed Climb · Semi-final', unit: 15, u: 'm', lanes: 5, first: 'Climbers off the start pads' },
-  'basketball-m': { title: 'Group A · Match 6', sa: 48, sb: 51, per: 3, pl: 'Q', plen: 600, maxPer: 4, pts: [2, 2, 2, 3, 1], act: { 1: 'free throw', 2: 'two-pointer', 3: 'three-pointer' }, chance: .6 },
-  'basketball-w': { title: 'Group B · Match 4', sa: 31, sb: 27, per: 2, pl: 'Q', plen: 600, maxPer: 4, pts: [2, 2, 2, 3, 1], act: { 1: 'free throw', 2: 'two-pointer', 3: 'three-pointer' }, chance: .55 },
-  'netball': { title: 'Semi-final 1', sa: 14, sb: 12, per: 2, pl: 'Q', plen: 900, maxPer: 4, pts: [1], act: { 1: 'goal' }, chance: .5 },
-  'football': { title: 'Group C · Match 2', pl: 'H', plen: 2700, maxPer: 2, pts: [1], act: { 1: 'GOAL' }, chance: .08 },
-  'futsal': { title: 'Group A · Match 1', pl: 'H', plen: 1200, maxPer: 2, pts: [1], act: { 1: 'goal' }, chance: .15 },
-  'cricket': { title: 'T10 · Group B', sa: 68, sb: 41, per: 2, pl: 'INN ', plen: 1200, maxPer: 2, pts: [0, 1, 1, 2, 4, 6], act: { 0: 'dot ball', 1: 'single', 2: 'two runs', 4: 'FOUR', 6: 'SIX' }, chance: .8 },
-  'cage-cricket': { title: 'Pool 1 · Match 3', pl: 'INN ', plen: 900, maxPer: 2, pts: [0, 1, 1, 2, 4, 6], act: { 0: 'dot ball', 1: 'single', 2: 'two runs', 4: 'FOUR', 6: 'SIX' }, chance: .8 },
-  'volleyball-w': { title: 'Pool A · Match 1', pl: 'SET ', plen: 1500, maxPer: 5, pts: [1], act: { 1: 'point' }, chance: .9 },
-  'badminton': { title: 'Singles · Quarter-final', to: 21, sets: [[21, 17]], cur: [11, 13] },
-  'pickleball': { title: 'Doubles · Round of 16', to: 11, sets: [[11, 8]], cur: [6, 7] },
-  'table-tennis': { title: 'Singles · Group 3', to: 11, sets: [[9, 11], [11, 6]], cur: [4, 3] },
-  'tennis': { title: 'Singles · Round 1', to: 6, sets: [[6, 4]], cur: [3, 2] },
-  'bowling': { title: 'Singles · Lanes 7–8', kind: 'bowl', n: 10, pre: 5, cell: 'Frame' },
-  'darts': { title: '501 · Quarter-final', kind: 'darts', n: 10, pre: 4, cell: 'Round' },
-  'golf': { title: 'Stroke play · Back Nine', kind: 'golf', n: 9, pre: 4, cell: 'Hole', low: true },
-  'pool': { title: '8-Ball · Group stage', kind: 'pool', n: 9, pre: 3, cell: 'Rack' },
-};
 const COURT_KEYS = ['basketball', 'netball', 'football', 'futsal', 'volleyball', 'cricket', 'cagecricket', 'badminton', 'pickleball', 'tabletennis', 'tennis'];
 const COURT_OF = { 'basketball-m': 'basketball', 'basketball-w': 'basketball', 'netball': 'netball', 'football': 'football', 'futsal': 'futsal', 'volleyball-w': 'volleyball', 'cricket': 'cricket', 'cage-cricket': 'cagecricket', 'badminton': 'badminton', 'pickleball': 'pickleball', 'table-tennis': 'tabletennis', 'tennis': 'tennis' };
-const SCORE_POS = { cricket: ['12%', '88%'], cagecricket: ['12%', '88%'] };
+const SCORE_POS = { cricket: ['17%', '83%'], cagecricket: ['12%', '88%'] };
 const COURT_MAX = { cricket: '620px', volleyball: '820px', tabletennis: '760px', badminton: '820px', pickleball: '820px', tennis: '860px' };
 const TRK = { S: 84.39, r0: 36.5, w: 1.22, cx: 95, cy: 53 };
 function trackXY(i, d) {
@@ -1382,84 +1429,258 @@ function trackXY(i, d) {
 }
 const swimXY = (i, d) => { const m = d % 100; return [2 + (m > 50 ? 100 - m : m), 2 + (i + 1) * 2.5 + 1.25]; };
 const boatXY = (i, d) => [40 + d * .96, 10 + 12 * i + 6];
-const GEN = {
-  bowl: () => Math.random() < .28 ? 10 : 3 + Math.floor(Math.random() * 7),
-  darts: () => Math.random() < .08 ? 180 : 26 + Math.floor(Math.random() * 115),
-  golf: () => 3 + Math.floor(Math.random() * 4),
-  pool: () => Math.floor(Math.random() * 9),
+// ================================================================ LIVE SCORING
+// Aturan (poin, set, babak, penalti, status) datang dari rulebook/*.md lewat window.RULEBOOK (assets/rulebook-data.js)
+// dan dihitung oleh window.SCORING (assets/scoring-engine.js). Data di bawah ini hanya skenario demo
+// (judul laga, jumlah peserta, peluang kejadian), BUKAN aturan.
+const RB = window.RULEBOOK, SC = window.SCORING;
+const RULE_SLUG = { 'basketball-m': 'basketball', 'basketball-w': 'basketball', 'volleyball-w': 'volleyball' };
+const slugOf = id => RULE_SLUG[id] || id;
+const EVENT_ISO = { FRI: '2026-10-16', SAT: '2026-10-17' };
+const LS_OVERRIDES = 'scgames_rule_overrides', LS_OPERATOR = 'scgames_operator';
+const lsGet = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v === null ? d : v; } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+// Nilai sementara supaya simulasi demo tetap jalan di mana rulebook belum menetapkan angka. Ditandai di panel aturan.
+const DEMO_ASSUMED = { futsal: { period_minutes: 20 } };
+
+function liveRules(id) {
+  const slug = slugOf(id);
+  const r = SC.resolveRules(RB.sports[slug], { date: EVENT_ISO.FRI, overrides: lsGet(LS_OVERRIDES, {})[slug] || {}, useOptionFallbacks: true });
+  r.demoUsed = [];
+  for (const [k, v] of Object.entries(DEMO_ASSUMED[id] || {})) if (r.params[k] == null) { r.params[k] = v; r.demoUsed.push(k); }
+  r.slug = slug;
+  return r;
+}
+
+const DEMO = {
+  'swimming': { title: '200m Freestyle · Heat 2', unit: 200, u: 'm', lanes: 6, secs: 125, first: 'Swimmers through the first turn' },
+  'running': { title: '400m · Heat 1', unit: 400, u: 'm', lanes: 8, secs: 52, first: 'Runners away cleanly' },
+  'dragon-boat': { title: '500m · Final', unit: 500, u: 'm', lanes: 5, teams: true, secs: 125, first: 'Boats away on the horn' },
+  'rock-climbing': { title: 'Speed Climb · Semi-final', unit: 15, u: 'm', lanes: 5, secs: 6.4, first: 'Climbers off the start pads' },
+  'basketball-m': { title: 'Group A · Match 6', warm: { period: 3, score: [48, 51] }, chance: .6, weights: { free_throw: 1, two_pointer: 4, three_pointer: 2 }, label: { free_throw: 'free throw', two_pointer: 'two-pointer', three_pointer: 'three-pointer' } },
+  'basketball-w': { title: 'Group B · Match 4', warm: { period: 2, score: [31, 27] }, chance: .55, weights: { free_throw: 1, two_pointer: 4, three_pointer: 2 }, label: { free_throw: 'free throw', two_pointer: 'two-pointer', three_pointer: 'three-pointer' } },
+  'netball': { title: 'Semi-final 1', warm: { period: 2, score: [14, 12] }, chance: .5, weights: { goal: 1 }, label: { goal: 'goal' } },
+  'football': { title: 'Group C · Match 2', chance: .08, weights: { goal: 1 }, label: { goal: 'GOAL' } },
+  'futsal': { title: 'Group A · Match 1', chance: .15, weights: { goal: 1 }, label: { goal: 'goal' } },
+  'cricket': { title: 'T20 · Group B', first: 'Toss won. Batting first' },
+  'volleyball-w': { title: 'Pool A · Match 1', warm: 40 },
+  'badminton': { title: 'Singles · Quarter-final', warm: 24 },
+  'pickleball': { title: 'Doubles · Round of 16', warm: 12 },
+  'table-tennis': { title: 'Singles · Group 3', warm: 14 },
+  'tennis': { title: 'Singles · Round 1', warm: 30 },
+  'bowling': { title: 'Singles · Lanes 7–8', players: 4, warm: 5 },
+  'darts': { title: '501 · Quarter-final', players: 2, warm: 4 },
+  'golf': { title: 'Stroke play · Back Nine', players: 4, warm: 4, pars: [4, 3, 5, 4, 4, 3, 4, 5, 4] },
+  'pool': { title: '8-Ball · Group stage', players: 2 },
+  'cage-cricket': { title: 'Pool 1 · Match 3', players: 6 },
 };
-const HI = { bowl: v => v === 10, darts: v => v >= 140, golf: v => v <= 3, pool: v => v === 8 };
-const ON = { bowl: 'ON THE LANE', darts: 'AT THE OCHE', golf: 'ON THE TEE', pool: 'AT THE TABLE' };
-const score = (e, fr) => e.kind === 'bowl' ? fr.reduce((a, v) => a + v + (v === 10 ? 5 : 0), 0) : fr.reduce((a, v) => a + v, 0);
+const ON = { bowling: 'ON THE LANE', darts: 'AT THE OCHE', golf: 'ON THE TEE', pool: 'AT THE TABLE' };
 const nameOf = (e, c) => e.teams ? TEAMS[c].team : TEAMS[c].ath;
-function initLive() {
-  return SPORTS.map(sp => {
+const wpick = (R, w) => { const ks = Object.keys(w); let t = ks.reduce((a, k) => a + w[k], 0) * R(); for (const k of ks) { t -= w[k]; if (t <= 0) return k; } return ks[0]; };
+const STATUS_LABEL = { DNS: 'DNS', DNF: 'DNF', DQ: 'DQ', WO: 'W/O', RET: 'RET' };
+
+// tampilan per cabor ditentukan dari tipe hasil di rulebook
+function viewOf(sp, p) {
+  if (p.result_type === null) return 'manual';
+  if (p.result_type === 'timed') return sp.id === 'rock-climbing' ? 'climb' : 'race';
+  if (p.result_type === 'head_to_head_score') return 'match';
+  if (p.result_type === 'head_to_head_sets') return sp.mode === 'racket' ? 'racket' : sp.type === 'team' ? 'sets' : 'target';
+  return 'target';
+}
+
+function newEngine(e) {
+  const P = e.P;
+  if (e.mode === 'racket' || e.mode === 'sets') return SC.createMatch(P, { matchTiebreak: false });
+  if (e.mode === 'match') return P.overs_per_innings ? SC.createCricket(P) : SC.createScoreMatch(P);
+  return null;
+}
+
+function makeLive(sp) {
+  {
     const live = sp.sessions.some(([d, t]) => statusOf(d, t) === 'LIVE');
     const nxt = sp.sessions.find(([d, t]) => statusOf(d, t) === 'UP');
     const up = !live;
     const r = rng(hash(sp.id + 'x')); const pick = n => [...CODES].sort(() => r() - .5).slice(0, n);
-    const c = CFG[sp.id]; const mode = c.mode || sp.mode;
-    const e = { id: sp.id, sport: sp.id, mode, title: c.title, up, upLabel: up ? (nxt ? 'STARTS ' + (nxt[0] === 'FRI' ? 'FRI 16' : 'SAT 17') + ' · ' + nxt[1].toUpperCase() : 'FINISHED') : '', feed: up ? [] : [{ txt: c.first || 'Under way', t: 0 }] };
-    if (mode === 'race' || mode === 'climb') Object.assign(e, { unit: c.unit, u: c.u, teams: !!c.teams, done: 0, lanes: pick(c.lanes).map(x => ({ c: x, p: up ? 0 : 15 + r() * 30, v: 2.4 + r() * 1.4, place: 0 })) });
-    else if (mode === 'match') { const [a, b] = pick(2); Object.assign(e, { a: { c: a, s: up ? 0 : (c.sa ?? Math.floor(r() * 3)) }, b: { c: b, s: up ? 0 : (c.sb ?? Math.floor(r() * 3)) }, per: up ? 1 : (c.per || 1), clock: up ? c.plen : Math.floor(c.plen * .55), pl: c.pl, plen: c.plen, maxPer: c.maxPer, pts: c.pts, act: c.act, chance: c.chance, hist: [0, 1, 0, 1], ball: [50, 50] }); }
-    else if (mode === 'racket') { const [a, b] = pick(2); Object.assign(e, { a: { c: a, n: TEAMS[a].ath }, b: { c: b, n: TEAMS[b].ath }, to: c.to, sets: up ? [] : c.sets, cur: up ? [0, 0] : [...c.cur], serve: 0, rally: 0, sh: [30, 40] }); }
-    else Object.assign(e, { kind: c.kind, n: c.n, cell: c.cell, low: !!c.low, turn: 0, last: 0, players: pick(4).map(x => ({ c: x, fr: up ? [] : Array.from({ length: c.pre }, GEN[c.kind]) })) });
+    const R = liveRules(sp.id); const d = DEMO[sp.id]; const P = R.params;
+    const mode = viewOf(sp, P);
+    const e = { id: sp.id, sport: sp.id, mode, title: d.title, up, upLabel: up ? (nxt ? 'STARTS ' + (nxt[0] === 'FRI' ? 'FRI 16' : 'SAT 17') + ' · ' + nxt[1].toUpperCase() : 'FINISHED') : '', feed: up ? [] : [{ txt: d.first || 'Under way', t: 0 }], statuses: {}, wait: 0, P, needs: [] };
+    try {
+      if (mode === 'race' || mode === 'climb') {
+        Object.assign(e, { unit: d.unit, u: d.u, teams: !!d.teams, done: 0, T: 0, dtSec: d.secs / 28, lanes: pick(d.lanes).map(x => ({ c: x, p: up ? 0 : 15 + r() * 30, v: 2.4 + r() * 1.4, place: 0, t: null })) });
+      } else if (mode === 'racket' || mode === 'sets') {
+        const [a, b] = pick(2); Object.assign(e, { a: { c: a, n: sp.type === 'team' ? TEAMS[a].team : TEAMS[a].ath }, b: { c: b, n: sp.type === 'team' ? TEAMS[b].team : TEAMS[b].ath } });
+        e.m = newEngine(e);
+        if (!up) for (let i = 0; i < d.warm && e.m.status === 'live'; i++) e.m = SC.addPoint(e.m, r() < .5 ? 0 : 1);
+      } else if (mode === 'match') {
+        const [a, b] = pick(2); Object.assign(e, { a: { c: a }, b: { c: b }, chance: d.chance, weights: d.weights, label: d.label });
+        e.m = newEngine(e);
+        if (P.overs_per_innings) {
+          if (!up) for (let i = 0; i < 70; i++) e.m = SC.cricketBall(e.m, cricketEvent(r));
+        } else {
+          e.dt = P.period_minutes * 60 / 40;
+          if (!up) {
+            if (d.warm) { e.m.period = d.warm.period; e.m.score = [...d.warm.score]; }
+            e.m.clock = Math.floor(P.period_minutes * 60 * .55);
+          }
+        }
+      } else if (mode === 'target') {
+        e.kind = sp.id; e.n = 0;
+        if (sp.id === 'bowling') {
+          Object.assign(e, { n: P.frames, turn: 0, last: 0, players: pick(d.players).map(x => ({ c: x, rolls: [] })) });
+          for (let i = 0; i < d.warm * e.players.length * 1.6 && !up; i++) bowlRoll(e, r, () => {});
+        } else if (sp.id === 'darts') {
+          const [a, b] = pick(2); Object.assign(e, { a: { c: a, n: TEAMS[a].ath }, b: { c: b, n: TEAMS[b].ath }, n: 10, last: 0 });
+          e.m = SC.createMatch(P, {});
+          for (let i = 0; i < d.warm * 2 && !up; i++) dartsVisit(e, r, () => {});
+        } else if (sp.id === 'pool') {
+          const [a, b] = pick(2); Object.assign(e, { a: { c: a, n: TEAMS[a].ath }, b: { c: b, n: TEAMS[b].ath }, n: 2 * P.frames_to_win_match - 1, frames: [] });
+          e.m = SC.createMatch(P, {});
+          if (!up) { e.m = SC.addPoint(e.m, 0); e.frames.push(0); e.m = SC.addPoint(e.m, 1); e.frames.push(1); }
+        } else if (sp.id === 'golf') {
+          Object.assign(e, { n: d.pars.length, pars: d.pars, turn: 0, last: 0, players: pick(d.players).map(x => ({ c: x, holes: [] })) });
+          for (let i = 0; i < d.warm * e.players.length && !up; i++) golfHole(e, r, () => {});
+        }
+      } else if (mode === 'manual') {
+        Object.assign(e, { players: pick(d.players).map(x => ({ c: x, pts: 0 })) });
+      }
+    } catch (err) { e.needs = String(err.message).replace('Parameter belum ditetapkan rulebook: ', '').split(', '); e.m = null; }
     return e;
-  });
+  }
 }
+const initLive = () => SPORTS.map(makeLive);
 
+// ---------------------------------------------------------------- satu langkah simulasi (tiap 2 detik)
+const ord2 = n => ord(n);
 function step(e, T) {
   const push = txt => { e.feed.unshift({ txt, t: T }); e.feed = e.feed.slice(0, 6); };
   const R = Math.random;
+  if (e.needs && e.needs.length) return e;
+  const stat = Object.keys(e.statuses || {}).length;
   if (e.mode === 'race' || e.mode === 'climb') {
     if (e.done) {
       e.done++;
-      if (e.done > 4) { e.lanes.forEach(l => { l.p = 0; l.place = 0; l.v = 2.4 + R() * 1.4; }); e.done = 0; push('Next heat is under way'); }
+      if (e.done > 4) { e.lanes.forEach(l => { l.p = 0; l.place = 0; l.t = null; l.v = 2.4 + R() * 1.4; }); e.T = 0; e.statuses = {}; e.done = 0; push('Next heat is under way'); }
       return e;
     }
+    e.T += e.dtSec;
     let placed = e.lanes.filter(l => l.place).length;
-    e.lanes.filter(l => !l.place).forEach(l => { l.p += l.v * (0.6 + R() * 0.8); });
-    e.lanes.filter(l => !l.place).sort((a, b) => b.p - a.p).forEach(l => {
-      if (l.p >= 100) { l.p = 100; l.place = ++placed; push(`${ord(l.place)} · ${nameOf(e, l.c)} (${l.c}) ${e.mode === 'climb' ? 'tops out' : 'crosses the line'}`); }
+    const act = e.lanes.filter(l => !l.place && !e.statuses[l.c]);
+    act.forEach(l => { l.prev = l.p; l.p += l.v * (0.6 + R() * 0.8); });
+    act.sort((a, b) => b.p - a.p).forEach(l => {
+      if (l.p >= 100) { l.t = e.T - e.dtSec + e.dtSec * (100 - l.prev) / (l.p - l.prev); l.p = 100; l.place = ++placed; push(`${ord2(l.place)} · ${nameOf(e, l.c)} (${l.c}) ${e.mode === 'climb' ? 'tops out' : 'crosses the line'}`); }
     });
-    if (placed === e.lanes.length) e.done = 1;
-    else if (R() < .22) { const ld = [...e.lanes].sort((a, b) => b.p - a.p)[0]; push(`${nameOf(e, ld.c)} leads at ${(ld.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0)}${e.u}`); }
+    if (e.lanes.every(l => l.place || e.statuses[l.c])) e.done = 1;
+    else if (R() < .22) { const ld = [...e.lanes].filter(l => !e.statuses[l.c]).sort((a, b) => b.p - a.p)[0]; if (ld) push(`${nameOf(e, ld.c)} leads at ${(ld.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0)}${e.u}`); }
+  } else if (e.mode === 'racket' || e.mode === 'sets') {
+    if (e.m.status === 'done' || stat) { if (stat && e.m.status !== 'done') return e; if (++e.wait > 3) { e.m = newEngine(e); e.wait = 0; e.statuses = {}; push('New match starts'); } return e; }
+    const w = R() < .5 ? 0 : 1; const nm = [e.a, e.b][w].n; const g0 = SC.summarize(e.m).games.length;
+    e.m = SC.addPoint(e.m, w);
+    const s = SC.summarize(e.m);
+    if (s.games.length > g0) { const g = s.games[s.games.length - 1]; push(`${e.mode === 'sets' ? 'Set' : 'Game'} to ${nm} ${g[w]}–${g[1 - w]}`); }
+    if (s.status === 'done') push(`${nm} wins the match`);
+    else if (R() < .12) push(`Point ${nm} · ${s.pointLabels ? s.pointLabels.join('–') : s.current.join('–')}`);
   } else if (e.mode === 'match') {
-    e.clock -= 18;
-    if (R() < e.chance) {
-      const side = R() < .5 ? 'a' : 'b'; const p = e.pts[Math.floor(R() * e.pts.length)];
-      e[side].s += p; e.hist.push(side === 'a' ? 0 : 1); e.hist = e.hist.slice(-8);
-      if (p > 0 || R() < .3) push(`${TEAMS[e[side].c].team} ${e.act[p]} · +${p}`);
+    if (e.m.status !== 'live' || stat) { if (stat && e.m.status === 'live') return e; if (++e.wait > 3) { e.m = newEngine(e); e.wait = 0; e.statuses = {}; if (e.P.period_minutes) e.m.clock = e.P.period_minutes * 60; push('Next match starting'); } return e; }
+    if (e.P.overs_per_innings) {
+      const ev = cricketEvent(R);
+      const before = e.m.cur, nB = e.m.inns[before].balls;
+      e.m = SC.cricketBall(e.m, ev);
+      const who = TEAMS[[e.a, e.b][before].c].team;
+      if (ev.runs === 4 || ev.runs === 6) push(`${who} ${ev.runs === 6 ? 'SIX' : 'FOUR'} · +${ev.runs}`);
+      else if (ev.wicket) push(`${who} lose a wicket`);
+      else if (ev.extra) push(`${ev.extra === 'wide' ? 'Wide' : 'No-ball'} · +1`);
+      else if (e.m.status === 'live' && e.m.inns[before].balls % e.P.balls_per_over === 0 && e.m.inns[before].balls !== nB) push(`End of over ${e.m.inns[before].balls / e.P.balls_per_over} · ${e.m.inns[before].runs}/${e.m.inns[before].wkts}`);
+      if (e.m.cur !== before) push(`Innings break. Target ${e.m.target}`);
+      if (e.m.status === 'done') push(e.m.winner === null ? 'Match tied. Super over' : `${TEAMS[[e.a, e.b][e.m.winner].c].team} win by ${e.m.result.margin} ${e.m.result.by}`);
+    } else {
+      const p0 = e.m.period + '/' + e.m.ot;
+      e.m = SC.tickClock(e.m, e.dt);
+      if (e.m.status === 'live' && R() < e.chance) {
+        const side = R() < .5 ? 0 : 1; const key = wpick(R, e.weights);
+        e.m = SC.scoreEvent(e.m, side, key);
+        push(`${TEAMS[[e.a, e.b][side].c].team} ${e.label[key]} · +${e.P.score_events[key]}`);
+      }
+      if (e.m.status === 'live' && e.m.period + '/' + e.m.ot !== p0) push(`Start of ${SC.periodLabel(e.m)}`);
+      if (e.m.status !== 'live') push(e.m.status === 'shootout' ? 'Level after extra time. Penalty shootout' : e.m.draw ? 'Full time. Match drawn' : 'Full time');
     }
-    if (e.clock <= 0) { e.per++; e.clock = e.plen; if (e.per > e.maxPer) { push('Full time. Next match starting'); e.per = 1; e.a.s = 0; e.b.s = 0; } else push(`Start of ${e.pl}${e.per}`); }
-  } else if (e.mode === 'racket') {
-    const w = R() < .5 ? 0 : 1; e.cur[w]++; e.serve = w;
-    const nm = [e.a, e.b][w].n;
-    if ((e.cur[w] >= e.to && e.cur[w] - e.cur[1 - w] >= 2) || e.cur[w] >= e.to + 9) {
-      e.sets.push([...e.cur]); const won = e.sets.filter(x => x[w] > x[1 - w]).length;
-      push(`Game to ${nm} ${e.cur[w]}–${e.cur[1 - w]}`); e.cur = [0, 0];
-      if (won >= 2) { push(`${nm} wins the match`); e.sets = []; }
-    } else if (R() < .15) push(`Point ${nm} · ${e.cur[0]}–${e.cur[1]}`);
-  } else {
-    if (e.players.every(p => p.fr.length >= e.n)) { e.wait = (e.wait || 0) + 1; if (e.wait > 3) { e.players.forEach(p => p.fr = []); e.wait = 0; push('New game starts'); } return e; }
-    const p = e.players[e.turn]; const v = GEN[e.kind]();
-    p.fr.push(v); e.last = v; e.turn = (e.turn + 1) % e.players.length;
-    const who = `${TEAMS[p.c].ath} (${p.c})`;
-    if (HI[e.kind](v)) push(e.kind === 'bowl' ? `STRIKE · ${who}` : e.kind === 'darts' ? `${v} · ${who}` : e.kind === 'golf' ? `Birdie or better · ${who}` : `${who} clears the rack`);
-    else if (R() < .3) push(`${who} · ${e.cell.toLowerCase()} ${p.fr.length}: ${v}`);
+  } else if (e.mode === 'target') {
+    if (e.kind === 'bowling') {
+      if (e.players.every(p => SC.bowlingProgress(e.P, p.rolls).complete)) { if (++e.wait > 3) { e.players.forEach(p => p.rolls = []); e.wait = 0; e.turn = 0; e.statuses = {}; push('New game starts'); } return e; }
+      bowlRoll(e, R, push);
+    } else if (e.kind === 'darts') {
+      if (e.m.status === 'done') { if (++e.wait > 3) { e.m = SC.createMatch(e.P, {}); e.wait = 0; e.statuses = {}; push('New match starts'); } return e; }
+      if (stat) return e;
+      dartsVisit(e, R, push);
+    } else if (e.kind === 'pool') {
+      if (e.m.status === 'done') { if (++e.wait > 3) { e.m = SC.createMatch(e.P, {}); e.frames = []; e.wait = 0; e.statuses = {}; push('New match starts'); } return e; }
+      if (stat) return e;
+      if (R() < .3) { const w = R() < .5 ? 0 : 1; e.m = SC.addPoint(e.m, w); e.frames.push(w); push(`Frame to ${[e.a, e.b][w].n} (${e.a.c} ${e.m.wins[0]}–${e.m.wins[1]} ${e.b.c})`); if (e.m.status === 'done') push(`${[e.a, e.b][w].n} wins the match`); }
+    } else if (e.kind === 'golf') {
+      if (e.players.every(p => p.holes.length >= e.n)) { if (++e.wait > 3) { e.players.forEach(p => p.holes = []); e.wait = 0; e.turn = 0; e.statuses = {}; push('New round starts'); } return e; }
+      golfHole(e, R, push);
+    }
   }
   return e;
+}
+
+// kejadian satu bola cricket untuk simulasi demo (peluang demo, bukan aturan)
+function cricketEvent(R) {
+  const o = R();
+  return o < .03 ? { extra: 'wide' } : o < .05 ? { extra: 'no_ball' } : o < .09 ? { wicket: true, how: 'bowled' } : { runs: [0, 0, 0, 1, 1, 1, 2, 4, 6][Math.floor(R() * 9)] };
+}
+
+function bowlRoll(e, R, push) {
+  const live = e.players.filter(p => !e.statuses[p.c]); if (!live.length) return;
+  let p = e.players[e.turn % e.players.length];
+  if (e.statuses[p.c] || SC.bowlingProgress(e.P, p.rolls).complete) { e.turn = (e.turn + 1) % e.players.length; return; }
+  const before = SC.bowlingProgress(e.P, p.rolls);
+  const pins = before.standing === 10 && before.ball === 1 ? (R() < .28 ? 10 : Math.floor(R() * 10)) : (R() < .45 ? before.standing : Math.floor(R() * (before.standing + 1)));
+  p.rolls.push(pins); e.last = pins;
+  const after = SC.bowlingProgress(e.P, p.rolls);
+  const who = `${TEAMS[p.c].ath} (${p.c})`;
+  if (pins === 10 && before.standing === 10) push(`STRIKE · ${who}`);
+  else if (before.ball > 1 && pins === before.standing && before.standing > 0) push(`Spare · ${who}`);
+  if (after.complete || after.frame !== before.frame) e.turn = (e.turn + 1) % e.players.length;
+}
+
+function simDart(rem, R) {
+  if (rem <= 40 && rem % 2 === 0) return R() < .33 ? { r: 'D', n: rem / 2 } : (R() < .5 ? { r: 'S', n: 1 } : { r: 'M', n: 0 });
+  if (rem <= 40) return { r: 'S', n: 1 };
+  if (rem === 50) return R() < .3 ? { r: 'B', n: 25 } : { r: 'S', n: 10 };
+  const pool = [['T', 20, 22], ['T', 19, 6], ['S', 20, 14], ['S', 19, 6], ['S', 18, 6], ['S', 5, 5], ['S', 1, 4], ['D', 20, 3], ['B', 25, 2], ['OB', 25, 3], ['M', 0, 6], ['S', 17, 5], ['T', 18, 3], ['T', 17, 2]];
+  let t = pool.reduce((a, x) => a + x[2], 0) * R();
+  for (const [r, n, w] of pool) { t -= w; if (t <= 0) return { r, n }; }
+  return { r: 'S', n: 20 };
+}
+function dartsVisit(e, R, push) {
+  const side = e.m.turn; const darts = []; let rem = e.m.remaining[side];
+  for (let i = 0; i < 3; i++) { const d = simDart(rem, R); darts.push(d); rem -= SC.dartValue(d); if (rem <= 1) break; }
+  const res = SC.addVisit(e.m, side, darts);
+  const nm = [e.a, e.b][side].n; e.m = res.match; e.last = res.scored;
+  if (res.checkout) push(`${nm} checks out · leg ${e.m.legs[side]}`); else if (res.bust) push(`BUST · ${nm}`); else if (res.scored >= 140) push(`${res.scored} · ${nm}`);
+  if (e.m.status === 'done') push(`${nm} wins the match`);
+}
+function golfHole(e, R, push) {
+  const pending = e.players.filter(p => p.holes.length < e.n && !e.statuses[p.c]); if (!pending.length) return;
+  const min = Math.min(...pending.map(p => p.holes.length));
+  const p = pending.find(x => x.holes.length === min);
+  const par = e.pars[p.holes.length];
+  const d = wpick(R, { '-2': 1, '-1': 14, '0': 44, '1': 30, '2': 11 });
+  const strokes = Math.max(1, par + Number(d));
+  p.holes.push(strokes); e.last = strokes - par;
+  const who = `${TEAMS[p.c].ath} (${p.c})`;
+  if (strokes - par <= -1) push(`${strokes - par <= -2 ? 'Eagle' : 'Birdie'} · ${who}`);
 }
 
 const fmtH = x => { const hh = Math.floor(x), mm = Math.round((x - hh) * 60); const h12 = ((hh + 11) % 12) + 1; return `${h12}:${String(mm).padStart(2, '0')}${hh >= 12 ? 'pm' : 'am'}`; };
 const ROUND = k => k < 4 ? 'Group stage' : k < 6 ? 'Quarter-finals' : k < 7 ? 'Semi-finals' : 'Final';
 const scoreGen = (sp, r, live) => {
   const f = live ? .6 : 1; const g = (lo, hi) => Math.floor((lo + r() * (hi - lo)) * f);
-  if (sp.mode === 'racket') return live ? [Math.floor(r() * 2), Math.floor(r() * 2)] : (r() < .5 ? [2, Math.floor(r() * 2)] : [Math.floor(r() * 2), 2]);
+  const P = liveRules(sp.id).params;
+  if (P.result_type === 'head_to_head_sets') { const need = P.sets_to_win_match ?? P.games_to_win_match ?? P.legs_to_win_match ?? P.frames_to_win_match ?? 2; const x = () => Math.floor(r() * need); return live ? [x(), x()] : (r() < .5 ? [need, x()] : [x(), need]); }
   if (sp.id.includes('cricket')) return [g(60, 130), g(55, 130)];
   if (sp.id.includes('basketball')) return [g(35, 75), g(35, 75)];
   if (sp.id === 'netball') return [g(18, 40), g(18, 40)];
-  if (sp.id === 'volleyball-w') return live ? [Math.floor(r() * 3), Math.floor(r() * 3)] : (r() < .5 ? [3, Math.floor(r() * 3)] : [Math.floor(r() * 3), 3]);
   return [g(0, 5), g(0, 5)];
 };
 function sessionFixtures(sp, day, time, si, user) {
@@ -1511,7 +1732,7 @@ class Component extends DCLogic {
     view: 'home', homeTab: 'all', schedQ: '', schedSports: [], schedOpen: '', schedDay: 'ALL', schedType: 'all', liveId: 'swimming', lbSport: 'overall',
     step: 0, err: '', sentCode: '', branchOpen: false, branchQ: '',
     form: { email: '', otp: '', name: '', dob: '', branch: '', division: '', photo: '', sports: [], teams: {} },
-    user: null, live: initLive(), t: 0,
+    user: null, live: initLive(), t: 0, operator: false, ov: {},
     cheers: { SG: 1240, HK: 1102, IN: 980, MY: 870, ID: 910, AE: 540, KE: 610, CN: 720, KR: 660, VN: 480 },
     cheerFeed: [
       { who: 'Priya S.', to: 'India', type: 'GO GO GO', msg: 'Bring it home!', t: 0 },
@@ -1529,6 +1750,7 @@ class Component extends DCLogic {
 
   componentDidMount() {
     try { const u = JSON.parse(localStorage.getItem('scgames_user') || 'null'); if (u) this.setState({ user: u }); } catch (e) {}
+    try { if (/[?&]operator=1/.test(location.search)) lsSet(LS_OPERATOR, true); this.setState({ operator: !!lsGet(LS_OPERATOR, false) }); } catch (e) {}
     this.iv = setInterval(() => this.tick(), 2000);
     this.dot = React.createElement('span', { style: { width: 7, height: 7, borderRadius: '50%', background: '#38D200', display: 'inline-block', flexShrink: 0, animation: 'scpulse 1.2s ease-in-out infinite' } });
   }
@@ -1561,31 +1783,158 @@ class Component extends DCLogic {
 
   ago(t) { const sec = (this.state.t - t) * 2; return sec < 4 ? 'now' : sec < 60 ? `${sec}s ago` : `${Math.floor(sec / 60)}m ago`; }
 
+  // ---------------------------------------------------------------- operator, override, status (hanya di browser ini; belum ada penyimpanan bersama)
+  setOperator(on) { lsSet(LS_OPERATOR, on); this.setState({ operator: on }); }
+  reinit(slug) { this.setState(s => ({ live: s.live.map(x => slugOf(x.sport) === slug ? makeLive(SP[x.sport]) : x) })); }
+  applyOverride(slug, field, raw, options) {
+    const t = String(raw).trim();
+    let val = t === '' ? null : t === 'true' ? true : t === 'false' ? false : Number.isFinite(Number(t)) ? Number(t) : t;
+    if (val === null) return this.flash('Isi nilai dulu');
+    if (options && options.length && !options.some(o => String(o) === t) && typeof options[0] !== 'number') return this.flash('Nilai tidak ada di pilihan rulebook');
+    const all = lsGet(LS_OVERRIDES, {}); all[slug] = { ...(all[slug] || {}), [field]: val }; lsSet(LS_OVERRIDES, all);
+    this.reinit(slug); this.flash(`${field} = ${val} (override panitia, hanya di browser ini)`);
+  }
+  clearOverrides(slug) { const all = lsGet(LS_OVERRIDES, {}); delete all[slug]; lsSet(LS_OVERRIDES, all); this.reinit(slug); this.flash('Override dihapus'); }
+  setStatus(id, key, code) {
+    this.setState(s => ({ live: s.live.map(e => { if (e.id !== id) return e; const st = { ...e.statuses }; if (code) st[key] = code; else delete st[key]; return { ...e, statuses: st }; }) }));
+  }
+  manualAdd(id, code, delta) {
+    this.setState(s => ({ live: s.live.map(e => e.id !== id ? e : { ...e, players: e.players.map(p => p.c === code ? { ...p, pts: Math.max(0, p.pts + delta) } : p) }) }));
+  }
+
+  entrants(e) {
+    if (e.mode === 'race' || e.mode === 'climb') return e.lanes.map(l => ({ key: l.c, name: `${nameOf(e, l.c)} (${l.c})` }));
+    if (e.players) return e.players.map(p => ({ key: p.c, name: `${TEAMS[p.c].ath} (${p.c})` }));
+    if (e.a && e.b) return [e.a, e.b].map(x => ({ key: x.c, name: `${x.n || TEAMS[x.c].team} (${x.c})` }));
+    return [];
+  }
+
+  ruleLines(P) {
+    const v = x => x == null ? 'belum ditetapkan' : x;
+    const L = [];
+    if (P.result_type === 'head_to_head_sets') {
+      if (P.scoring_mode === 'tennis_points') L.push(`Set sampai ${v(P.games_per_set)} game (selisih ${v(P.set_win_by)}) · menang ${v(P.sets_to_win_match)} set`, `Deuce: ${P.deuce_rule ? P.deuce_rule.replace('_', ' ') : 'belum ditetapkan'}${P.tiebreak_game ? ` · tie-break ke ${P.tiebreak_game.points_to_win} pada ${P.tiebreak_game.at_games}–${P.tiebreak_game.at_games}` : ''}`);
+      else if (P.scoring_mode === 'x01_countdown') L.push(`${v(P.start_score)} hitung mundur · tutup di double · menang ${v(P.legs_to_win_match)} leg`, `Bust: giliran hangus (lebih dari sisa, sisa 1, atau 0 tanpa double)`);
+      else if (P.scoring_mode === 'frame_race') L.push(`Race to ${v(P.frames_to_win_match)} frame`);
+      else L.push(`${P.scoring_mode === 'side_out' ? 'Side-out: hanya server mencetak poin' : 'Rally point'} · ${v(P.points_to_win_game)} poin, selisih ${v(P.win_by)}${P.point_cap === 'none' ? '' : ' · batas ' + v(P.point_cap)}`, `Menang ${v(P.games_to_win_match)} ${P.unit}${P.deciding_game_points !== 'same' && P.deciding_game_points ? ` · ${P.unit} penentu sampai ${P.deciding_game_points}` : ''}`);
+    } else if (P.result_type === 'head_to_head_score') {
+      if (P.overs_per_innings) L.push(`${P.overs_per_innings} over per innings (${P.balls_per_over} bola) · ${P.wickets_per_innings} wicket · bowler maks ${P.max_overs_per_bowler} over`, `Wide/no-ball +${P.extras.wide} run · penalty run ${P.extras.penalty_runs}`);
+      else L.push(`${P.periods} babak × ${v(P.period_minutes)} menit`, `Nilai: ${Object.entries(P.score_events).map(([k, n]) => `${k.replace('_', ' ')} ${n}`).join(', ')}`, P.overtime && P.overtime !== 'none' ? `Perpanjangan: ${P.overtime.periods ? P.overtime.periods + ' × ' : ''}${v(P.overtime.period_minutes)} menit${P.overtime.then === 'penalty_shootout' ? ', lalu adu penalti' : ''}${P.overtime.repeat === 'until_winner' ? ' sampai ada pemenang' : ''}` : 'Perpanjangan: belum ditetapkan');
+    } else if (P.result_type === 'timed') L.push(`Peringkat berdasarkan waktu terendah · ketelitian ${v(P.time_precision)} detik`, P.penalties && P.penalties.length ? `Penalti waktu: ${P.penalties.filter(x => x.seconds != null).map(x => `${x.code.toLowerCase().replace(/_/g, ' ')} ${x.seconds}s`).slice(0, 4).join(', ')}${P.penalties.length > 4 ? ' …' : ''}` : 'Penalti waktu: tidak ada nilai detik di rulebook');
+    else if (P.result_type === 'frames') L.push(`${P.frames} frame · maksimal ${P.max_score} · strike = 10 + 2 lemparan berikutnya, spare = 10 + 1 lemparan berikutnya${P.scoring_system === 'current_frame' ? ' (Current Frame Scoring)' : ''}`);
+    else if (P.result_type === 'points_total') L.push(`Stroke play: pukulan terendah menang · Stableford ${Object.values(P.stableford).join('-')} poin`);
+    else L.push('Tidak ada aturan skor yang terbaca dari sumber. Skor diinput manual oleh panitia.');
+    return L;
+  }
+
+  rulesPanel(e) {
+    const R = liveRules(e.sport); const P = R.params; const meta = RB.sports[R.slug]; const op = !!this.state.operator;
+    const unv = R.unverified;
+    const cand = unv.filter(f => { const val = f.split('.').reduce((a, k) => (a == null ? undefined : a[k]), meta); return val === null || val === undefined || (meta.options && meta.options[f]); });
+    const ovAll = lsGet(LS_OVERRIDES, {})[R.slug] || {};
+    const codes = P.status_codes || [];
+    const ents = this.entrants(e);
+    const warns = [];
+    if (unv.length) warns.push(`Belum terverifikasi di rulebook: ${unv.join(', ')}`);
+    if (R.uncertain.length) warns.push(`Varian tanggal belum pasti: ${R.uncertain.join(', ')}`);
+    if (R.assumed.length) warns.push(`Simulasi memakai nilai contoh dari rulebook untuk: ${R.assumed.join(', ')}`);
+    if (R.demoUsed.length) warns.push(`Simulasi memakai nilai sementara (bukan aturan) untuk: ${R.demoUsed.join(', ')}`);
+    if (e.needs && e.needs.length) warns.push(`Menunggu parameter dari panitia: ${e.needs.join(', ')}`);
+    return {
+      title: 'ATURAN', source: meta.source, checked: meta.rules_checked, page: meta.page, verified: R.verified && !R.demoUsed.length,
+      lines: this.ruleLines(P).map(t => ({ t })),
+      variant: R.applied.length ? `Varian aturan aktif: ${R.applied.join(', ')}` : '',
+      warns: warns.map(t => ({ t })), hasWarn: warns.length > 0,
+      statusList: codes.map(c => ({ code: STATUS_LABEL[c], meaning: (meta.status_meanings && meta.status_meanings[c]) || '' })), hasStatus: codes.length > 0,
+      manual: !!P.manual_input_required,
+      opOn: op, opLabel: op ? 'MODE OPERATOR: ON' : 'MODE OPERATOR: OFF', opBg: op ? '#38D200' : 'rgba(255,255,255,.12)', opFg: op ? '#05103F' : '#fff',
+      toggleOp: () => this.setOperator(!op),
+      ovs: cand.map(f => {
+        const opts = (meta.options && meta.options[f]) || [];
+        const key = `${R.slug}:${f}`;
+        const cur = key in this.state.ov ? this.state.ov[key] : (ovAll[f] ?? '');
+        return { field: f, hint: opts.length ? `pilihan rulebook: ${opts.join(', ')}` : 'rulebook tidak menyebut nilainya', value: String(cur), applied: f in ovAll,
+          onChange: ev => { const val = ev.target.value; this.setState(s => ({ ov: { ...s.ov, [key]: val } })); },
+          apply: () => this.applyOverride(R.slug, f, key in this.state.ov ? this.state.ov[key] : String(cur), opts) };
+      }),
+      hasOvs: cand.length > 0, hasOverrides: Object.keys(ovAll).length > 0, clearOv: () => this.clearOverrides(R.slug),
+      ents: codes.length ? ents.map(en => ({ name: en.name, current: e.statuses[en.key] ? STATUS_LABEL[e.statuses[en.key]] : '',
+        btns: [{ label: 'OK', bg: e.statuses[en.key] ? 'rgba(255,255,255,.12)' : '#38D200', fg: e.statuses[en.key] ? '#fff' : '#05103F', go: () => this.setStatus(e.id, en.key, null) },
+          ...codes.map(c => ({ label: STATUS_LABEL[c], bg: e.statuses[en.key] === c ? '#D6243A' : 'rgba(255,255,255,.12)', fg: '#fff', go: () => this.setStatus(e.id, en.key, c) }))] })) : [],
+      hasEnts: codes.length > 0 && ents.length > 0,
+    };
+  }
+
+  progress(e, i) {
+    const s = SC.summarize(e.m);
+    if (e.m.kind === 'tennis') return s.gamesInSet[i] / e.P.games_per_set * 100;
+    if (e.m.kind === 'x01') return (1 - s.current[i] / e.P.start_score) * 100;
+    if (e.m.kind === 'frames') return s.wins[i] / e.P.frames_to_win_match * 100;
+    return s.current[i] / (e.P.points_to_win_game || 11) * 100;
+  }
+
+  bowlCells(e, p) {
+    const sc = SC.scoreBowling(e.P, p.rolls);
+    const mark = r => r === 0 ? '-' : r;
+    return Array.from({ length: e.n }, (_, i) => {
+      const f = sc.frames[i];
+      if (!f) return { v: '', sub: '', bg: 'rgba(255,255,255,.05)', fg: '#fff' };
+      let v;
+      if (f.rolls[0] === 10 && i < e.n - 1) v = 'X';
+      else if (i === e.n - 1) v = f.rolls.map((r, k) => r === 10 ? 'X' : (k > 0 && f.rolls[k - 1] !== 10 && f.rolls[k - 1] + r === 10) ? '/' : mark(r)).join(' ');
+      else v = f.mark === '/' ? `${mark(f.rolls[0])} /` : f.rolls.length > 1 ? `${mark(f.rolls[0])} ${mark(f.rolls[1])}` : String(mark(f.rolls[0]));
+      const hi = f.rolls[0] === 10;
+      return { v, sub: f.cumulative == null ? '' : String(f.cumulative), bg: hi ? '#38D200' : 'rgba(255,255,255,.14)', fg: hi ? '#05103F' : '#fff' };
+    });
+  }
+
   liveCard(e) {
     const sp = SP[e.sport]; const sel = this.state.liveId === e.id && this.state.view === 'live';
     let rows = [], status = '', summary = '';
-    if (e.mode === 'race' || e.mode === 'climb') {
+    const row = (c, name, val, pctv, lead) => ({ code: c, name, val, pct: pct(pctv), chip: lead ? '#38D200' : '#0473EA', bar: lead ? '#38D200' : '#0473EA' });
+    if (e.needs && e.needs.length) { status = 'MENUNGGU ATURAN'; summary = 'Parameter belum ditetapkan'; }
+    else if (e.mode === 'race' || e.mode === 'climb') {
       const sorted = [...e.lanes].sort((a, b) => (a.place || 99) - (b.place || 99) || b.p - a.p);
-      rows = sorted.slice(0, 3).map((l, i) => ({ code: l.c, name: nameOf(e, l.c), val: (l.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u, pct: pct(l.p), chip: i === 0 ? '#38D200' : '#0473EA', bar: i === 0 ? '#38D200' : '#0473EA' }));
+      rows = sorted.slice(0, 3).map((l, i) => row(l.c, nameOf(e, l.c), (l.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u, l.p, i === 0));
       status = e.done ? 'FINISHED' : `${rows[0].val} / ${e.unit}${e.u}`;
       summary = `${sorted[0].c} leads · ${rows[0].val}`;
+    } else if (e.mode === 'racket' || e.mode === 'sets') {
+      const s = SC.summarize(e.m); const lab = s.pointLabels || s.current;
+      rows = [e.a, e.b].map((x, i) => row(x.c, x.n, `${s.wins[i]} · ${lab[i]}`, this.progress(e, i), s.current[i] >= s.current[1 - i]));
+      const nm = e.mode === 'sets' ? 'SET ' : 'Game ';
+      status = `${nm}${s.games.length + 1}`;
+      summary = `${e.a.c} ${lab[0]}–${lab[1]} ${e.b.c} · ${e.mode === 'sets' ? 'S' : 'G'}${s.games.length + 1}`;
     } else if (e.mode === 'match') {
-      const mx = Math.max(e.a.s, e.b.s, 1);
-      rows = [e.a, e.b].map(x => ({ code: x.c, name: TEAMS[x.c].team, val: String(x.s), pct: pct(x.s / mx * 100), chip: x.s === mx ? '#38D200' : '#0473EA', bar: x.s === mx ? '#38D200' : '#0473EA' }));
-      status = `${e.pl}${e.per} · ${mmss(e.clock)}`;
-      summary = `${e.a.c} ${e.a.s} – ${e.b.s} ${e.b.c} · ${e.pl}${e.per}`;
-    } else if (e.mode === 'racket') {
-      const sw = i => e.sets.filter(x => x[i] > x[1 - i]).length;
-      rows = [e.a, e.b].map((x, i) => ({ code: x.c, name: x.n, val: `${sw(i)} · ${e.cur[i]}`, pct: pct(e.cur[i] / e.to * 100), chip: e.cur[i] >= e.cur[1 - i] ? '#38D200' : '#0473EA', bar: e.cur[i] >= e.cur[1 - i] ? '#38D200' : '#0473EA' }));
-      status = `Game ${e.sets.length + 1}`;
-      summary = `${e.a.c} ${e.cur[0]}–${e.cur[1]} ${e.b.c} · G${e.sets.length + 1}`;
-    } else {
-      const sc = e.players.map(p => ({ ...p, sc: score(e, p.fr) })).sort((a, b) => e.low ? a.sc - b.sc : b.sc - a.sc);
-      const mx = Math.max(...sc.map(p => p.sc), 1);
-      rows = sc.slice(0, 3).map((p, i) => ({ code: p.c, name: TEAMS[p.c].ath, val: String(p.sc), pct: pct(e.low ? (p.sc ? sc[0].sc / p.sc * 100 : 0) : p.sc / mx * 100), chip: i === 0 ? '#38D200' : '#0473EA', bar: i === 0 ? '#38D200' : '#0473EA' }));
-      const fmin = Math.min(...e.players.map(p => p.fr.length));
-      status = `${e.cell} ${Math.min(e.n, fmin + 1)}/${e.n}`;
-      summary = `${sc[0].c} leads · ${sc[0].sc}`;
+      if (e.P.overs_per_innings) {
+        const i0 = e.m.inns[0], i1 = e.m.inns[1]; const mx = Math.max(i0.runs, i1.runs, 1);
+        rows = [e.a, e.b].map((x, i) => row(x.c, TEAMS[x.c].team, `${e.m.inns[i].runs}/${e.m.inns[i].wkts}`, e.m.inns[i].runs / mx * 100, e.m.inns[i].runs === mx));
+        status = `INN ${e.m.cur + 1} · ${SC.oversLabel(e.m.inns[e.m.cur].balls)} ov`;
+        summary = `${e.a.c} ${i0.runs}/${i0.wkts} – ${i1.runs}/${i1.wkts} ${e.b.c} · INN${e.m.cur + 1}`;
+      } else {
+        const mx = Math.max(e.m.score[0], e.m.score[1], 1);
+        rows = [e.a, e.b].map((x, i) => row(x.c, TEAMS[x.c].team, String(e.m.score[i]), e.m.score[i] / mx * 100, e.m.score[i] === mx));
+        status = e.m.status === 'live' ? `${SC.periodLabel(e.m)} · ${mmss(Math.round(e.m.clock))}` : e.m.status === 'shootout' ? 'PENALTIES' : 'FT';
+        summary = `${e.a.c} ${e.m.score[0]} – ${e.m.score[1]} ${e.b.c} · ${SC.periodLabel(e.m)}`;
+      }
+    } else if (e.mode === 'target') {
+      if (e.kind === 'darts' || e.kind === 'pool') {
+        const s = SC.summarize(e.m); const cur = e.kind === 'darts' ? s.current : s.wins;
+        rows = [e.a, e.b].map((x, i) => row(x.c, x.n, e.kind === 'darts' ? `${cur[i]} · ${s.wins[i]}L` : String(cur[i]), this.progress(e, i), e.kind === 'darts' ? cur[i] <= cur[1 - i] : cur[i] >= cur[1 - i]));
+        status = e.kind === 'darts' ? `Leg ${s.wins[0] + s.wins[1] + 1}` : `Frame ${s.wins[0] + s.wins[1] + 1}`;
+        summary = e.kind === 'darts' ? `${e.a.c} ${cur[0]} – ${cur[1]} ${e.b.c} · legs ${s.wins[0]}–${s.wins[1]}` : `${e.a.c} ${s.wins[0]} – ${s.wins[1]} ${e.b.c}`;
+      } else {
+        const sc = e.players.map(p => ({ ...p, sc: e.kind === 'bowling' ? SC.scoreBowling(e.P, p.rolls).total : p.holes.reduce((a, b) => a + b, 0), done: e.kind === 'bowling' ? SC.bowlingProgress(e.P, p.rolls).frame : p.holes.length }))
+          .sort((a, b) => e.kind === 'golf' ? (a.sc - b.sc) : (b.sc - a.sc));
+        const mx = Math.max(...sc.map(p => p.sc), 1);
+        rows = sc.slice(0, 3).map((p, i) => row(p.c, TEAMS[p.c].ath, String(p.sc), e.kind === 'golf' ? (p.sc ? sc[0].sc / p.sc * 100 : 0) : p.sc / mx * 100, i === 0));
+        const fmin = Math.min(...sc.map(p => p.done));
+        status = e.kind === 'bowling' ? `Frame ${Math.min(e.n, fmin)}/${e.n}` : `Hole ${Math.min(e.n, fmin + 1)}/${e.n}`;
+        summary = `${sc[0].c} leads · ${sc[0].sc}`;
+      }
+    } else if (e.mode === 'manual') {
+      const sc = [...e.players].sort((a, b) => b.pts - a.pts); const mx = Math.max(sc[0].pts, 1);
+      rows = sc.slice(0, 3).map((p, i) => row(p.c, TEAMS[p.c].ath, String(p.pts), p.pts / mx * 100, i === 0));
+      status = 'INPUT MANUAL'; summary = `${sc[0].c} ${sc[0].pts} · skor diinput panitia`;
     }
     if (e.up) { status = e.upLabel; summary = e.upLabel; }
     return { id: e.id, sport: sp.name, title: e.title, status, summary, rows, isLive: !e.up, chip: e.up ? 'UPCOMING' : 'LIVE', chipBg: e.up ? '#E3EFFD' : '#E6F9DC', chipFg: e.up ? '#0359B5' : '#1E7A00', go: () => this.go('live', { liveId: e.id }), selBg: sel ? '#05103F' : '#fff', selFg: sel ? '#fff' : '#0B1430', selBorder: sel ? '#05103F' : '#E3E7EF' };
@@ -1594,36 +1943,83 @@ class Component extends DCLogic {
   detail(e) {
     const sp = SP[e.sport];
     const cv = COURT_OF[sp.id];
-    const d = { cv: Object.fromEntries(COURT_KEYS.map(k => [k, cv === k])), courtMax: COURT_MAX[cv] || '900px', scoreL: (SCORE_POS[cv] || [])[0] || '37%', scoreR: (SCORE_POS[cv] || [])[1] || '63%', isSwim: sp.id === 'swimming', isTrack: sp.id === 'running', isBoat: sp.id === 'dragon-boat', isDarts: e.kind === 'darts', isGolf: e.kind === 'golf', isPool: e.kind === 'pool', sportName: sp.name, title: e.title, venue: sp.venue.toUpperCase(), feed: e.feed.map(f => ({ txt: f.txt, ago: this.ago(f.t) })), isRace: e.mode === 'race', isClimb: e.mode === 'climb', isMatch: e.mode === 'match', isRacket: e.mode === 'racket', isTarget: e.mode === 'target', chip: e.up ? 'UPCOMING' : 'LIVE', chipBg: e.up ? '#8FA3D9' : '#38D200', noFeed: !e.feed.length };
+    const R0 = liveRules(sp.id); const meta = RB.sports[R0.slug];
+    const d = { cv: Object.fromEntries(COURT_KEYS.map(k => [k, cv === k])), courtMax: COURT_MAX[cv] || '900px', scoreL: (SCORE_POS[cv] || [])[0] || '37%', scoreR: (SCORE_POS[cv] || [])[1] || '63%', isSwim: sp.id === 'swimming', isTrack: sp.id === 'running', isBoat: sp.id === 'dragon-boat', isDarts: e.kind === 'darts', isGolf: e.kind === 'golf', isPool: e.kind === 'pool', isBowl: e.kind === 'bowling', sportName: sp.name,
+      title: e.title, venue: sp.venue.toUpperCase(), feed: e.feed.map(f => ({ txt: f.txt, ago: this.ago(f.t) })), isRace: e.mode === 'race', isClimb: e.mode === 'climb', isMatch: e.mode === 'match' || e.mode === 'sets', isRacket: e.mode === 'racket', isTarget: e.mode === 'target', isManual: e.mode === 'manual',
+      chip: e.up ? 'UPCOMING' : 'LIVE', chipBg: e.up ? '#8FA3D9' : '#38D200', noFeed: !e.feed.length, rules: this.rulesPanel(e), rulebookHref: '/' + meta.page, gameLabel: e.mode === 'racket' && e.P.scoring_mode === 'tennis_points' ? 'SET' : e.kind === 'pool' ? 'FRAME' : 'GAME',
+      needsMsg: e.needs && e.needs.length ? `Menunggu parameter dari panitia: ${e.needs.join(', ')}. Buka MODE OPERATOR untuk menetapkannya.` : '', hasNeeds: !!(e.needs && e.needs.length) };
+    const stNote = () => { const k = Object.keys(e.statuses || {})[0]; if (!k) return ''; const en = this.entrants(e).find(x => x.key === k); return `${STATUS_LABEL[e.statuses[k]]} · ${en ? en.name : k}`; };
     let codes = [];
-    if (e.mode === 'race' || e.mode === 'climb') {
+    if (e.needs && e.needs.length) { codes = []; d.status = 'MENUNGGU ATURAN'; }
+    else if (e.mode === 'race' || e.mode === 'climb') {
       const rank = [...e.lanes].sort((a, b) => (a.place || 99) - (b.place || 99) || b.p - a.p).map(l => l.c);
-      d.lanes = e.lanes.map((l, i) => { const r = rank.indexOf(l.c) + 1; const dist = l.p * e.unit / 100; const xy = d.isSwim ? swimXY(i, dist) : d.isTrack ? trackXY(i, dist) : d.isBoat ? boatXY(i, dist) : [0, 0]; const vw = d.isSwim ? 54 : d.isTrack ? 190 : 560, vh = d.isSwim ? 24 : d.isTrack ? 106 : 82; return { tx: xy[0].toFixed(2), ty: xy[1].toFixed(2), lx: pct(xy[0] / vw * 100), ly: pct(xy[1] / vh * 100), lxl: pct((xy[0] - 9) / vw * 100), lane: d.isSwim ? i + 2 : i + 1, code: l.c, name: nameOf(e, l.c), pct: pct(l.p), pos: l.place ? ord(l.place).toUpperCase() : 'P' + r, mk: r === 1 ? '#38D200' : '#fff', distLabel: (l.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u }; });
+      const prec = e.P.time_precision || 0.01;
+      d.lanes = e.lanes.map((l, i) => {
+        const r = rank.indexOf(l.c) + 1; const dist = l.p * e.unit / 100;
+        const xy = d.isSwim ? swimXY(i, dist) : d.isTrack ? trackXY(i, dist) : d.isBoat ? boatXY(i, dist) : [0, 0];
+        const vw = d.isSwim ? 54 : d.isTrack ? 190 : 560, vh = d.isSwim ? 24 : d.isTrack ? 106 : 82;
+        const st = e.statuses[l.c];
+        const pos = st ? STATUS_LABEL[st] : l.place ? `${ord(l.place).toUpperCase()} · ${SC.formatTime(l.t, prec)}` : 'P' + r;
+        return { tx: xy[0].toFixed(2), ty: xy[1].toFixed(2), lx: pct(xy[0] / vw * 100), ly: pct(xy[1] / vh * 100), lxl: pct((xy[0] - 9) / vw * 100), lane: d.isSwim ? i + 2 : i + 1, code: l.c, name: nameOf(e, l.c), pct: pct(l.p), pos, mk: st ? '#D6243A' : r === 1 ? '#38D200' : '#fff', distLabel: (l.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u };
+      });
       const ld = e.lanes.find(l => l.c === rank[0]);
       d.leader = `${nameOf(e, ld.c)} (${ld.c})`; d.dist = `${(ld.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0)}${e.u} of ${e.unit}${e.u}`;
       d.status = e.done ? 'HEAT FINISHED' : d.dist.toUpperCase();
       codes = e.lanes.map(l => l.c);
-    } else if (e.mode === 'match') {
-      const side = (x, o) => ({ code: x.c, team: TEAMS[x.c].team, branch: TEAMS[x.c].name, score: x.s, scoreColor: x.s >= o.s ? '#38D200' : '#fff' });
-      d.a = side(e.a, e.b); d.b = side(e.b, e.a); d.period = `${e.pl}${e.per}`; d.clock = mmss(e.clock);
-      d.ballX = e.ball[0] + '%'; d.ballY = e.ball[1] + '%';
-      const aShare = e.hist.filter(h => h === 0).length / Math.max(1, e.hist.length);
-      d.momA = pct(15 + aShare * 70); d.status = `${d.period} · ${d.clock}`;
+    } else if (e.mode === 'match' || e.mode === 'sets') {
+      const cr = !!e.P.overs_per_innings; const isSets = e.mode === 'sets'; const s = isSets ? SC.summarize(e.m) : null;
+      const sc = cr ? [0, 1].map(i => e.m.inns[i].runs) : isSets ? s.current : e.m.score;
+      const lbl = cr ? [0, 1].map(i => `${e.m.inns[i].runs}/${e.m.inns[i].wkts}`) : sc;
+      const side = (x, i) => ({ code: x.c, team: TEAMS[x.c].team, branch: TEAMS[x.c].name, score: lbl[i], scoreColor: sc[i] >= sc[1 - i] ? '#38D200' : '#fff' });
+      d.a = side(e.a, 0); d.b = side(e.b, 1);
+      if (cr) { d.period = `INN ${e.m.cur + 1}`; d.clock = `${SC.oversLabel(e.m.inns[e.m.cur].balls)} ov${e.m.target ? ` · target ${e.m.target}` : ''}`; }
+      else if (isSets) { d.period = `SET ${s.games.length + 1}`; d.clock = `${s.wins[0]}–${s.wins[1]} sets`; }
+      else { d.period = SC.periodLabel(e.m); d.clock = e.m.status === 'live' ? mmss(Math.round(e.m.clock)) : e.m.status === 'shootout' ? 'PENALTIES' : 'FT'; }
+      const ev = cr ? [] : isSets ? [] : e.m.events.slice(-8);
+      const aShare = ev.length ? ev.filter(x => x.side === 0).length / ev.length : sc[0] / Math.max(1, sc[0] + sc[1]);
+      d.momA = pct(15 + aShare * 70); d.status = stNote() || `${d.period} · ${d.clock}`;
       codes = [e.a.c, e.b.c];
     } else if (e.mode === 'racket') {
-      d.p0code = e.a.c; d.p1code = e.b.c; d.p0cur = e.cur[0]; d.p1cur = e.cur[1]; d.gameNo = e.sets.length + 1; d.shX = e.sh[0] + '%'; d.shY = e.sh[1] + '%'; d.rally = e.rally;
-      d.players = [e.a, e.b].map((x, i) => ({ code: x.c, name: x.n, cur: e.cur[i], serveOp: e.serve === i ? 1 : 0, sets: e.sets.map(s => ({ v: s[i], color: s[i] > s[1 - i] ? '#38D200' : '#8FA3D9' })) }));
-      d.status = `GAME ${e.sets.length + 1} · ${e.cur[0]}–${e.cur[1]}`;
+      const s = SC.summarize(e.m); const lab = s.pointLabels || s.current; const tennis = e.m.kind === 'tennis';
+      d.p0code = e.a.c; d.p1code = e.b.c; d.p0cur = lab[0]; d.p1cur = lab[1]; d.gameNo = s.games.length + 1;
+      d.players = [e.a, e.b].map((x, i) => ({ code: x.c, name: x.n, cur: lab[i], serveOp: s.server === i ? 1 : 0,
+        sets: [...s.games.map((g, k) => ({ v: g[i] + (s.tiebreaks && s.tiebreaks[k] ? `(${s.tiebreaks[k][i]})` : ''), color: g[i] > g[1 - i] ? '#38D200' : '#8FA3D9' })), ...(tennis ? [{ v: s.gamesInSet[i], color: '#fff' }] : [])] }));
+      d.status = stNote() || (tennis ? `SET ${s.games.length + 1} · ${s.gamesInSet[0]}–${s.gamesInSet[1]} · ${lab[0]}–${lab[1]}` : `GAME ${s.games.length + 1} · ${lab[0]}–${lab[1]}`);
       codes = [e.a.c, e.b.c];
-    } else {
-      d.pins = Array.from({ length: 10 }, (_, n) => { const k = Math.floor((Math.sqrt(8 * n + 1) - 1) / 2); const j = n - k * (k + 1) / 2; const down = n + 1 <= e.last; return { x: (60 + (j - k / 2) * 30.5).toFixed(1), y: (94 - k * 26.4).toFixed(1), bg: down ? '#3B4A7A' : '#fff', op: down ? .35 : 1 }; });
-      d.isBowl = e.kind === 'bowl'; d.onLabel = ON[e.kind]; d.cols = `150px repeat(${e.n},minmax(30px,1fr)) 60px`;
-      d.lastLabel = e.last === 10 ? 'STRIKE' : `${e.last} PINS DOWN`;
-      d.upNext = `${TEAMS[e.players[e.turn].c].ath} · ${e.players[e.turn].c}`;
-      d.players = e.players.map(p => ({ code: p.c, name: TEAMS[p.c].ath, total: score(e, p.fr), cells: Array.from({ length: e.n }, (_, i) => { const v = p.fr[i]; const hi = v !== undefined && HI[e.kind](v); return { v: v === undefined ? '' : (e.kind === 'bowl' && v === 10) ? 'X' : v, bg: v === undefined ? 'rgba(255,255,255,.05)' : hi ? '#38D200' : 'rgba(255,255,255,.14)', fg: hi ? '#05103F' : '#fff' }; }) }));
-      d.status = `${e.cell.toUpperCase()} ${Math.min(e.n, Math.min(...e.players.map(p => p.fr.length)) + 1)} / ${e.n}`;
-      codes = e.players.map(p => p.c);
+    } else if (e.mode === 'target') {
+      d.onLabel = ON[e.kind]; d.cols = `150px repeat(${e.n},minmax(34px,1fr)) 70px`;
+      if (e.kind === 'bowling') {
+        const down = e.last; d.pins = Array.from({ length: 10 }, (_, n) => { const k = Math.floor((Math.sqrt(8 * n + 1) - 1) / 2); const j = n - k * (k + 1) / 2; const dn = n + 1 <= down; return { x: (60 + (j - k / 2) * 30.5).toFixed(1), y: (94 - k * 26.4).toFixed(1), bg: dn ? '#3B4A7A' : '#fff', op: dn ? .35 : 1 }; });
+        d.lastLabel = e.last === 10 ? 'STRIKE' : `${e.last} PINS DOWN`;
+        const cur = e.players[e.turn % e.players.length]; d.upNext = `${TEAMS[cur.c].ath} · ${cur.c}`;
+        d.players = e.players.map(p => ({ code: p.c, name: TEAMS[p.c].ath, extra: e.statuses[p.c] ? STATUS_LABEL[e.statuses[p.c]] : '', total: SC.scoreBowling(e.P, p.rolls).total, cells: this.bowlCells(e, p) }));
+        d.status = `FRAME ${Math.min(e.n, Math.min(...e.players.map(p => SC.bowlingProgress(e.P, p.rolls).frame)))} / ${e.n}`;
+        codes = e.players.map(p => p.c);
+      } else if (e.kind === 'darts') {
+        const s = SC.summarize(e.m); const cur = [e.a, e.b][s.turn];
+        d.upNext = `${cur.n} · ${cur.c}`; d.lastLabel = '';
+        d.players = [e.a, e.b].map((x, i) => { const h = e.m.history[i].slice(-e.n); return { code: x.c, name: x.n, extra: `${s.wins[i]} legs`, total: s.current[i], cells: Array.from({ length: e.n }, (_, k) => { const v = h[k]; const hi = v && !v.bust && v.scored >= 140; return { v: v ? (v.bust ? 'BUST' : v.scored) : '', sub: v ? String(v.remainingAfter) : '', bg: !v ? 'rgba(255,255,255,.05)' : v.bust ? '#D6243A' : hi ? '#38D200' : 'rgba(255,255,255,.14)', fg: hi ? '#05103F' : '#fff' }; }) }; });
+        d.status = stNote() || `LEG ${s.wins[0] + s.wins[1] + 1} · ${s.current[0]}–${s.current[1]}`;
+        codes = [e.a.c, e.b.c];
+      } else if (e.kind === 'pool') {
+        const s = SC.summarize(e.m); d.upNext = `${e.a.n} ${s.wins[0]} – ${s.wins[1]} ${e.b.n}`;
+        d.players = [e.a, e.b].map((x, i) => ({ code: x.c, name: x.n, extra: '', total: s.wins[i], cells: Array.from({ length: e.n }, (_, k) => { const w = e.frames[k]; const win = w === i; return { v: w === undefined ? '' : win ? 'W' : 'L', sub: '', bg: w === undefined ? 'rgba(255,255,255,.05)' : win ? '#38D200' : 'rgba(255,255,255,.14)', fg: win ? '#05103F' : '#fff' }; }) }));
+        d.status = stNote() || `FRAME ${s.wins[0] + s.wins[1] + 1} · ${s.wins[0]}–${s.wins[1]}`;
+        codes = [e.a.c, e.b.c];
+      } else {
+        const next = e.players.filter(p => p.holes.length < e.n).sort((a, b) => a.holes.length - b.holes.length)[0] || e.players[0];
+        d.upNext = `${TEAMS[next.c].ath} · ${next.c}`; d.lastLabel = '';
+        d.players = e.players.map(p => { const tot = p.holes.reduce((a, b) => a + b, 0); const par = p.holes.reduce((a, _, i) => a + e.pars[i], 0); const tp = SC.golfToPar(tot, par);
+          return { code: p.c, name: TEAMS[p.c].ath, extra: p.holes.length ? (tp > 0 ? '+' : '') + (tp === 0 ? 'E' : tp) : '', total: tot, cells: Array.from({ length: e.n }, (_, k) => { const v = p.holes[k]; const hi = v !== undefined && v <= e.pars[k] - 1; return { v: v === undefined ? '' : v, sub: v === undefined ? 'P' + e.pars[k] : '', bg: v === undefined ? 'rgba(255,255,255,.05)' : hi ? '#38D200' : 'rgba(255,255,255,.14)', fg: hi ? '#05103F' : '#fff' }; }) }; });
+        d.status = `HOLE ${Math.min(e.n, Math.min(...e.players.map(p => p.holes.length)) + 1)} / ${e.n}`;
+        codes = e.players.map(p => p.c);
+      }
+    } else if (e.mode === 'manual') {
+      const op = !!this.state.operator;
+      d.manualPlayers = [...e.players].sort((a, b) => b.pts - a.pts).map((p, i) => ({ rank: i + 1, code: p.c, name: TEAMS[p.c].ath, pts: p.pts, opOn: op, plus: () => this.manualAdd(e.id, p.c, 1), minus: () => this.manualAdd(e.id, p.c, -1) }));
+      d.status = 'INPUT MANUAL PANITIA'; codes = e.players.map(p => p.c);
     }
+    if (d.hasNeeds) Object.assign(d, { isRace: false, isClimb: false, isMatch: false, isRacket: false, isTarget: false, isManual: false });
     if (e.up) d.status = e.upLabel;
     d.cheerTargets = [...new Set(codes)].map(c => ({ code: c, n: this.state.cheers[c] || 0, go: () => this.cheer(c, 'GO GO GO') }));
     return d;
@@ -1635,7 +2031,7 @@ class Component extends DCLogic {
     const tabStyle = (on) => ({ bg: on ? '#05103F' : 'transparent', fg: on ? '#fff' : '#5B6478' });
     const liveOnly = s.live.filter(e => !e.up);
     const navDef = [['live', 'LIVE', liveOnly.length], ['schedule', 'SCHEDULE'], ['leaderboard', 'LEADERBOARD'], ['cheer', 'CHEER ZONE']];
-    const navItems = navDef.map(([v, label, count]) => ({ label, count: count || 0, go: () => this.go(v), bg: s.view === v ? 'rgba(255,255,255,.12)' : 'transparent', fg: s.view === v ? '#fff' : '#B8C4E6' }));
+    const navItems = [...navDef.map(([v, label, count]) => ({ label, count: count || 0, go: () => this.go(v), bg: s.view === v ? 'rgba(255,255,255,.12)' : 'transparent', fg: s.view === v ? '#fff' : '#B8C4E6' })), { label: 'RULEBOOK', count: 0, go: () => { window.location.href = 'rulebook/'; }, bg: 'transparent', fg: '#B8C4E6' }];
 
     const rowsAll = [];
     SPORTS.forEach(sp => sp.sessions.forEach(([day, time]) => rowsAll.push({ sp, day, time, st: statusOf(day, time), start: (day === 'SAT' ? 24 : 0) + range(time)[0] })));

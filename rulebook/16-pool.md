@@ -11,6 +11,8 @@ unit: frame
 frames_to_win_match: null
 extra:
   three_consecutive_fouls_lose_frame: null
+options:
+  frames_to_win_match: [3]
 status_codes: [DNS, DNF, DQ, WO, RET]
 tiebreakers: [head_to_head, frame_difference]
 league_points:

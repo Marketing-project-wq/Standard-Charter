@@ -14,6 +14,8 @@ bust: true
 legs_to_win_match: null
 max_visit_score: 180
 max_checkout: 170
+options:
+  legs_to_win_match: [3]
 status_codes: [DNS, DNF, DQ, WO, RET]
 tiebreakers: [head_to_head, leg_difference]
 league_points:

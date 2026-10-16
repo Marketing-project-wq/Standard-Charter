@@ -279,6 +279,20 @@ test('bowling: frame yang belum selesai tidak dihitung dulu', () => {
   assert.equal(r.frames[0].mark, 'X');
 });
 
+test('bowling: posisi lemparan berikutnya (frame, bola, pin tersisa)', () => {
+  const p = R('bowling').params;
+  assert.deepEqual(S.bowlingProgress(p, []), { frame: 1, ball: 1, standing: 10, complete: false });
+  assert.deepEqual(S.bowlingProgress(p, [7]), { frame: 1, ball: 2, standing: 3, complete: false });
+  assert.deepEqual(S.bowlingProgress(p, [7, 2]), { frame: 2, ball: 1, standing: 10, complete: false });
+  assert.deepEqual(S.bowlingProgress(p, [10]), { frame: 2, ball: 1, standing: 10, complete: false });
+  assert.equal(S.bowlingProgress(p, Array(12).fill(10)).complete, true);
+  const nine = Array(9).fill(0).flatMap(() => [0, 0]);
+  assert.deepEqual(S.bowlingProgress(p, [...nine, 10]), { frame: 10, ball: 2, standing: 10, complete: false });
+  assert.deepEqual(S.bowlingProgress(p, [...nine, 10, 4]), { frame: 10, ball: 3, standing: 6, complete: false });
+  assert.deepEqual(S.bowlingProgress(p, [...nine, 7, 3]), { frame: 10, ball: 3, standing: 10, complete: false });
+  assert.equal(S.bowlingProgress(p, [...nine, 7, 2]).complete, true);
+});
+
 test('bowling: Current Frame Scoring (opsi World Bowling) strike = 30, maksimal tetap 300', () => {
   const p = R('bowling', { overrides: { scoring_system: 'current_frame' } }).params;
   assert.equal(S.scoreBowling(p, Array(12).fill(10)).total, 300);
