@@ -1,0 +1,20 @@
+SC GAMES 2027 LIVE
+Kode masuk untuk pendaftaran peserta
+
+Halo, ini kode masukmu.
+
+Masukkan kode di bawah ini di halaman login untuk melanjutkan pendaftaran SC Games 2027.
+
+KODE VERIFIKASI: {{ .Token }}
+Berlaku 10 menit.
+
+Jangan bagikan kode ini ke siapa pun, termasuk yang mengaku panitia. Panitia tidak akan pernah memintanya.
+
+Tidak merasa meminta kode? Abaikan saja email ini. Akunmu tetap aman.
+
+--
+Your SC Games 2027 sign-in code is {{ .Token }}. It expires in 10 minutes. If you didn't request it, you can ignore this email.
+
+Indonesia SC Games 2027
+indonesiascgames2027.20fit.id · Powered by 20FIT
+Email ini dikirim otomatis, mohon tidak dibalas.

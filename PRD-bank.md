@@ -29,7 +29,7 @@ A web portal for Standard Chartered staff taking part in, or following, the SC G
 ### Non-goals (v1)
 - Payments, merchandise and ticketing.
 - Native mobile apps. The portal is responsive web only.
-- Referee or official score-entry tools. Scores come from an admin feed (§9).
+- Official score-entry tools and a shared score feed. Live scores are simulated for now. The scoring engine and the local operator panel (rule overrides, result status codes) read their rules from the rulebook (§6.1). The real results source is still open (§14).
 
 ---
 
@@ -87,30 +87,28 @@ My Races (logged-in athletes)
 ### 4.1 Steps
 
 ```
-1. Email → 2. Verify (OTP) → 3. Sports → 4. Team* → 5. Profile → 6. Done → My Races
-                                              *only if a team sport is selected
+1. Email → 2. Verifikasi (OTP) → 3. Profil → 4. Cabor/divisi → Pendaftaranku
 ```
 
 | # | Step | Fields | Validation | Next |
 |---|---|---|---|---|
-| 1 | **Email** | Work email | Valid email format. Production: restrict to SC domains (e.g. `@sc.com`) | Send OTP → 2 |
-| 2 | **Verify** | 6-digit OTP | Must match the issued code. Expires after 10 minutes. Resend available | Existing user → **My Races**. New user → 3 |
-| 3 | **Sports** | Multi-select from the 20 sports | At least 1 sport | Has a team sport → 4. Otherwise → 5 |
-| 4 | **Team** | Team name for each selected team sport | Required for each team sport. Unique within the sport | → 5 |
-| 5 | **Profile** | Full name, date of birth, branch, division, photo | Name, DOB, branch and division required. Photo optional (recommended) | → 6 |
-| 6 | **Done** | Summary of the athlete card and selected sports | — | **See my race schedule** → My Races |
+| 1 | **Email** | Email | Format valid. Domain dibatasi hanya jika `app_settings.allowed_email_domains` terisi (kosong = terbuka). Dicek di database | Kirim OTP (Supabase Auth) → 2 |
+| 2 | **Verifikasi** | Kode 6 digit | Dicek Supabase Auth. Kirim ulang tersedia | Sudah punya profil → Pendaftaranku. Baru → 3 |
+| 3 | **Profil** | Nama tampil (publik), nama lengkap, tanggal lahir, gender, telepon (opsional), branch | Nama tampil, tanggal lahir, gender, branch wajib | → 4 |
+| 4 | **Cabor/divisi** | Pilih satu atau lebih divisi dari `sport_divisions`; nama tim untuk divisi tim | Divisi yang tidak sesuai gender atau sudah didaftar dinonaktifkan | Individu: pendaftaran langsung dibuat. Tim: tim dibuat, kapten = pendaftar → Pendaftaranku |
 
-### 4.2 Step rules
-- The stepper on the left shows ✓ for completed steps, highlights the current step and dims future steps.
-- The **Team** step is hidden when only individual sports are selected.
-- **Back** keeps everything already entered.
-- **Login** uses the same Email → OTP steps. If the email is already registered, the user goes straight to My Races.
-- **Add sports** (from My Races) reopens the flow at step 3 with the profile pre-filled.
+Pendaftaran ditutup bila `app_settings.registration_open = false` atau lewat deadline (global atau per divisi); ditegakkan oleh trigger database.
 
-### 4.3 Team registration
-- The person who registers a team becomes its **captain**.
-- Each team gets a **team code** (format `SC-####`) for teammates to join. *Joining by code is v1.1. See Open questions.*
-- Team names appear in the schedule, team search, leaderboards and the stage chart.
+### 4.2 Aturan
+- Login hanya untuk mendaftar dan mengelola tim. Live, jadwal, klasemen, dan cheer tetap tanpa login.
+- Profil dipakai ulang untuk semua cabor.
+- Peserta tidak pernah melihat email, telepon, atau tanggal lahir orang lain. Halaman publik hanya memuat nama tampil, nama tim, dan branch (view `public_roster`).
+
+### 4.3 Pendaftaran tim
+- Kapten membuat tim, lalu menambah anggota lewat email, dengan peran (mis. drummer, steersperson untuk dragon boat) dan penanda cadangan.
+- Anggota yang akunnya belum ada menerima undangan; undangan tertaut otomatis saat mereka membuat profil. Anggota harus mengonfirmasi sendiri (kapten tidak bisa mengonfirmasi atas nama orang lain).
+- Kapten mengajukan tim. Trigger database memvalidasi roster dari `sport_divisions` (min/max pemain, cadangan, aturan gender, peran wajib, semua anggota terkonfirmasi) dan mengembalikan kode error yang dipetakan ke pesan Indonesia.
+- Roster dapat diubah kapten selama status `pending` dan sebelum deadline; setelah diproses panitia roster terkunci.
 
 ### 4.4 Branch list (all regions except Europe)
 | Region | Branches |
@@ -123,14 +121,14 @@ My Races (logged-in athletes)
 
 The branch picker has a search box and groups branches by region. Each branch has a 2-letter code (e.g. SG, HK, KE) used as its badge everywhere.
 
-### 4.5 Divisions
-Corporate & Investment Banking · Wealth & Retail Banking · Ventures · Technology & Operations · Risk · Finance · Compliance · Legal · People & Culture · Brand & Marketing · Group Functions
+### 4.5 Status pendaftaran
+`pending` (menunggu review) → `approved` / `rejected` / `waitlist`, dengan catatan panitia yang terlihat peserta. Hanya `approved` yang masuk jadwal dan live.
 
 ---
 
 ## 5. Sports and schedule
 
-### 5.1 Sports (20 confirmed, 2 still to be supplied)
+### 5.1 Sports (20 scheduled; Padel and Hyrox are in the rulebook but not yet scheduled)
 
 | Sport | Type | Visual mode | Sessions | Venue |
 |---|---|---|---|---|
@@ -138,7 +136,7 @@ Corporate & Investment Banking · Wealth & Retail Banking · Ventures · Technol
 | Basketball (M) | Team | Match | Fri 9am–9pm · Sat 9am–3pm | Jurong West Centre |
 | Basketball (W) | Team | Match | Fri 9am–9pm · Sat 9am–3pm | Jurong West Centre |
 | Bowling | Individual | Target | Fri 10am–7pm | Orchid Country Club |
-| Cage Cricket | Team | Match | Sat 8am–2pm | CBP1 (SCB Office) |
+| Cage Cricket | Individual (6 per cage) | Manual | Sat 8am–2pm | CBP1 (SCB Office) |
 | Cricket | Team | Match | Fri 8am–6pm | Ceylon Sports Club |
 | Darts | Individual | Target | Fri 9am–6pm | Good Vibes |
 | Dragon Boat | Team | Race | Sat 8am–12pm | Water Sports Ctr |
@@ -178,9 +176,18 @@ Every sport has a live detail view. Sports not currently in session show **UPCOM
 |---|---|---|
 | **Race** | Swimming, Running, Dragon Boat | Horizontal lanes with position markers (P1… / 1ST once finished), progress trail and finish line |
 | **Climb** | Rock Climbing | Vertical climbing wall. Each climber's marker rises with their height. Top line at 15 m |
-| **Match** | Basketball M/W, Netball, Football, Futsal, Cricket, Cage Cricket, Volleyball | Scoreboard plus a static court showing each side's live score in large type, period and clock, and a momentum bar. **No moving ball** |
+| **Match** | Basketball M/W, Netball, Football, Futsal, Cricket, Volleyball | Scoreboard plus a static court showing each side's live score in large type, period and clock, and a momentum bar. **No moving ball** |
 | **Racket** | Badminton, Pickleball, Table Tennis, Tennis | Static court showing the current game points for each player and the game number, plus a table of completed game scores and serve indicator. **No moving shuttle** |
-| **Target** | Bowling, Darts, Golf, Pool | Score grid per player (frames, rounds, holes or racks) with highlights for strikes, 140+, birdies and cleared racks. Bowling also shows a pin deck. Golf ranks lowest score first |
+| **Target** | Bowling, Darts, Golf, Pool | Score grid per player (frames with marks and running total, darts visits with remaining score, holes with par, frames won) with highlights for strikes, 140+, birdies and frame wins. Bowling also shows a lane and a pin deck. Golf ranks lowest score first |
+| **Manual** | Cage Cricket | Rulebook has no readable scoring rules. Players and points are entered manually by the organisers (operator mode) |
+
+### 6.1 Rulebook and scoring
+
+- `rulebook/*.md` is the source of truth for scoring. Each sport file has YAML frontmatter with the parameters the live scoring engine reads (points to win, sets, periods, penalties, status codes, tie-breakers). Values the rulebook does not state are `null` and listed in `unverified_fields`. Nothing is guessed.
+- The public rulebook (`/rulebook/`, no login) renders the same Markdown with a sidebar of all 22 sports and full-text search.
+- Each live view shows a rules panel: the rules in force, the source and check date, a warning for anything unverified, the meaning of each result status (DNS, DNF, DQ, W/O, RET) taken from the rulebook, and a link to the rulebook page.
+- **Operator mode** (toggle in the rules panel, or `?operator=1`) lets organisers set an unverified parameter, mark a competitor with a result status, and enter Cage Cricket points. These changes apply in that browser only until a shared score store exists.
+- Badminton keeps the 21-point game until BWF Laws v6.0 takes effect on 4 January 2027, then switches to 15 points by match date. The v6.0 details the rulebook does not state stay flagged.
 
 Every detail view also includes:
 - **Live report:** a timestamped feed of the latest events, up to 6.
@@ -221,35 +228,35 @@ Every detail view also includes:
 
 ---
 
-## 9. My Races (logged in)
+## 9. Pendaftaranku (logged in)
 
-- **Athlete card:** photo or initials, name, branch code, branch and division.
-- **Your next race:** the next upcoming or live session the user is registered for.
-- **One card per registered sport:**
-  - Type tag, status, team name, sessions and venue.
-  - **Leaderboard position** `#rank / total`, a progress bar, and the gap to the entry above ("X pts behind Y").
-  - CTA: **Track live** (if live) or **View standings**.
-- Actions: **Add sports**, **Log out**.
+- **Kartu peserta:** inisial, nama tampil, branch, email.
+- **Undangan tim** untukmu: terima atau tolak.
+- **Satu kartu per pendaftaran:** tag individu/tim, status (Menunggu review, Disetujui, Ditolak, Daftar tunggu), catatan panitia, nama tim, daftar anggota dengan status konfirmasi, masalah roster, tambah/hapus anggota (kapten, selama pending), Ajukan pendaftaran tim, Cek ulang roster, Batalkan, tautan rulebook cabor, dan Lihat klasemen untuk yang disetujui.
+- Aksi: **Tambah cabor**, **Keluar**.
+
+### 9.1 Dashboard panitia (`/admin`)
+- Login OTP; hak admin dicek ke tabel `admins` (`is_sc_admin()`), tanpa email hardcode.
+- Daftar pendaftaran dengan filter cabor, status, branch, dan pencarian; setujui, tolak, atau daftar tunggu dengan catatan.
+- Pengaturan: buka/tutup pendaftaran, deadline global, domain email yang diizinkan.
+- Ekspor CSV (sel berawalan `=`, `+`, `-`, `@` di-escape).
 
 ---
 
 ## 10. Data model (suggested)
 
 ```ts
-User        { id, email, name, dob, branchCode, division, photoUrl, createdAt }
+// Skema registrasi yang berlaku: supabase/migrations/*.sql dan supabase/database.types.ts
+// (app_settings, admins, sports, sport_divisions, participants, teams, team_members, registrations, cheers)
 Branch      { code, name, region }               // non-Europe only
 Sport       { id, name, type: 'team'|'individual', mode: 'race'|'climb'|'match'|'racket'|'target', venue }
 Session     { id, sportId, day: 'FRI'|'SAT', start, end }
-Team        { id, sportId, name, code, captainUserId, branchCode }
-TeamMember  { teamId, userId, role: 'captain'|'member' }
-Registration{ userId, sportId, teamId? }
 Fixture     { id, sessionId, round, court, startAt, kind: 'vs'|'heat',
               sideA?, sideB?, entrants?[], status: 'UP'|'LIVE'|'DONE', scoreA?, scoreB?, winnerId? }
 LiveState   { fixtureId, payload (mode-specific), updatedAt }
 Standing    { sportId, entrantId, rank, points, record, stageReached, stageStatus: 'adv'|'in'|'out' }
 Cheer       { id, fromUserId?, toBranchCode, type, message?, createdAt }
 Congrats    { resultId, userId, createdAt }
-Otp         { email, codeHash, expiresAt, attempts }
 ```
 
 ### Suggested API
@@ -304,7 +311,7 @@ Otp         { email, codeHash, expiresAt, attempts }
 
 ## 14. Open questions
 
-1. **2 more sports:** the brief says 22, but the schedule lists 20. Names, sessions and venues are needed.
+1. **Padel and Hyrox:** the rulebook has 22 sports but the schedule lists 20. Sessions and venues for Padel and Hyrox are needed before they appear on Live and Schedule.
 2. **Joining a team:** do teammates join with the team code during registration, or does the captain add them?
 3. **Roster limits:** minimum and maximum players per team sport, and the number of sports one person can enter.
 4. **Email domains:** which domains are allowed (`@sc.com` only, or others)?
