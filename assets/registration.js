@@ -11,31 +11,31 @@
 
   // ───────── pesan error (kode dari trigger DB, lihat 20261016000001_schema.sql) ─────────
   const MESSAGES = {
-    EMAIL_DOMAIN_NOT_ALLOWED: () => 'Domain email ini belum diizinkan untuk pendaftaran.',
-    REGISTRATION_CLOSED: () => 'Pendaftaran sedang ditutup.',
-    DEADLINE_PASSED: () => 'Batas waktu pendaftaran untuk divisi ini sudah lewat.',
-    ADMIN_ONLY: () => 'Status dan catatan hanya bisa diubah oleh panitia.',
-    ROSTER_LOCKED: () => 'Susunan tim sudah dikunci karena pendaftaran sudah diproses panitia.',
-    ROSTER_UNCONFIRMED_MEMBERS: () => 'Masih ada anggota yang belum mengonfirmasi undangan.',
-    ROSTER_MIN_PLAYERS: d => `Jumlah pemain kurang. Minimal ${d} pemain.`,
-    ROSTER_MAX_PLAYERS: d => `Jumlah pemain melebihi batas. Maksimal ${d} pemain.`,
-    ROSTER_MAX_SUBSTITUTES: d => `Cadangan melebihi batas. Maksimal ${d} cadangan.`,
-    ROSTER_GENDER_MISMATCH: () => 'Ada anggota yang tidak sesuai ketentuan gender divisi ini.',
-    ROSTER_GENDER_MIX: d => `Divisi mixed butuh minimal ${d} pemain putra dan ${d} pemain putri.`,
-    ROSTER_MISSING_ROLE: d => `Peran wajib belum terisi: ${d}.`,
-    DIVISION_MISMATCH: () => 'Tim ini terdaftar di divisi yang berbeda.',
-    ENTRY_TYPE_MISMATCH: () => 'Divisi ini tidak cocok dengan jenis pendaftaran (individu atau tim).',
-    TEAM_NOT_FOUND: () => 'Tim tidak ditemukan.',
-    OTP_EMAIL_INVALID: () => 'Format email tidak valid.',
-    OTP_COOLDOWN: () => 'Kode baru saja dikirim. Tunggu 30 detik sebelum meminta lagi.',
-    OTP_RATE_LIMIT: () => 'Terlalu banyak permintaan kode. Coba lagi dalam satu jam.',
-    OTP_NOT_CONFIGURED: () => 'Pengiriman kode belum aktif. Hubungi panitia.',
-    OTP_CODE_FAILED: () => 'Gagal membuat kode. Coba lagi.',
-    OTP_SEND_FAILED: () => 'Email kode gagal dikirim. Coba lagi sebentar lagi.',
-    CHEER_COOLDOWN: () => 'Tunggu beberapa detik sebelum mengirim cheer lagi.',
-    CHEER_RATE_LIMIT: () => 'Terlalu banyak cheer dalam satu menit. Coba lagi sebentar lagi.',
+    EMAIL_DOMAIN_NOT_ALLOWED: () => 'This email domain is not allowed to register.',
+    REGISTRATION_CLOSED: () => 'Registration is closed.',
+    DEADLINE_PASSED: () => 'The registration deadline for this division has passed.',
+    ADMIN_ONLY: () => 'Only the organizers can change status and notes.',
+    ROSTER_LOCKED: () => 'The roster is locked because the organizers have already processed this registration.',
+    ROSTER_UNCONFIRMED_MEMBERS: () => 'Some members have not confirmed their invitation yet.',
+    ROSTER_MIN_PLAYERS: d => `Not enough players. Minimum ${d} players.`,
+    ROSTER_MAX_PLAYERS: d => `Too many players. Maximum ${d} players.`,
+    ROSTER_MAX_SUBSTITUTES: d => `Too many substitutes. Maximum ${d} substitutes.`,
+    ROSTER_GENDER_MISMATCH: () => 'Some members do not meet the gender rule of this division.',
+    ROSTER_GENDER_MIX: d => `A mixed division needs at least ${d} male and ${d} female players.`,
+    ROSTER_MISSING_ROLE: d => `Required role not filled: ${d}.`,
+    DIVISION_MISMATCH: () => 'This team is registered in a different division.',
+    ENTRY_TYPE_MISMATCH: () => 'This division does not match the registration type (individual or team).',
+    TEAM_NOT_FOUND: () => 'Team not found.',
+    OTP_EMAIL_INVALID: () => 'Invalid email format.',
+    OTP_COOLDOWN: () => 'A code was just sent. Wait 30 seconds before requesting another.',
+    OTP_RATE_LIMIT: () => 'Too many code requests. Try again in an hour.',
+    OTP_NOT_CONFIGURED: () => 'Code sending is not active yet. Contact the organizers.',
+    OTP_CODE_FAILED: () => 'Could not create a code. Try again.',
+    OTP_SEND_FAILED: () => 'The code email could not be sent. Try again shortly.',
+    CHEER_COOLDOWN: () => 'Wait a few seconds before sending another cheer.',
+    CHEER_RATE_LIMIT: () => 'Too many cheers in one minute. Try again shortly.',
   };
-  const ROLE_LABEL = { drummer: 'drummer', steersperson: 'juru mudi (steersperson)' };
+  const ROLE_LABEL = { drummer: 'drummer', steersperson: 'steersperson' };
 
   // Postgres: 23505 = unique_violation, 42501 = RLS ditolak, 23503 = FK
   function explain(err) {
@@ -48,17 +48,17 @@
       return MESSAGES[code](d);
     }
     if (err.code === '23505') {
-      if (/teams_name_key/.test(msg)) return 'Nama tim itu sudah dipakai di divisi ini. Pilih nama lain.';
-      if (/team_members_email_key/.test(msg)) return 'Email itu sudah ada di tim ini.';
-      if (/registrations_/.test(msg)) return 'Kamu sudah terdaftar di divisi ini.';
-      if (/participants_email_key/.test(msg)) return 'Email ini sudah dipakai profil lain.';
-      return 'Data itu sudah ada.';
+      if (/teams_name_key/.test(msg)) return 'That team name is already taken in this division. Choose another.';
+      if (/team_members_email_key/.test(msg)) return 'That email is already on this team.';
+      if (/registrations_/.test(msg)) return 'You are already registered in this division.';
+      if (/participants_email_key/.test(msg)) return 'This email is already used by another profile.';
+      return 'That record already exists.';
     }
-    if (err.code === '42501' || /row-level security/i.test(msg)) return 'Kamu tidak punya izin untuk tindakan ini. Coba login ulang.';
-    if (/invalid.*otp|token has expired|Token has expired/i.test(msg)) return 'Kode salah atau sudah kedaluwarsa. Kirim ulang kode.';
-    if (/rate limit|too many requests|over_email_send_rate_limit/i.test(msg)) return 'Terlalu banyak permintaan kode. Tunggu sebentar lalu coba lagi.';
-    if (/Failed to fetch|NetworkError/i.test(msg)) return 'Tidak bisa terhubung ke server. Periksa koneksi internet.';
-    return 'Terjadi kesalahan. Coba lagi, atau hubungi panitia kalau berulang.';
+    if (err.code === '42501' || /row-level security/i.test(msg)) return 'You do not have permission for this action. Try signing in again.';
+    if (/invalid.*otp|token has expired|Token has expired/i.test(msg)) return 'The code is wrong or has expired. Request a new code.';
+    if (/rate limit|too many requests|over_email_send_rate_limit/i.test(msg)) return 'Too many code requests. Wait a moment and try again.';
+    if (/Failed to fetch|NetworkError/i.test(msg)) return 'Cannot reach the server. Check your internet connection.';
+    return 'Something went wrong. Try again, or contact the organizers if it keeps happening.';
   }
 
   // ───────── validasi roster di klien (cermin dari trigger DB, untuk pesan sebelum submit) ─────────
@@ -85,7 +85,7 @@
     const only = division.nama === 'Open' || division.nama === sport.nama;
     return only ? sport.nama : `${sport.nama} · ${division.nama}`;
   }
-  const STATUS_LABEL = { pending: 'Menunggu review', approved: 'Disetujui', rejected: 'Ditolak', waitlist: 'Daftar tunggu' };
+  const STATUS_LABEL = { pending: 'Pending review', approved: 'Approved', rejected: 'Rejected', waitlist: 'Waitlist' };
 
   // ───────── akses data ─────────
   const CONFIG = { url: 'https://cpvzwqptzcxnwzfzgrmt.supabase.co', key: 'sb_publishable_0t9vEOYeIo_YM1__X5iNMQ_qXofEozw' };

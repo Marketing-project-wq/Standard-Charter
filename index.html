@@ -460,7 +460,7 @@ input,button{font-family:inherit}
       <sc-if value="{{ user }}" hint-placeholder-val="{{ false }}">
         <div sc-camel-on-click="{{ goMy }}" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:999px;padding:4px 16px 4px 4px;cursor:pointer" style-hover="background:rgba(255,255,255,.16)">
           <div style="width:38px;height:38px;border-radius:50%;background:#38D200;color:#05103F;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;overflow:hidden;background-image:url('{{ user.photo }}');background-size:cover;background-position:center">{{ userInitialsIfNoPhoto }}</div>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff">PENDAFTARANKU</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff">MY REGISTRATIONS</span>
         </div>
       </sc-if>
     </div>
@@ -644,7 +644,7 @@ input,button{font-family:inherit}
         </sc-if>
         <sc-if value="{{ d.rules.hasStatus }}" hint-placeholder-val="{{ false }}">
           <details>
-            <summary style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#B8C4E6">ARTI STATUS HASIL (DNS, DNF, DQ, W/O, RET) MENURUT RULEBOOK</summary>
+            <summary style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#B8C4E6">RESULT STATUS MEANINGS (DNS, DNF, DQ, W/O, RET) PER RULEBOOK</summary>
             <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
               <sc-for list="{{ d.rules.statusList }}" as="s" hint-placeholder-count="4">
                 <div style="display:grid;grid-template-columns:54px minmax(0,1fr);gap:8px;font-size:13px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#38D200">{{ s.code }}</span><span style="color:#B8C4E6">{{ s.meaning }}</span></div>
@@ -654,19 +654,19 @@ input,button{font-family:inherit}
         </sc-if>
         <sc-if value="{{ d.rules.opOn }}" hint-placeholder-val="{{ false }}">
           <div style="border-top:1px dashed rgba(255,255,255,.25);padding-top:10px;display:flex;flex-direction:column;gap:10px">
-            <span style="font-size:12px;color:#8FA3D9">Override dan status dari panitia hanya berlaku di browser ini (belum ada penyimpanan bersama).</span>
+            <span style="font-size:12px;color:#8FA3D9">Organizer overrides and statuses only apply in this browser (no shared storage yet).</span>
             <sc-for list="{{ d.rules.ovs }}" as="o" hint-placeholder-count="1">
               <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                 <code style="font-size:12px;color:#fff">{{ o.field }}</code>
                 <span style="font-size:12px;color:#8FA3D9">{{ o.hint }}</span>
                 <input value="{{ o.value }}" sc-camel-on-change="{{ o.onChange }}" style="width:120px;padding:6px 8px;border-radius:8px;border:1px solid #3B4A7A;background:#0A1A4F;color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px">
-                <span sc-camel-on-click="{{ o.apply }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;padding:5px 12px;border-radius:8px;background:#0473EA;color:#fff">TERAPKAN</span>
+                <span sc-camel-on-click="{{ o.apply }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;padding:5px 12px;border-radius:8px;background:#0473EA;color:#fff">APPLY</span>
               </div>
             </sc-for>
-            <sc-if value="{{ d.rules.hasOverrides }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ d.rules.clearOv }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;color:#FF8A8A">HAPUS SEMUA OVERRIDE CABOR INI</span></sc-if>
+            <sc-if value="{{ d.rules.hasOverrides }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ d.rules.clearOv }}" style="cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;color:#FF8A8A">CLEAR ALL OVERRIDES FOR THIS SPORT</span></sc-if>
             <sc-if value="{{ d.rules.hasPens }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;flex-direction:column;gap:8px">
-                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#B8C4E6">PENALTI MENURUT RULEBOOK (klik nama = tambah, − = batalkan)</span>
+                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#B8C4E6">PENALTIES PER RULEBOOK (click a name to add, − to undo)</span>
                 <sc-for list="{{ d.rules.pens }}" as="pe" hint-placeholder-count="2">
                   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
                     <span style="min-width:170px;font-size:13px">{{ pe.name }}</span>
@@ -692,7 +692,7 @@ input,button{font-family:inherit}
       <div style="padding:4px 28px 28px">
         <sc-if value="{{ d.hasNeeds }}" hint-placeholder-val="{{ false }}"><div style="background:#FFF3C4;color:#5C4400;border-radius:12px;padding:16px;font-size:15px">{{ d.needsMsg }}</div></sc-if>
         <sc-if value="{{ d.isManual }}" hint-placeholder-val="{{ false }}">
-          <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px;color:#D5DEF5">Rulebook belum memuat aturan skor Cage Cricket. Panitia memasukkan poin tiap pemain secara manual (aktifkan MODE OPERATOR).</div>
+          <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px;color:#D5DEF5">The rulebook does not define Cage Cricket scoring yet. Organizers enter each player's points manually (enable OPERATOR MODE).</div>
           <div style="display:flex;flex-direction:column;gap:8px">
             <sc-for list="{{ d.manualPlayers }}" as="p" hint-placeholder-count="6">
               <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:12px;padding:10px 14px">
@@ -1183,37 +1183,37 @@ input,button{font-family:inherit}
   </div>
 
   <div style="flex:2 1 460px;min-width:0;background:#fff;border:1px solid #E3E7EF;border-radius:26px;padding:34px;display:flex;flex-direction:column;gap:22px">
-    <sc-if value="{{ regClosed }}" hint-placeholder-val="{{ false }}"><div style="background:#FDE7EA;color:#C21F37;border-radius:12px;padding:12px 16px;font-size:14px">Pendaftaran sedang ditutup. Kamu masih bisa login untuk melihat status pendaftaranmu.</div></sc-if>
+    <sc-if value="{{ regClosed }}" hint-placeholder-val="{{ false }}"><div style="background:#FDE7EA;color:#C21F37;border-radius:12px;padding:12px 16px;font-size:14px">Registration is closed. You can still sign in to check your registration status.</div></sc-if>
     <sc-if value="{{ step0 }}" hint-placeholder-val="{{ true }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Masukkan email kamu</h2><p style="margin:6px 0 0;color:#5B6478">Kami kirim kode 6 digit ke email ini. Tidak perlu password.</p></div>
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Enter your email</h2><p style="margin:6px 0 0;color:#5B6478">We'll send a 6-digit code to this email. No password needed.</p></div>
       <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">EMAIL</span>
-        <input type="email" value="{{ form.email }}" sc-camel-on-change="{{ onEmail }}" placeholder="nama@email.com" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none;padding:16px;font-size:17px" style-focus="border-color:#0473EA"></label>
+        <input type="email" value="{{ form.email }}" sc-camel-on-change="{{ onEmail }}" placeholder="name@email.com" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none;padding:16px;font-size:17px" style-focus="border-color:#0473EA"></label>
       <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="color:#D6243A;font-size:14px">{{ err }}</span></sc-if>
       <div sc-camel-on-click="{{ sendCode }}" style="align-self:flex-start;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn0 }}">{{ busyLabel0 }}</div>
     </sc-if>
 
     <sc-if value="{{ step1 }}" hint-placeholder-val="{{ false }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Cek inbox kamu</h2><p style="margin:6px 0 0;color:#5B6478">Kode dikirim ke <b style="color:#0B1430">{{ form.email }}</b>. Berlaku beberapa menit.</p></div>
-      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">KODE 6 DIGIT</span>
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Check your inbox</h2><p style="margin:6px 0 0;color:#5B6478">Code sent to <b style="color:#0B1430">{{ form.email }}</b>. It expires shortly.</p></div>
+      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">6-DIGIT CODE</span>
         <input inputmode="numeric" maxlength="6" value="{{ form.otp }}" sc-camel-on-change="{{ onOtp }}" placeholder="••••••" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:16px;font-size:30px;letter-spacing:.5em;font-family:'JetBrains Mono',monospace;outline:none;max-width:320px" style-focus="border-color:#0473EA"></label>
       <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="color:#D6243A;font-size:14px">{{ err }}</span></sc-if>
       <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
         <div sc-camel-on-click="{{ verify }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn1 }}">{{ busyLabel1 }}</div>
-        <span sc-camel-on-click="{{ sendCode }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#0473EA">KIRIM ULANG KODE</span>
-        <span sc-camel-on-click="{{ backStep }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#5B6478">GANTI EMAIL</span>
+        <span sc-camel-on-click="{{ sendCode }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#0473EA">RESEND CODE</span>
+        <span sc-camel-on-click="{{ backStep }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#5B6478">CHANGE EMAIL</span>
       </div>
     </sc-if>
 
     <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Profil peserta</h2><p style="margin:6px 0 0;color:#5B6478">Hanya nama tampil, nama tim, dan branch yang terlihat publik. Email, telepon, dan tanggal lahir tidak pernah ditampilkan.</p></div>
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Participant profile</h2><p style="margin:6px 0 0;color:#5B6478">Only your display name, team name, and branch are shown publicly. Email, phone, and date of birth are never shown.</p></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
-        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NAMA TAMPIL (PUBLIK)</span>
-          <input value="{{ form.display_name }}" sc-camel-on-change="{{ onDisplayName }}" placeholder="mis. Budi S." style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
-        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NAMA LENGKAP</span>
-          <input value="{{ form.full_name }}" sc-camel-on-change="{{ onFullName }}" placeholder="Sesuai identitas" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
-        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">TANGGAL LAHIR</span>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">DISPLAY NAME (PUBLIC)</span>
+          <input value="{{ form.display_name }}" sc-camel-on-change="{{ onDisplayName }}" placeholder="e.g. Budi S." style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">FULL NAME</span>
+          <input value="{{ form.full_name }}" sc-camel-on-change="{{ onFullName }}" placeholder="As on your ID" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">DATE OF BIRTH</span>
           <input type="date" value="{{ form.dob }}" sc-camel-on-change="{{ onDob }}" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none;padding:13px 14px" style-focus="border-color:#0473EA"></label>
-        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NOMOR TELEPON (OPSIONAL)</span>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">PHONE NUMBER (OPTIONAL)</span>
           <input value="{{ form.phone }}" sc-camel-on-change="{{ onPhone }}" placeholder="08xxxxxxxxxx" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -1229,7 +1229,7 @@ input,button{font-family:inherit}
         <div sc-camel-on-click="{{ toggleBranch }}" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;cursor:pointer;display:flex;justify-content:space-between;color:{{ branchFg }}"><span>{{ branchLabel }}</span><span style="color:#0473EA">▾</span></div>
         <sc-if value="{{ branchOpen }}" hint-placeholder-val="{{ false }}">
           <div style="border:1.5px solid #0473EA;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:12px;max-height:320px;overflow-y:auto;background:#fff">
-            <input value="{{ branchQ }}" sc-camel-on-change="{{ onBranchQ }}" placeholder="Cari negara atau kota" style="border:1px solid #D5DBE6;border-radius:10px;padding:10px 12px;font-size:15px;outline:none">
+            <input value="{{ branchQ }}" sc-camel-on-change="{{ onBranchQ }}" placeholder="Search country or city" style="border:1px solid #D5DBE6;border-radius:10px;padding:10px 12px;font-size:15px;outline:none">
             <sc-for list="{{ regionList }}" as="g" hint-placeholder-count="4">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5B6478;letter-spacing:.08em">{{ g.name }}</span>
@@ -1250,7 +1250,7 @@ input,button{font-family:inherit}
     </sc-if>
 
     <sc-if value="{{ step3 }}" hint-placeholder-val="{{ false }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Pilih cabor</h2><p style="margin:6px 0 0;color:#5B6478">Pilih satu atau lebih divisi. Divisi tim akan membuat timmu dengan kamu sebagai kapten; anggota ditambahkan di halaman Pendaftaranku.</p></div>
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Pick your sports</h2><p style="margin:6px 0 0;color:#5B6478">Choose one or more divisions. A team division creates your team with you as captain; add members from My registrations.</p></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px">
         <sc-for list="{{ divTiles }}" as="s" hint-placeholder-count="12">
           <div sc-camel-on-click="{{ s.go }}" style="border-radius:16px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:6px;border:1.5px solid {{ s.border }};background:{{ s.bg }};color:{{ s.fg }};opacity:{{ s.op }}">
@@ -1263,16 +1263,16 @@ input,button{font-family:inherit}
       <sc-if value="{{ hasPickedTeams }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;flex-direction:column;gap:10px">
           <sc-for list="{{ teamNameRows }}" as="t" hint-placeholder-count="1">
-            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NAMA TIM · {{ t.name }}</span>
-              <input value="{{ t.val }}" sc-camel-on-change="{{ t.onChange }}" placeholder="Nama tim" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">TEAM NAME · {{ t.name }}</span>
+              <input value="{{ t.val }}" sc-camel-on-change="{{ t.onChange }}" placeholder="Team name" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
           </sc-for>
         </div>
       </sc-if>
       <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="color:#D6243A;font-size:14px">{{ err }}</span></sc-if>
       <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
         <div sc-camel-on-click="{{ submitPicks }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn3 }}">{{ busyLabel3 }}</div>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6478">{{ pickedCount }} dipilih</span>
-        <span sc-camel-on-click="{{ skipPicks }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#5B6478">LEWATI</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6478">{{ pickedCount }} selected</span>
+        <span sc-camel-on-click="{{ skipPicks }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#5B6478">SKIP</span>
       </div>
     </sc-if>
   </div>
@@ -1284,37 +1284,37 @@ input,button{font-family:inherit}
   <div style="background:#05103F;color:#fff;border-radius:26px;padding:28px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;background-image:radial-gradient(circle at 100% 0%,rgba(4,115,234,.5),transparent 50%)">
     <div style="width:112px;height:112px;border-radius:28px;background:#38D200;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:42px;color:#05103F">{{ userInitials }}</div>
     <div style="flex:1;min-width:220px">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#38D200;letter-spacing:.1em">PESERTA · {{ userCode }}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#38D200;letter-spacing:.1em">PARTICIPANT · {{ userCode }}</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:48px;line-height:1;text-transform:uppercase;margin-top:4px">{{ user.name }}</div>
       <div style="color:#B8C4E6;margin-top:6px">{{ user.branch }} · {{ user.email }}</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,.07);border-radius:16px;padding:16px 20px;min-width:220px">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8C4E6;letter-spacing:.1em">LOMBA BERIKUTNYA</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8C4E6;letter-spacing:.1em">YOUR NEXT EVENT</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;text-transform:uppercase">{{ myNext.name }}</span>
       <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#38D200">{{ myNext.when }}</span>
     </div>
   </div>
   <sc-if value="{{ hasInvites }}" hint-placeholder-val="{{ false }}">
     <div style="background:#E3EFFD;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px">
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;color:#0359B5">Undangan tim untukmu</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;color:#0359B5">Team invitations</span>
       <sc-for list="{{ invites }}" as="iv" hint-placeholder-count="1">
         <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#fff;border-radius:12px;padding:12px 16px">
           <span style="flex:1;min-width:200px;font-size:15px">{{ iv.text }}</span>
-          <span sc-camel-on-click="{{ iv.accept }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#fff;background:#0473EA;border-radius:10px;padding:8px 16px">TERIMA</span>
-          <span sc-camel-on-click="{{ iv.decline }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#C21F37">TOLAK</span>
+          <span sc-camel-on-click="{{ iv.accept }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#fff;background:#0473EA;border-radius:10px;padding:8px 16px">ACCEPT</span>
+          <span sc-camel-on-click="{{ iv.decline }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#C21F37">DECLINE</span>
         </div>
       </sc-for>
     </div>
   </sc-if>
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
-    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;margin:0;text-transform:uppercase">Pendaftaranku</h2>
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;margin:0;text-transform:uppercase">My registrations</h2>
     <div style="display:flex;gap:16px">
-      <span sc-camel-on-click="{{ editSports }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#0473EA">TAMBAH CABOR</span>
-      <span sc-camel-on-click="{{ logout }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#5B6478">KELUAR</span>
+      <span sc-camel-on-click="{{ editSports }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#0473EA">ADD SPORTS</span>
+      <span sc-camel-on-click="{{ logout }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#5B6478">LOG OUT</span>
     </div>
   </div>
   <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><div style="background:#FDE7EA;color:#C21F37;border-radius:12px;padding:12px 16px;font-size:14px">{{ err }}</div></sc-if>
-  <sc-if value="{{ noCards }}" hint-placeholder-val="{{ false }}"><div style="color:#5B6478">Kamu belum mendaftar di cabor mana pun. Klik TAMBAH CABOR.</div></sc-if>
+  <sc-if value="{{ noCards }}" hint-placeholder-val="{{ false }}"><div style="color:#5B6478">You haven't registered for any sport yet. Click ADD SPORTS.</div></sc-if>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px">
     <sc-for list="{{ myCards }}" as="m" hint-placeholder-count="2">
       <div style="background:#fff;border:1px solid #E3E7EF;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
@@ -1324,9 +1324,9 @@ input,button{font-family:inherit}
         </div>
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;text-transform:uppercase;line-height:1">{{ m.name }}</div>
-          <sc-if value="{{ m.team }}" hint-placeholder-val="{{ false }}"><div style="font-size:15px;color:#0473EA;font-weight:600;margin-top:4px">Tim {{ m.team }}</div></sc-if>
+          <sc-if value="{{ m.team }}" hint-placeholder-val="{{ false }}"><div style="font-size:15px;color:#0473EA;font-weight:600;margin-top:4px">Team {{ m.team }}</div></sc-if>
         </div>
-        <sc-if value="{{ m.note }}" hint-placeholder-val="{{ false }}"><div style="background:#FFF6E0;border-radius:12px;padding:12px 14px;font-size:14px;color:#7A5300">Catatan panitia: {{ m.note }}</div></sc-if>
+        <sc-if value="{{ m.note }}" hint-placeholder-val="{{ false }}"><div style="background:#FFF6E0;border-radius:12px;padding:12px 14px;font-size:14px;color:#7A5300">Organizer note: {{ m.note }}</div></sc-if>
         <sc-if value="{{ m.isTeam }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:6px">
             <sc-for list="{{ m.members }}" as="mb" hint-placeholder-count="3">
@@ -1339,24 +1339,24 @@ input,button{font-family:inherit}
           <sc-if value="{{ m.issues.length }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#C21F37"><sc-for list="{{ m.issues }}" as="is" hint-placeholder-count="1"><span>• {{ is.t }}</span></sc-for></div></sc-if>
           <sc-if value="{{ m.canEdit }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #E3E7EF;padding-top:12px">
-              <input value="{{ m.inv.email }}" sc-camel-on-change="{{ m.inv.onEmail }}" placeholder="Email anggota" style="border:1.5px solid #D5DBE6;border-radius:10px;padding:10px 12px;font-size:14px;outline:none">
+              <input value="{{ m.inv.email }}" sc-camel-on-change="{{ m.inv.onEmail }}" placeholder="Member email" style="border:1.5px solid #D5DBE6;border-radius:10px;padding:10px 12px;font-size:14px;outline:none">
               <div style="display:flex;gap:6px;flex-wrap:wrap">
                 <sc-for list="{{ m.inv.roles }}" as="rl" hint-placeholder-count="2"><span sc-camel-on-click="{{ rl.go }}" style="font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;border:1px solid {{ rl.border }};background:{{ rl.bg }};color:{{ rl.fg }}">{{ rl.label }}</span></sc-for>
               </div>
               <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-                <span sc-camel-on-click="{{ m.inv.toggleSub }}" style="font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;border:1px solid {{ m.inv.subBorder }};background:{{ m.inv.subBg }};color:{{ m.inv.subFg }}">Cadangan</span>
-                <span sc-camel-on-click="{{ m.inv.add }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#fff;background:#0473EA;border-radius:10px;padding:8px 16px">TAMBAH ANGGOTA</span>
+                <span sc-camel-on-click="{{ m.inv.toggleSub }}" style="font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;border:1px solid {{ m.inv.subBorder }};background:{{ m.inv.subBg }};color:{{ m.inv.subFg }}">Substitute</span>
+                <span sc-camel-on-click="{{ m.inv.add }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#fff;background:#0473EA;border-radius:10px;padding:8px 16px">ADD MEMBER</span>
               </div>
             </div>
           </sc-if>
         </sc-if>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <sc-if value="{{ m.canSubmit }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.submit }}" style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;background:#38D200;color:#05103F;border-radius:12px;padding:12px">AJUKAN PENDAFTARAN TIM</span></sc-if>
-          <sc-if value="{{ m.canRevalidate }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.revalidate }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#0473EA">CEK ULANG ROSTER</span></sc-if>
-          <sc-if value="{{ m.canCancel }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.cancel }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#C21F37">BATALKAN</span></sc-if>
-          <sc-if value="{{ m.canStandings }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.standings }}" style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#fff;background:#05103F;border-radius:12px;padding:12px">LIHAT KLASEMEN →</span></sc-if>
+          <sc-if value="{{ m.canSubmit }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.submit }}" style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;background:#38D200;color:#05103F;border-radius:12px;padding:12px">SUBMIT TEAM REGISTRATION</span></sc-if>
+          <sc-if value="{{ m.canRevalidate }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.revalidate }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#0473EA">RE-CHECK ROSTER</span></sc-if>
+          <sc-if value="{{ m.canCancel }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.cancel }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#C21F37">CANCEL</span></sc-if>
+          <sc-if value="{{ m.canStandings }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.standings }}" style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#fff;background:#05103F;border-radius:12px;padding:12px">VIEW STANDINGS →</span></sc-if>
         </div>
-        <a href="{{ m.rulebook }}" style="font-size:13px;color:#0473EA">Baca rulebook {{ m.sportName }}</a>
+        <a href="{{ m.rulebook }}" style="font-size:13px;color:#0473EA">Read the {{ m.sportName }} rulebook</a>
       </div>
     </sc-for>
   </div>
@@ -1809,7 +1809,7 @@ class Component extends DCLogic {
     this.flash(`${type} sent to ${(TEAMS[code] || {}).name || code}`);
   }
   // ───────── registrasi (Supabase) ─────────
-  appSportId(slug, divNama) { if (slug === 'basketball') return divNama === 'Putra' ? 'basketball-m' : 'basketball-w'; if (slug === 'volleyball') return 'volleyball-w'; return SP[slug] ? slug : null; }
+  appSportId(slug, divNama) { if (slug === 'basketball') return divNama === 'Men' ? 'basketball-m' : 'basketball-w'; if (slug === 'volleyball') return 'volleyball-w'; return SP[slug] ? slug : null; }
   // hanya pendaftaran yang disetujui panitia yang masuk ke jadwal dan live
   deriveUser(reg) {
     if (!reg.session) return null;
@@ -1858,7 +1858,7 @@ class Component extends DCLogic {
     const t = String(raw).trim();
     let val = t === '' ? null : t === 'true' ? true : t === 'false' ? false : Number.isFinite(Number(t)) ? Number(t) : t;
     if (val === null) return this.flash('Isi nilai dulu');
-    if (options && options.length && !options.some(o => String(o) === t) && typeof options[0] !== 'number') return this.flash('Nilai tidak ada di pilihan rulebook');
+    if (options && options.length && !options.some(o => String(o) === t) && typeof options[0] !== 'number') return this.flash('Value is not one of the rulebook options');
     const all = lsGet(LS_OVERRIDES, {}); all[slug] = { ...(all[slug] || {}), [field]: val }; lsSet(LS_OVERRIDES, all);
     this.reinit(slug); this.flash(`${field} = ${val} (override panitia, hanya di browser ini)`);
   }
@@ -1890,20 +1890,20 @@ class Component extends DCLogic {
   }
 
   ruleLines(P) {
-    const v = x => x == null ? 'belum ditetapkan' : x;
+    const v = x => x == null ? 'not set' : x;
     const L = [];
     if (P.result_type === 'head_to_head_sets') {
-      if (P.scoring_mode === 'tennis_points') L.push(`Set sampai ${v(P.games_per_set)} game (selisih ${v(P.set_win_by)}) · menang ${v(P.sets_to_win_match)} set`, `Deuce: ${P.deuce_rule ? P.deuce_rule.replace('_', ' ') : 'belum ditetapkan'}${P.tiebreak_game ? ` · tie-break ke ${P.tiebreak_game.points_to_win} pada ${P.tiebreak_game.at_games}–${P.tiebreak_game.at_games}` : ''}`);
-      else if (P.scoring_mode === 'x01_countdown') L.push(`${v(P.start_score)} hitung mundur · tutup di double · menang ${v(P.legs_to_win_match)} leg`, `Bust: giliran hangus (lebih dari sisa, sisa 1, atau 0 tanpa double)`);
+      if (P.scoring_mode === 'tennis_points') L.push(`Sets to ${v(P.games_per_set)} games (win by ${v(P.set_win_by)}) · first to ${v(P.sets_to_win_match)} sets`, `Deuce: ${P.deuce_rule ? P.deuce_rule.replace('_', ' ') : 'not set'}${P.tiebreak_game ? ` · tie-break to ${P.tiebreak_game.points_to_win} at ${P.tiebreak_game.at_games}–${P.tiebreak_game.at_games}` : ''}`);
+      else if (P.scoring_mode === 'x01_countdown') L.push(`${v(P.start_score)} countdown · double out · first to ${v(P.legs_to_win_match)} legs`, `Bust: the turn is void (over the remainder, leaves 1, or reaches 0 without a double)`);
       else if (P.scoring_mode === 'frame_race') L.push(`Race to ${v(P.frames_to_win_match)} frame`);
-      else L.push(`${P.scoring_mode === 'side_out' ? 'Side-out: hanya server mencetak poin' : 'Rally point'} · ${v(P.points_to_win_game)} poin, selisih ${v(P.win_by)}${P.point_cap === 'none' ? '' : ' · batas ' + v(P.point_cap)}`, `Menang ${v(P.games_to_win_match)} ${P.unit}${P.deciding_game_points !== 'same' && P.deciding_game_points ? ` · ${P.unit} penentu sampai ${P.deciding_game_points}` : ''}`);
+      else L.push(`${P.scoring_mode === 'side_out' ? 'Side-out: only the server scores' : 'Rally point'} · ${v(P.points_to_win_game)} points, win by ${v(P.win_by)}${P.point_cap === 'none' ? '' : ' · cap ' + v(P.point_cap)}`, `First to ${v(P.games_to_win_match)} ${P.unit}${P.deciding_game_points !== 'same' && P.deciding_game_points ? ` · deciding ${P.unit} to ${P.deciding_game_points}` : ''}`);
     } else if (P.result_type === 'head_to_head_score') {
-      if (P.overs_per_innings) L.push(`${P.overs_per_innings} over per innings (${P.balls_per_over} bola) · ${P.wickets_per_innings} wicket · bowler maks ${P.max_overs_per_bowler} over`, `Wide/no-ball +${P.extras.wide} run · penalty run ${P.extras.penalty_runs}`);
-      else L.push(`${P.periods} babak × ${v(P.period_minutes)} menit`, `Nilai: ${Object.entries(P.score_events).map(([k, n]) => `${k.replace('_', ' ')} ${n}`).join(', ')}`, P.overtime && P.overtime !== 'none' ? `Perpanjangan: ${P.overtime.periods ? P.overtime.periods + ' × ' : ''}${v(P.overtime.period_minutes)} menit${P.overtime.then === 'penalty_shootout' ? ', lalu adu penalti' : ''}${P.overtime.repeat === 'until_winner' ? ' sampai ada pemenang' : ''}` : 'Perpanjangan: belum ditetapkan');
-    } else if (P.result_type === 'timed') L.push(`Peringkat berdasarkan waktu terendah · ketelitian ${v(P.time_precision)} detik`, P.penalties && P.penalties.length ? `Penalti waktu: ${P.penalties.filter(x => x.seconds != null).map(x => `${x.code.toLowerCase().replace(/_/g, ' ')} ${x.seconds}s`).slice(0, 4).join(', ')}${P.penalties.length > 4 ? ' …' : ''}` : 'Penalti waktu: tidak ada nilai detik di rulebook');
-    else if (P.result_type === 'frames') L.push(`${P.frames} frame · maksimal ${P.max_score} · strike = 10 + 2 lemparan berikutnya, spare = 10 + 1 lemparan berikutnya${P.scoring_system === 'current_frame' ? ' (Current Frame Scoring)' : ''}`);
-    else if (P.result_type === 'points_total') L.push(`Stroke play: pukulan terendah menang · Stableford ${Object.values(P.stableford).join('-')} poin`);
-    else L.push('Tidak ada aturan skor yang terbaca dari sumber. Skor diinput manual oleh panitia.');
+      if (P.overs_per_innings) L.push(`${P.overs_per_innings} overs per innings (${P.balls_per_over} balls) · ${P.wickets_per_innings} wickets · bowler max ${P.max_overs_per_bowler} overs`, `Wide/no-ball +${P.extras.wide} run · penalty run ${P.extras.penalty_runs}`);
+      else L.push(`${P.periods} periods × ${v(P.period_minutes)} min`, `Scoring: ${Object.entries(P.score_events).map(([k, n]) => `${k.replace('_', ' ')} ${n}`).join(', ')}`, P.overtime && P.overtime !== 'none' ? `Extra time: ${P.overtime.periods ? P.overtime.periods + ' × ' : ''}${v(P.overtime.period_minutes)} min${P.overtime.then === 'penalty_shootout' ? ', then penalty shootout' : ''}${P.overtime.repeat === 'until_winner' ? ' until a winner' : ''}` : 'Extra time: not set');
+    } else if (P.result_type === 'timed') L.push(`Ranked by lowest time · precision ${v(P.time_precision)} s`, P.penalties && P.penalties.length ? `Time penalties: ${P.penalties.filter(x => x.seconds != null).map(x => `${x.code.toLowerCase().replace(/_/g, ' ')} ${x.seconds}s`).slice(0, 4).join(', ')}${P.penalties.length > 4 ? ' …' : ''}` : 'Time penalties: the rulebook gives no seconds value');
+    else if (P.result_type === 'frames') L.push(`${P.frames} frames · max ${P.max_score} · strike = 10 + next 2 rolls, spare = 10 + next roll${P.scoring_system === 'current_frame' ? ' (Current Frame Scoring)' : ''}`);
+    else if (P.result_type === 'points_total') L.push(`Stroke play: lowest strokes win · Stableford ${Object.values(P.stableford).join('-')} points`);
+    else L.push('No scoring rules could be read from the source. Scores are entered manually by the organizers.');
     return L;
   }
 
@@ -1915,25 +1915,25 @@ class Component extends DCLogic {
     const codes = P.status_codes || [];
     const ents = this.entrants(e);
     const warns = [];
-    if (unv.length) warns.push(`Belum terverifikasi di rulebook: ${unv.join(', ')}`);
-    if (R.uncertain.length) warns.push(`Varian tanggal belum pasti: ${R.uncertain.join(', ')}`);
-    if (R.assumed.length) warns.push(`Simulasi memakai nilai contoh dari rulebook untuk: ${R.assumed.join(', ')}`);
-    if (R.demoUsed.length) warns.push(`Simulasi memakai nilai sementara (bukan aturan) untuk: ${R.demoUsed.join(', ')}`);
-    if (e.needs && e.needs.length) warns.push(`Menunggu parameter dari panitia: ${e.needs.join(', ')}`);
+    if (unv.length) warns.push(`Not verified in the rulebook: ${unv.join(', ')}`);
+    if (R.uncertain.length) warns.push(`Uncertain date variants: ${R.uncertain.join(', ')}`);
+    if (R.assumed.length) warns.push(`The simulation uses example values from the rulebook for: ${R.assumed.join(', ')}`);
+    if (R.demoUsed.length) warns.push(`The simulation uses placeholder values (not rules) for: ${R.demoUsed.join(', ')}`);
+    if (e.needs && e.needs.length) warns.push(`Waiting for parameters from the organizers: ${e.needs.join(', ')}`);
     return {
       title: 'ATURAN', source: meta.source, checked: meta.rules_checked, page: meta.page, verified: R.verified && !R.demoUsed.length,
       lines: this.ruleLines(P).map(t => ({ t })),
-      variant: R.applied.length ? `Varian aturan aktif: ${R.applied.join(', ')}` : '',
+      variant: R.applied.length ? `Active rule variant: ${R.applied.join(', ')}` : '',
       warns: warns.map(t => ({ t })), hasWarn: warns.length > 0,
       statusList: codes.map(c => ({ code: STATUS_LABEL[c], meaning: (meta.status_meanings && meta.status_meanings[c]) || '' })), hasStatus: codes.length > 0,
       manual: !!P.manual_input_required,
-      opOn: op, opLabel: op ? 'MODE OPERATOR: ON' : 'MODE OPERATOR: OFF', opBg: op ? '#38D200' : 'rgba(255,255,255,.12)', opFg: op ? '#05103F' : '#fff',
+      opOn: op, opLabel: op ? 'OPERATOR MODE: ON' : 'OPERATOR MODE: OFF', opBg: op ? '#38D200' : 'rgba(255,255,255,.12)', opFg: op ? '#05103F' : '#fff',
       toggleOp: () => this.setOperator(!op),
       ovs: cand.map(f => {
         const opts = (meta.options && meta.options[f]) || [];
         const key = `${R.slug}:${f}`;
         const cur = key in this.state.ov ? this.state.ov[key] : (ovAll[f] ?? '');
-        return { field: f, hint: opts.length ? `pilihan rulebook: ${opts.join(', ')}` : 'rulebook tidak menyebut nilainya', value: String(cur), applied: f in ovAll,
+        return { field: f, hint: opts.length ? `rulebook options: ${opts.join(', ')}` : 'not stated in the rulebook', value: String(cur), applied: f in ovAll,
           onChange: ev => { const val = ev.target.value; this.setState(s => ({ ov: { ...s.ov, [key]: val } })); },
           apply: () => this.applyOverride(R.slug, f, key in this.state.ov ? this.state.ov[key] : String(cur), opts) };
       }),
@@ -1941,7 +1941,7 @@ class Component extends DCLogic {
       ents: codes.length ? ents.map(en => ({ name: en.name, current: e.statuses[en.key] ? STATUS_LABEL[e.statuses[en.key]] : '',
         btns: [{ label: 'OK', bg: e.statuses[en.key] ? 'rgba(255,255,255,.12)' : '#38D200', fg: e.statuses[en.key] ? '#fff' : '#05103F', go: () => this.setStatus(e.id, en.key, null) },
           ...codes.map(c => ({ label: STATUS_LABEL[c], bg: e.statuses[en.key] === c ? '#D6243A' : 'rgba(255,255,255,.12)', fg: '#fff', go: () => this.setStatus(e.id, en.key, c) }))] })) : [],
-      pens: (e.mode === 'race' || e.mode === 'climb') ? ents.map(en => ({ name: en.name, list: (P.penalties || []).map(pn => { const n = ((e.pens || {})[en.key] || {})[pn.code] || 0; return { label: `${pn.code.replace(/_/g, ' ').toLowerCase()}${pn.seconds != null ? ` +${pn.seconds}s` : ' (wasit)'}${pn.first_is_warning ? ' · 1x peringatan' : ''}${pn.per === 'race' ? ' · 1x/lomba' : ''}${n ? ` ×${n}` : ''}`, bg: n ? '#D6243A' : 'rgba(255,255,255,.12)', add: () => this.addPenalty(e.id, en.key, pn.code, 1), sub: () => this.addPenalty(e.id, en.key, pn.code, -1), n }; }) })) : [],
+      pens: (e.mode === 'race' || e.mode === 'climb') ? ents.map(en => ({ name: en.name, list: (P.penalties || []).map(pn => { const n = ((e.pens || {})[en.key] || {})[pn.code] || 0; return { label: `${pn.code.replace(/_/g, ' ').toLowerCase()}${pn.seconds != null ? ` +${pn.seconds}s` : ' (referee)'}${pn.first_is_warning ? ' · 1st is a warning' : ''}${pn.per === 'race' ? ' · once per race' : ''}${n ? ` ×${n}` : ''}`, bg: n ? '#D6243A' : 'rgba(255,255,255,.12)', add: () => this.addPenalty(e.id, en.key, pn.code, 1), sub: () => this.addPenalty(e.id, en.key, pn.code, -1), n }; }) })) : [],
       hasPens: (e.mode === 'race' || e.mode === 'climb') && !!(P.penalties && P.penalties.length),
       hasEnts: codes.length > 0 && ents.length > 0,
     };
@@ -1974,7 +1974,7 @@ class Component extends DCLogic {
     const sp = SP[e.sport]; const sel = this.state.liveId === e.id && this.state.view === 'live';
     let rows = [], status = '', summary = '';
     const row = (c, name, val, pctv, lead) => ({ code: c, name, val, pct: pct(pctv), chip: lead ? '#38D200' : '#0473EA', bar: lead ? '#38D200' : '#0473EA' });
-    if (e.needs && e.needs.length) { status = 'MENUNGGU ATURAN'; summary = 'Parameter belum ditetapkan'; }
+    if (e.needs && e.needs.length) { status = 'AWAITING RULES'; summary = 'Parameters not set'; }
     else if (e.mode === 'race' || e.mode === 'climb') {
       const tbl = this.raceTable(e); const sorted = tbl.map(x => x.lane);
       rows = tbl.slice(0, 3).map((x, i) => row(x.lane.c, nameOf(e, x.lane.c), x.row.rank != null ? x.row.display : (x.lane.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u, x.lane.p, i === 0));
@@ -2029,10 +2029,10 @@ class Component extends DCLogic {
     const d = { cv: Object.fromEntries(COURT_KEYS.map(k => [k, cv === k])), courtMax: COURT_MAX[cv] || '900px', scoreL: (SCORE_POS[cv] || [])[0] || '37%', scoreR: (SCORE_POS[cv] || [])[1] || '63%', isSwim: sp.id === 'swimming', isTrack: sp.id === 'running', isBoat: sp.id === 'dragon-boat', isDarts: e.kind === 'darts', isGolf: e.kind === 'golf', isPool: e.kind === 'pool', isBowl: e.kind === 'bowling', sportName: sp.name,
       title: e.title, venue: sp.venue.toUpperCase(), feed: e.feed.map(f => ({ txt: f.txt, ago: this.ago(f.t) })), isRace: e.mode === 'race', isClimb: e.mode === 'climb', isMatch: e.mode === 'match' || e.mode === 'sets', isRacket: e.mode === 'racket', isTarget: e.mode === 'target', isManual: e.mode === 'manual',
       chip: e.up ? 'UPCOMING' : 'LIVE', chipBg: e.up ? '#8FA3D9' : '#38D200', noFeed: !e.feed.length, rules: this.rulesPanel(e), rulebookHref: '/' + meta.page, gameLabel: e.mode === 'racket' && e.P.scoring_mode === 'tennis_points' ? 'SET' : e.kind === 'pool' ? 'FRAME' : 'GAME',
-      needsMsg: e.needs && e.needs.length ? `Menunggu parameter dari panitia: ${e.needs.join(', ')}. Buka MODE OPERATOR untuk menetapkannya.` : '', hasNeeds: !!(e.needs && e.needs.length) };
+      needsMsg: e.needs && e.needs.length ? `Waiting for parameters from the organizers: ${e.needs.join(', ')}. Open OPERATOR MODE to set them.` : '', hasNeeds: !!(e.needs && e.needs.length) };
     const stNote = () => { const k = Object.keys(e.statuses || {})[0]; if (!k) return ''; const en = this.entrants(e).find(x => x.key === k); return `${STATUS_LABEL[e.statuses[k]]} · ${en ? en.name : k}`; };
     let codes = [];
-    if (e.needs && e.needs.length) { codes = []; d.status = 'MENUNGGU ATURAN'; }
+    if (e.needs && e.needs.length) { codes = []; d.status = 'AWAITING RULES'; }
     else if (e.mode === 'race' || e.mode === 'climb') {
       const tbl = this.raceTable(e); const rank = tbl.map(x => x.lane.c); const adj = Object.fromEntries(tbl.map(x => [x.lane.c, x.row]));
       const prec = e.P.time_precision || 0.01;
@@ -2041,7 +2041,7 @@ class Component extends DCLogic {
         const xy = d.isSwim ? swimXY(i, dist) : d.isTrack ? trackXY(i, dist) : d.isBoat ? boatXY(i, dist) : [0, 0];
         const vw = d.isSwim ? 54 : d.isTrack ? 190 : 560, vh = d.isSwim ? 24 : d.isTrack ? 106 : 82;
         const st = e.statuses[l.c];
-        const ar = adj[l.c]; const pos = st ? STATUS_LABEL[st] : l.place ? `${ord(r).toUpperCase()} · ${ar.display}${ar.penaltySeconds ? ` (+${ar.penaltySeconds}s penalti)` : ''}${ar.unknownPenalties.length ? ' · penalti menunggu wasit' : ''}` : 'P' + r;
+        const ar = adj[l.c]; const pos = st ? STATUS_LABEL[st] : l.place ? `${ord(r).toUpperCase()} · ${ar.display}${ar.penaltySeconds ? ` (+${ar.penaltySeconds}s penalty)` : ''}${ar.unknownPenalties.length ? ' · penalty awaiting referee' : ''}` : 'P' + r;
         return { tx: xy[0].toFixed(2), ty: xy[1].toFixed(2), lx: pct(xy[0] / vw * 100), ly: pct(xy[1] / vh * 100), lxl: pct((xy[0] - 9) / vw * 100), lane: d.isSwim ? i + 2 : i + 1, code: l.c, name: nameOf(e, l.c), pct: pct(l.p), pos, mk: st ? '#D6243A' : r === 1 ? '#38D200' : '#fff', distLabel: (l.p * e.unit / 100).toFixed(e.unit < 50 ? 1 : 0) + e.u };
       });
       const ld = e.lanes.find(l => l.c === rank[0]);
@@ -2198,21 +2198,21 @@ class Component extends DCLogic {
     const cat = s.reg.catalog; const prof = s.reg.profile;
     const emailOk = /\S+@\S+\.\S+/.test(f.email);
     const profileOk = f.display_name.trim().length >= 2 && f.dob && f.gender && f.branch;
-    const labels = ['Email', 'Verifikasi', 'Profil', 'Cabor'];
+    const labels = ['Email', 'Verify', 'Profile', 'Sports'];
     const ORDER = [0, 1, 2, 3];
     const pos = ORDER.indexOf(s.step);
     const regSteps = ORDER.map((id, i) => ({ n: i < pos ? '✓' : i + 1, label: labels[id], bg: i < pos ? '#38D200' : i === pos ? '#0473EA' : 'rgba(255,255,255,.1)', fg: i < pos ? '#05103F' : '#fff', op: i === pos ? 1 : i < pos ? .8 : .45 }));
     const q = s.branchQ.trim().toLowerCase();
     const regionList = REGIONS.map(r => ({ name: r.name, items: r.items.filter(([n]) => !q || n.toLowerCase().includes(q)).map(([n]) => ({ label: n, bg: f.branch === n ? '#0473EA' : '#fff', fg: f.branch === n ? '#fff' : '#0B1430', go: () => { this.setF('branch', n); this.setState({ branchOpen: false, branchQ: '' }); } })) })).filter(r => r.items.length);
-    const genderChips = [['male', 'Putra'], ['female', 'Putri']].map(([v, l]) => { const on = f.gender === v; return { label: l, go: () => this.setF('gender', v), bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#D5DBE6' }; });
+    const genderChips = [['male', 'Male'], ['female', 'Female']].map(([v, l]) => { const on = f.gender === v; return { label: l, go: () => this.setF('gender', v), bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#D5DBE6' }; });
     const sportById = cat ? Object.fromEntries(cat.sports.map(x => [x.id, x])) : {};
     const divById = cat ? Object.fromEntries(cat.divisions.map(d => [d.id, d])) : {};
     const takenDiv = new Set([...s.reg.indiv.map(r => r.division_id), ...s.reg.teams.filter(t => t.captain_id === (s.user && s.user.id)).map(t => t.division_id)]);
     const genderOk = d => d.gender_rule === 'open' || d.gender_rule === 'mixed' || d.gender_rule === f.gender;
-    const divNote = d => d.entry_type === 'individual' ? 'Individu' : `Tim ${d.min_players}${d.max_players !== d.min_players ? '–' + d.max_players : ''} pemain${d.max_substitutes ? ` + ${d.max_substitutes} cadangan` : ''}`;
+    const divNote = d => d.entry_type === 'individual' ? 'Individual' : `Team of ${d.min_players}${d.max_players !== d.min_players ? '–' + d.max_players : ''}${d.max_substitutes ? ` + ${d.max_substitutes} substitutes` : ''}`;
     const divTiles = cat ? cat.divisions.map(d => {
       const sp = sportById[d.sport_id]; const on = s.pick.includes(d.id); const taken = takenDiv.has(d.id); const ok = genderOk(d) && !taken;
-      return { name: SCReg.divisionLabel(sp, d), tag: d.entry_type === 'team' ? 'TIM' : 'INDIVIDU', note: taken ? 'Sudah terdaftar' : !genderOk(d) ? 'Tidak sesuai gender' : divNote(d), check: on ? '✓' : '', boxBg: on ? '#38D200' : 'rgba(5,16,63,.08)', bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#E3E7EF', op: ok ? 1 : .45,
+      return { name: SCReg.divisionLabel(sp, d), tag: d.entry_type === 'team' ? 'TEAM' : 'INDIVIDUAL', note: taken ? 'Already registered' : !genderOk(d) ? 'Gender not eligible' : divNote(d), check: on ? '✓' : '', boxBg: on ? '#38D200' : 'rgba(5,16,63,.08)', bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#E3E7EF', op: ok ? 1 : .45,
         go: () => ok && this.setState(st => ({ pick: on ? st.pick.filter(x => x !== d.id) : [...st.pick, d.id], err: '' })) };
     }) : [];
     const pickedTeamDivs = s.pick.map(id => divById[id]).filter(d => d && d.entry_type === 'team');
@@ -2223,30 +2223,30 @@ class Component extends DCLogic {
     const isLogin = s.mode === 'login';
 
     // pendaftaranku
-    const uid = s.user && s.user.id; const regCards = []; const stOf = r => r ? SCReg.STATUS_LABEL[r.status] : 'Belum diajukan';
+    const uid = s.user && s.user.id; const regCards = []; const stOf = r => r ? SCReg.STATUS_LABEL[r.status] : 'Not submitted';
     const stCol = r => !r ? ['#EEF0F4', '#5B6478'] : { pending: ['#FFF6E0', '#7A5300'], approved: ['#E6F9DC', '#1E7A00'], rejected: ['#FDE7EA', '#C21F37'], waitlist: ['#E3EFFD', '#0359B5'] }[r.status];
     const rulebookOf = sp => sp.rulebook_path || ('rulebook/' + sp.slug + '.html');
     const stand = (sp, d) => { const id = this.appSportId(sp.slug, d.nama); return id ? () => this.go('leaderboard', { lbSport: id }) : null; };
     if (cat) {
       s.reg.indiv.forEach(r => { const d = divById[r.division_id]; if (!d) return; const sp = sportById[d.sport_id]; const c = stCol(r); const go = stand(sp, d);
-        regCards.push({ tag: 'INDIVIDU', st: stOf(r), stBg: c[0], stFg: c[1], name: SCReg.divisionLabel(sp, d), team: '', note: r.admin_note || '', isTeam: false, members: [], issues: [], canEdit: false, inv: null, canSubmit: false, canRevalidate: false,
+        regCards.push({ tag: 'INDIVIDUAL', st: stOf(r), stBg: c[0], stFg: c[1], name: SCReg.divisionLabel(sp, d), team: '', note: r.admin_note || '', isTeam: false, members: [], issues: [], canEdit: false, inv: null, canSubmit: false, canRevalidate: false,
           canCancel: r.status === 'pending', cancel: () => this.act('cancel', () => SCReg.api.cancelRegistration(r.id)), canStandings: r.status === 'approved' && !!go, standings: go || (() => {}), rulebook: rulebookOf(sp), sportName: sp.nama }); });
       s.reg.teams.forEach(t => { const d = divById[t.division_id]; if (!d) return; const sp = sportById[d.sport_id]; const r = (t.registrations || [])[0]; const c = stCol(r); const cap = t.captain_id === uid; const go = stand(sp, d);
         const members = (t.members || []).map(m => ({ ...m, gender: m.gender }));
         const issues = cap && (!r || r.status === 'pending') ? SCReg.rosterIssues(d, members).map(x => ({ t: x })) : [];
         const edit = cap && (!r || r.status === 'pending'); const iv = this.getInv(t.id); const roleList = d.required_roles || [];
-        regCards.push({ tag: 'TIM', st: stOf(r), stBg: c[0], stFg: c[1], name: SCReg.divisionLabel(sp, d), team: t.nama, note: r ? (r.admin_note || '') : '', isTeam: true,
-          members: members.map(m => ({ label: (m.display_name || m.invited_email) + (m.is_captain ? ' (kapten)' : '') + (m.role ? ' · ' + m.role : '') + (m.is_substitute ? ' · cadangan' : ''), st: { confirmed: 'Terkonfirmasi', invited: 'Menunggu konfirmasi', declined: 'Menolak' }[m.status], fg: { confirmed: '#1E7A00', invited: '#B7791F', declined: '#C21F37' }[m.status], canRemove: edit && !m.is_captain, remove: () => this.act('rm', () => SCReg.api.removeMember(m.member_id)) })),
+        regCards.push({ tag: 'TEAM', st: stOf(r), stBg: c[0], stFg: c[1], name: SCReg.divisionLabel(sp, d), team: t.nama, note: r ? (r.admin_note || '') : '', isTeam: true,
+          members: members.map(m => ({ label: (m.display_name || m.invited_email) + (m.is_captain ? ' (captain)' : '') + (m.role ? ' · ' + m.role : '') + (m.is_substitute ? ' · substitute' : ''), st: { confirmed: 'Confirmed', invited: 'Awaiting confirmation', declined: 'Declined' }[m.status], fg: { confirmed: '#1E7A00', invited: '#B7791F', declined: '#C21F37' }[m.status], canRemove: edit && !m.is_captain, remove: () => this.act('rm', () => SCReg.api.removeMember(m.member_id)) })),
           issues, canEdit: edit,
           inv: { email: iv.email, onEmail: e => this.setInv(t.id, { email: e.target.value }), roles: roleList.map(role => { const on = iv.role === role; return { label: role, go: () => this.setInv(t.id, { role: on ? '' : role }), bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#D5DBE6' }; }),
             toggleSub: () => this.setInv(t.id, { sub: !iv.sub }), subBg: iv.sub ? '#05103F' : '#fff', subFg: iv.sub ? '#fff' : '#0B1430', subBorder: iv.sub ? '#05103F' : '#D5DBE6',
-            add: () => { if (!/\S+@\S+\.\S+/.test(iv.email)) return this.setState({ err: 'Masukkan email anggota yang valid.' }); this.act('add', () => SCReg.api.addMember(t.id, iv.email, iv.role, iv.sub), () => this.setInv(t.id, { email: '', role: '', sub: false })); } },
-          canSubmit: cap && !r, submit: () => this.act('submit', () => SCReg.api.submitTeam(t.id, t.division_id), () => this.flash('Pendaftaran tim diajukan')),
-          canRevalidate: edit && !!r, revalidate: () => this.act('reval', () => SCReg.api.revalidate(r.id), () => this.flash('Roster valid')),
+            add: () => { if (!/\S+@\S+\.\S+/.test(iv.email)) return this.setState({ err: 'Enter a valid member email.' }); this.act('add', () => SCReg.api.addMember(t.id, iv.email, iv.role, iv.sub), () => this.setInv(t.id, { email: '', role: '', sub: false })); } },
+          canSubmit: cap && !r, submit: () => this.act('submit', () => SCReg.api.submitTeam(t.id, t.division_id), () => this.flash('Team registration submitted')),
+          canRevalidate: edit && !!r, revalidate: () => this.act('reval', () => SCReg.api.revalidate(r.id), () => this.flash('Roster is valid')),
           canCancel: cap && (!r || r.status === 'pending'), cancel: () => this.act('delteam', () => SCReg.api.deleteTeam(t.id)),
           canStandings: !!r && r.status === 'approved' && !!go, standings: go || (() => {}), rulebook: rulebookOf(sp), sportName: sp.nama }); });
     }
-    const invites = s.reg.invites.map(iv => { const t = iv.teams; const d = t && divById[t.division_id]; return { text: t ? `Tim ${t.nama}${d ? ' · ' + SCReg.divisionLabel(sportById[d.sport_id], d) : ''}${iv.role ? ' · peran ' + iv.role : ''}` : 'Undangan tim', accept: () => this.act('inv', () => SCReg.api.respondInvitation(iv.id, 'confirmed')), decline: () => this.act('inv', () => SCReg.api.respondInvitation(iv.id, 'declined')) }; });
+    const invites = s.reg.invites.map(iv => { const t = iv.teams; const d = t && divById[t.division_id]; return { text: t ? `Team ${t.nama}${d ? ' · ' + SCReg.divisionLabel(sportById[d.sport_id], d) : ''}${iv.role ? ' · role ' + iv.role : ''}` : 'Team invitation', accept: () => this.act('inv', () => SCReg.api.respondInvitation(iv.id, 'confirmed')), decline: () => this.act('inv', () => SCReg.api.respondInvitation(iv.id, 'declined')) }; });
 
     return {
       liveDot: dot, user, loggedOut: !user,
@@ -2284,7 +2284,7 @@ class Component extends DCLogic {
       sendCheerMsg: () => { this.cheer(s.cheerTo, 'CLAP', s.cheerMsg); this.setState({ cheerMsg: '' }); },
       toast: s.toast,
       // registrasi
-      regKicker: isLogin ? 'SELAMAT DATANG KEMBALI' : 'PENDAFTARAN PESERTA', regTitle: isLogin ? 'Masuk ke SC Games' : 'Gabung SC Games 2027',
+      regKicker: isLogin ? 'WELCOME BACK' : 'PARTICIPANT REGISTRATION', regTitle: isLogin ? 'Sign in to SC Games' : 'Join SC Games 2027',
       regSteps, form: f, err: s.err, regClosed,
       step0: s.step === 0, step1: s.step === 1, step2: s.step === 2, step3: s.step === 3,
       onEmail: e => this.setF('email', e.target.value),
@@ -2294,22 +2294,22 @@ class Component extends DCLogic {
       onDob: e => this.setF('dob', e.target.value),
       onPhone: e => this.setF('phone', e.target.value),
       btn0: emailOk ? '#0473EA' : '#AEB6C6', btn1: f.otp.length === 6 ? '#0473EA' : '#AEB6C6', btn2: profileOk ? '#0473EA' : '#AEB6C6', btn3: s.pick.length && teamsOk ? '#0473EA' : '#AEB6C6',
-      busyLabel0: lbl('otp', 'KIRIM KODE →', 'MENGIRIM…'), busyLabel1: lbl('verify', 'VERIFIKASI →', 'MEMERIKSA…'), busyLabel2: lbl('profile', 'SIMPAN PROFIL →', 'MENYIMPAN…'), busyLabel3: lbl('picks', 'DAFTAR →', 'MENDAFTAR…'),
-      sendCode: () => { if (!emailOk) return this.setState({ err: 'Masukkan email yang valid.' }); this.act('otp', () => SCReg.api.sendOtp(f.email), () => { this.setState({ step: 1 }); this.setF('otp', ''); }); },
-      verify: () => { if (f.otp.length !== 6) return this.setState({ err: 'Masukkan 6 digit kode.' }); this.act('verify', async () => { const r = await SCReg.api.verifyOtp(f.email, f.otp); const profile = await this.regLoad(r.session); if (profile) { this.go('my'); this.flash('Berhasil masuk'); } else this.setState({ step: 2 }); }); },
+      busyLabel0: lbl('otp', 'SEND CODE →', 'SENDING…'), busyLabel1: lbl('verify', 'VERIFY →', 'VERIFYING…'), busyLabel2: lbl('profile', 'SAVE PROFILE →', 'SAVING…'), busyLabel3: lbl('picks', 'REGISTER →', 'REGISTERING…'),
+      sendCode: () => { if (!emailOk) return this.setState({ err: 'Enter a valid email.' }); this.act('otp', () => SCReg.api.sendOtp(f.email), () => { this.setState({ step: 1 }); this.setF('otp', ''); }); },
+      verify: () => { if (f.otp.length !== 6) return this.setState({ err: 'Enter the 6-digit code.' }); this.act('verify', async () => { const r = await SCReg.api.verifyOtp(f.email, f.otp); const profile = await this.regLoad(r.session); if (profile) { this.go('my'); this.flash('Signed in'); } else this.setState({ step: 2 }); }); },
       backStep: () => this.setState({ step: 0, err: '' }),
       toggleBranch: () => this.setState({ branchOpen: !s.branchOpen }),
       branchOpen: s.branchOpen, branchQ: s.branchQ, onBranchQ: e => this.setState({ branchQ: e.target.value }),
-      branchLabel: f.branch || 'Pilih branch', branchFg: f.branch ? '#0B1430' : '#8A93A6',
+      branchLabel: f.branch || 'Select your branch', branchFg: f.branch ? '#0B1430' : '#8A93A6',
       regionList, genderChips,
-      saveProfile: () => { if (!profileOk) return this.setState({ err: 'Lengkapi nama tampil, tanggal lahir, gender, dan branch.' }); this.act('profile', () => SCReg.api.saveProfile(s.reg.session.user.id, s.reg.session.user.email, { display_name: f.display_name, full_name: f.full_name, phone: f.phone, birth_date: f.dob, gender: f.gender, branch: f.branch }), () => this.setState({ step: 3 })); },
+      saveProfile: () => { if (!profileOk) return this.setState({ err: 'Complete display name, date of birth, gender, and branch.' }); this.act('profile', () => SCReg.api.saveProfile(s.reg.session.user.id, s.reg.session.user.email, { display_name: f.display_name, full_name: f.full_name, phone: f.phone, birth_date: f.dob, gender: f.gender, branch: f.branch }), () => this.setState({ step: 3 })); },
       divTiles, pickedCount: s.pick.length, hasPickedTeams: pickedTeamDivs.length > 0, teamNameRows,
-      submitPicks: () => { if (!s.pick.length || !teamsOk) return this.setState({ err: s.pick.length ? 'Isi nama tim untuk setiap divisi tim.' : 'Pilih minimal satu divisi.' });
-        this.act('picks', async () => { const uidNow = s.reg.session.user.id; for (const id of s.pick) { const d = divById[id]; if (d.entry_type === 'team') await SCReg.api.createTeam(uidNow, id, s.teamNames[id]); else await SCReg.api.registerIndividual(uidNow, id); } }, () => { this.setState({ pick: [], teamNames: {} }); this.go('my'); this.flash('Tersimpan. Cek statusnya di Pendaftaranku'); }); },
+      submitPicks: () => { if (!s.pick.length || !teamsOk) return this.setState({ err: s.pick.length ? 'Enter a team name for every team division.' : 'Pick at least one division.' });
+        this.act('picks', async () => { const uidNow = s.reg.session.user.id; for (const id of s.pick) { const d = divById[id]; if (d.entry_type === 'team') await SCReg.api.createTeam(uidNow, id, s.teamNames[id]); else await SCReg.api.registerIndividual(uidNow, id); } }, () => { this.setState({ pick: [], teamNames: {} }); this.go('my'); this.flash('Saved. Check the status in My registrations'); }); },
       skipPicks: () => this.go('my'),
       // pendaftaranku
       myCards: regCards, noCards: !regCards.length, invites, hasInvites: invites.length > 0,
-      myNext: myUp ? { name: myUp.sp.name, when: `${myUp.day === 'FRI' ? 'Fri 16' : 'Sat 17'} Oct · ${myUp.time}` } : { name: 'Belum ada', when: 'Menunggu persetujuan panitia' },
+      myNext: myUp ? { name: myUp.sp.name, when: `${myUp.day === 'FRI' ? 'Fri 16' : 'Sat 17'} Oct · ${myUp.time}` } : { name: 'None yet', when: 'Waiting for organizer approval' },
       editSports: () => this.go('register', { step: 3, mode: 'register', err: '', pick: [] }),
       logout: () => { SCReg.api.signOut(); this.uid = null; this.setState({ user: null, form: { email: '', otp: '', display_name: '', full_name: '', dob: '', gender: '', phone: '', branch: '' } }); this.go('home'); },
     };

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id"><head>
+<html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Panitia · SC Games 2027</title>
+<title>Organizers · SC Games 2027</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/registration.js"></script>
 <style>
@@ -27,7 +27,7 @@
 </style>
 </head>
 <body>
-<main id="app"><div class="card">Memuat…</div></main>
+<main id="app"><div class="card">Loading…</div></main>
 <script>
 (function () {
   'use strict';
@@ -39,10 +39,10 @@
   function who(r) { return r.teams ? r.teams.nama : (r.participants ? r.participants.display_name : ''); }
 
   function loginView(note) {
-    app.innerHTML = '<div class="card" style="max-width:420px;margin:60px auto;display:flex;flex-direction:column;gap:12px"><h1>Panitia SC Games</h1>' +
+    app.innerHTML = '<div class="card" style="max-width:420px;margin:60px auto;display:flex;flex-direction:column;gap:12px"><h1>SC Games organizers</h1>' +
       (S.step === 'email'
-        ? '<label>Email panitia<br><input id="em" type="email" value="' + esc(S.email) + '" style="width:100%"></label><button class="primary" id="send">Kirim kode</button>'
-        : '<label>Kode 6 digit<br><input id="cd" inputmode="numeric" maxlength="6" style="width:100%"></label><button class="primary" id="ver">Masuk</button><button id="back">Ganti email</button>') +
+        ? '<label>Organizer email<br><input id="em" type="email" value="' + esc(S.email) + '" style="width:100%"></label><button class="primary" id="send">Send code</button>'
+        : '<label>6-digit code<br><input id="cd" inputmode="numeric" maxlength="6" style="width:100%"></label><button class="primary" id="ver">Sign in</button><button id="back">Change email</button>') +
       (note ? '<div class="err">' + esc(note) + '</div>' : '') + '</div>';
     var $ = function (id) { return document.getElementById(id); };
     if ($('send')) $('send').onclick = function () { S.email = $('em').value.trim(); api.sendOtp(S.email).then(function () { S.step = 'code'; loginView(''); }).catch(function (e) { loginView(R.explain(e)); }); };
@@ -64,15 +64,15 @@
 
   function csvCell(v) { var s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; }
   function exportCsv() {
-    var head = ['Cabor', 'Divisi', 'Jenis', 'Nama/Tim', 'Nama tampil', 'Nama lengkap', 'Email', 'Telepon', 'Branch', 'Anggota tim', 'Status', 'Catatan', 'Dibuat'];
+    var head = ['Sport', 'Division', 'Type', 'Name/Team', 'Display name', 'Full name', 'Email', 'Phone', 'Branch', 'Team members', 'Status', 'Note', 'Created'];
     var lines = [head.map(csvCell).join(',')];
     filtered().forEach(function (r) {
       var d = r.sport_divisions || {}, sp = d.sports || {}, p = r.participants || {};
-      var members = r.teams ? (r.teams.team_members || []).map(function (m) { return (m.participants ? m.participants.display_name : m.invited_email) + (m.role ? ' (' + m.role + ')' : '') + (m.is_substitute ? ' [cadangan]' : '') + ' ' + m.status; }).join('; ') : '';
+      var members = r.teams ? (r.teams.team_members || []).map(function (m) { return (m.participants ? m.participants.display_name : m.invited_email) + (m.role ? ' (' + m.role + ')' : '') + (m.is_substitute ? ' [sub]' : '') + ' ' + m.status; }).join('; ') : '';
       lines.push([sp.nama, d.nama, d.entry_type, who(r), p.display_name, p.full_name, p.email, p.phone, p.branch, members, r.status, r.admin_note, r.created_at].map(csvCell).join(','));
     });
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }));
-    a.download = 'pendaftaran-sc-games-' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+    a.download = 'registrations-sc-games-' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
   }
 
   function render() {
@@ -80,27 +80,27 @@
     S.rows.forEach(function (r) { var sp = (r.sport_divisions || {}).sports; if (sp) sports[sp.slug] = sp.nama; if (r.participants && r.participants.branch) branches[r.participants.branch] = 1; });
     var rows = filtered(), st = S.settings;
     var counts = { pending: 0, approved: 0, rejected: 0, waitlist: 0 }; S.rows.forEach(function (r) { counts[r.status]++; });
-    var html = '<div class="row" style="justify-content:space-between"><h1>Panitia · Pendaftaran</h1><div class="row"><button id="csv">Ekspor CSV (' + rows.length + ')</button><button id="out">Keluar</button></div></div>';
-    html += '<div class="card row"><b>Pengaturan</b><label><input type="checkbox" id="open"' + (st.registration_open ? ' checked' : '') + '> Pendaftaran dibuka</label>' +
-      '<label>Deadline global <input type="datetime-local" id="dl" value="' + (st.registration_deadline ? new Date(st.registration_deadline).toISOString().slice(0, 16) : '') + '"></label>' +
-      '<label>Domain email diizinkan (koma, kosong = semua) <input id="dom" size="28" value="' + esc((st.allowed_email_domains || []).join(',')) + '"></label><button id="saveset" class="primary">Simpan</button></div>';
+    var html = '<div class="row" style="justify-content:space-between"><h1>Organizers · Registrations</h1><div class="row"><button id="csv">Export CSV (' + rows.length + ')</button><button id="out">Sign out</button></div></div>';
+    html += '<div class="card row"><b>Settings</b><label><input type="checkbox" id="open"' + (st.registration_open ? ' checked' : '') + '> Registration open</label>' +
+      '<label>Global deadline <input type="datetime-local" id="dl" value="' + (st.registration_deadline ? new Date(st.registration_deadline).toISOString().slice(0, 16) : '') + '"></label>' +
+      '<label>Allowed email domains (comma-separated, empty = all) <input id="dom" size="28" value="' + esc((st.allowed_email_domains || []).join(',')) + '"></label><button id="saveset" class="primary">Save</button></div>';
     html += '<div class="row">' + Object.keys(counts).map(function (k) { return '<span class="chip ' + k + '">' + R.STATUS_LABEL[k] + ': ' + counts[k] + '</span>'; }).join('') + '</div>';
-    html += '<div class="card row"><input id="q" placeholder="Cari nama, email, cabor" value="' + esc(S.filter.q) + '" style="min-width:240px">' +
-      '<select id="fs"><option value="">Semua cabor</option>' + Object.keys(sports).map(function (k) { return '<option value="' + esc(k) + '"' + (S.filter.sport === k ? ' selected' : '') + '>' + esc(sports[k]) + '</option>'; }).join('') + '</select>' +
-      '<select id="fst"><option value="">Semua status</option>' + Object.keys(R.STATUS_LABEL).map(function (k) { return '<option value="' + k + '"' + (S.filter.status === k ? ' selected' : '') + '>' + R.STATUS_LABEL[k] + '</option>'; }).join('') + '</select>' +
-      '<select id="fb"><option value="">Semua branch</option>' + Object.keys(branches).sort().map(function (k) { return '<option value="' + esc(k) + '"' + (S.filter.branch === k ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></div>';
-    if (S.msg) html += '<div class="card ' + (/^Gagal/.test(S.msg) ? 'err' : '') + '">' + esc(S.msg) + '</div>';
-    html += '<div class="card scroll"><table><thead><tr><th>Cabor</th><th>Peserta / Tim</th><th>Branch</th><th>Status</th><th>Aksi</th></tr></thead><tbody>';
+    html += '<div class="card row"><input id="q" placeholder="Search name, email, sport" value="' + esc(S.filter.q) + '" style="min-width:240px">' +
+      '<select id="fs"><option value="">All sports</option>' + Object.keys(sports).map(function (k) { return '<option value="' + esc(k) + '"' + (S.filter.sport === k ? ' selected' : '') + '>' + esc(sports[k]) + '</option>'; }).join('') + '</select>' +
+      '<select id="fst"><option value="">All statuses</option>' + Object.keys(R.STATUS_LABEL).map(function (k) { return '<option value="' + k + '"' + (S.filter.status === k ? ' selected' : '') + '>' + R.STATUS_LABEL[k] + '</option>'; }).join('') + '</select>' +
+      '<select id="fb"><option value="">All branches</option>' + Object.keys(branches).sort().map(function (k) { return '<option value="' + esc(k) + '"' + (S.filter.branch === k ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></div>';
+    if (S.msg) html += '<div class="card ' + (/^Failed/.test(S.msg) ? 'err' : '') + '">' + esc(S.msg) + '</div>';
+    html += '<div class="card scroll"><table><thead><tr><th>Sport</th><th>Participant / Team</th><th>Branch</th><th>Status</th><th>Action</th></tr></thead><tbody>';
     rows.forEach(function (r) {
       var d = r.sport_divisions || {}, sp = d.sports || {}, p = r.participants || {}, isOpen = S.open === r.id;
-      html += '<tr><td><b>' + esc(sp.nama) + '</b><br><span class="mute">' + esc(d.nama) + ' · ' + (d.entry_type === 'team' ? 'tim' : 'individu') + '</span></td>' +
-        '<td><b>' + esc(who(r)) + '</b>' + (r.teams ? '<br><span class="mute">' + (r.teams.team_members || []).map(function (m) { return esc((m.participants ? m.participants.display_name : m.invited_email) + (m.role ? ' (' + m.role + ')' : '') + (m.is_substitute ? ' [cad]' : '') + (m.status !== 'confirmed' ? ' ?' : '')); }).join(', ') + '</span>' : '<br><span class="mute">' + esc(p.full_name || '') + ' · ' + esc(p.email || '') + (p.phone ? ' · ' + esc(p.phone) : '') + '</span>') + '</td>' +
+      html += '<tr><td><b>' + esc(sp.nama) + '</b><br><span class="mute">' + esc(d.nama) + ' · ' + (d.entry_type === 'team' ? 'team' : 'individual') + '</span></td>' +
+        '<td><b>' + esc(who(r)) + '</b>' + (r.teams ? '<br><span class="mute">' + (r.teams.team_members || []).map(function (m) { return esc((m.participants ? m.participants.display_name : m.invited_email) + (m.role ? ' (' + m.role + ')' : '') + (m.is_substitute ? ' [sub]' : '') + (m.status !== 'confirmed' ? ' ?' : '')); }).join(', ') + '</span>' : '<br><span class="mute">' + esc(p.full_name || '') + ' · ' + esc(p.email || '') + (p.phone ? ' · ' + esc(p.phone) : '') + '</span>') + '</td>' +
         '<td>' + esc(p.branch || '') + '</td><td><span class="chip ' + r.status + '">' + R.STATUS_LABEL[r.status] + '</span>' + (r.admin_note ? '<br><span class="mute">' + esc(r.admin_note) + '</span>' : '') + '</td>' +
-        '<td><button data-open="' + r.id + '">' + (isOpen ? 'Tutup' : 'Proses') + '</button></td></tr>';
-      if (isOpen) html += '<tr><td colspan="5"><textarea id="note" placeholder="Catatan untuk peserta (opsional, tampil di Pendaftaranku)">' + esc(r.admin_note || '') + '</textarea><div class="row">' +
+        '<td><button data-open="' + r.id + '">' + (isOpen ? 'Close' : 'Process') + '</button></td></tr>';
+      if (isOpen) html += '<tr><td colspan="5"><textarea id="note" placeholder="Note for the participant (optional, shown in My registrations)">' + esc(r.admin_note || '') + '</textarea><div class="row">' +
         ['approved', 'rejected', 'waitlist', 'pending'].map(function (k) { return '<button class="' + (k === 'approved' ? 'ok' : k === 'rejected' ? 'bad' : '') + '" data-set="' + r.id + '|' + k + '">' + R.STATUS_LABEL[k] + '</button>'; }).join('') + '</div></td></tr>';
     });
-    html += '</tbody></table>' + (rows.length ? '' : '<p class="mute">Tidak ada pendaftaran yang cocok.</p>') + '</div>';
+    html += '</tbody></table>' + (rows.length ? '' : '<p class="mute">No registrations match.</p>') + '</div>';
     app.innerHTML = html;
     var $ = function (id) { return document.getElementById(id); };
     $('csv').onclick = exportCsv; $('out').onclick = function () { api.signOut().then(function () { S.step = 'email'; loginView(''); }); };
@@ -109,11 +109,11 @@
     $('saveset').onclick = function () {
       var dom = $('dom').value.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean);
       api.adminSetSettings({ registration_open: $('open').checked, registration_deadline: $('dl').value ? new Date($('dl').value).toISOString() : null, allowed_email_domains: dom })
-        .then(function () { setMsg('Pengaturan tersimpan.'); return load(); }).catch(function (e) { setMsg('Gagal: ' + R.explain(e)); render(); });
+        .then(function () { setMsg('Settings saved.'); return load(); }).catch(function (e) { setMsg('Failed: ' + R.explain(e)); render(); });
     };
     Array.prototype.forEach.call(app.querySelectorAll('[data-open]'), function (b) { b.onclick = function () { S.open = S.open === b.dataset.open ? null : b.dataset.open; render(); }; });
     Array.prototype.forEach.call(app.querySelectorAll('[data-set]'), function (b) {
-      b.onclick = function () { var a = b.dataset.set.split('|'); api.adminSetStatus(a[0], a[1], $('note').value.trim()).then(function () { S.open = null; setMsg('Status diperbarui.'); return load(); }).catch(function (e) { setMsg('Gagal: ' + R.explain(e)); render(); }); };
+      b.onclick = function () { var a = b.dataset.set.split('|'); api.adminSetStatus(a[0], a[1], $('note').value.trim()).then(function () { S.open = null; setMsg('Status updated.'); return load(); }).catch(function (e) { setMsg('Failed: ' + R.explain(e)); render(); }); };
     });
   }
 
@@ -124,7 +124,7 @@
     api.session().then(function (s) {
       if (!s) return loginView('');
       return api.isAdmin().then(function (ok) {
-        if (!ok) { app.innerHTML = '<div class="card" style="max-width:480px;margin:60px auto"><h1>Akses ditolak</h1><p>Akun ' + esc(s.user.email) + ' bukan panitia. Minta admin menambahkannya ke daftar panitia.</p><button id="out2">Keluar</button></div>'; document.getElementById('out2').onclick = function () { api.signOut().then(function () { S.step = 'email'; loginView(''); }); }; return; }
+        if (!ok) { app.innerHTML = '<div class="card" style="max-width:480px;margin:60px auto"><h1>Access denied</h1><p>Account ' + esc(s.user.email) + ' is not an organizer. Ask an admin to add it to the organizer list.</p><button id="out2">Sign out</button></div>'; document.getElementById('out2').onclick = function () { api.signOut().then(function () { S.step = 'email'; loginView(''); }); }; return; }
         return load();
       });
     }).catch(function (e) { app.innerHTML = '<div class="card err">' + esc(R.explain(e)) + '</div>'; });

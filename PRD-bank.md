@@ -87,15 +87,15 @@ My Races (logged-in athletes)
 ### 4.1 Steps
 
 ```
-1. Email → 2. Verifikasi (OTP) → 3. Profil → 4. Cabor/divisi → Pendaftaranku
+1. Email → 2. Verifikasi (OTP) → 3. Profil → 4. Cabor/divisi → My registrations
 ```
 
 | # | Step | Fields | Validation | Next |
 |---|---|---|---|---|
 | 1 | **Email** | Email | Format valid. Domain dibatasi hanya jika `app_settings.allowed_email_domains` terisi (kosong = terbuka). Dicek di database | Kirim OTP (Supabase Auth) → 2 |
-| 2 | **Verifikasi** | Kode 6 digit | Dicek Supabase Auth. Kirim ulang tersedia | Sudah punya profil → Pendaftaranku. Baru → 3 |
+| 2 | **Verifikasi** | Kode 6 digit | Dicek Supabase Auth. Kirim ulang tersedia | Sudah punya profil → My registrations. Baru → 3 |
 | 3 | **Profil** | Nama tampil (publik), nama lengkap, tanggal lahir, gender, telepon (opsional), branch | Nama tampil, tanggal lahir, gender, branch wajib | → 4 |
-| 4 | **Cabor/divisi** | Pilih satu atau lebih divisi dari `sport_divisions`; nama tim untuk divisi tim | Divisi yang tidak sesuai gender atau sudah didaftar dinonaktifkan | Individu: pendaftaran langsung dibuat. Tim: tim dibuat, kapten = pendaftar → Pendaftaranku |
+| 4 | **Cabor/divisi** | Pilih satu atau lebih divisi dari `sport_divisions`; nama tim untuk divisi tim | Divisi yang tidak sesuai gender atau sudah didaftar dinonaktifkan | Individu: pendaftaran langsung dibuat. Tim: tim dibuat, kapten = pendaftar → My registrations |
 
 Pendaftaran ditutup bila `app_settings.registration_open = false` atau lewat deadline (global atau per divisi); ditegakkan oleh trigger database.
 
@@ -228,7 +228,7 @@ Every detail view also includes:
 
 ---
 
-## 9. Pendaftaranku (logged in)
+## 9. My registrations (logged in)
 
 - **Kartu peserta:** inisial, nama tampil, branch, email.
 - **Undangan tim** untukmu: terima atau tolak.
