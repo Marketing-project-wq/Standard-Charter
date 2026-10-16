@@ -1,0 +1,22 @@
+name: rulebook
+
+# Validasi frontmatter rulebook, pastikan file hasil generate up to date, dan jalankan unit test mesin scoring.
+on:
+  pull_request:
+  push:
+    branches: [staging, main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validasi frontmatter + hasil generate up to date
+        run: node scripts/build-rulebook.mjs --check
+      - name: Konversi HTML -> MD masih cocok dengan sumber
+        run: node scripts/html-to-md.mjs
+      - name: Unit test
+        run: node --test
