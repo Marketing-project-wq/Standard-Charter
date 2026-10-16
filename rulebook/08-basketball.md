@@ -1,5 +1,44 @@
 ---
 sport: basketball
+number: 8
+numbers: [8, 9]
+name: Basketball (M) dan (W)
+category: tim
+source: "FIBA, Official Basketball Rules"
+rules_checked: 2026-10-16
+result_type: head_to_head_score
+periods: 4
+period_label: quarter
+period_minutes: 10
+overtime:
+  period_minutes: 5
+  repeat: until_winner
+score_events:
+  free_throw: 1
+  two_pointer: 2
+  three_pointer: 3
+walkover:
+  score: [20, 0]
+extra:
+  ball_size:
+    men: 7
+    women: 6
+status_codes: [DNS, DNF, DQ, WO]
+tiebreakers: [head_to_head, point_difference, total_points]
+league_points:
+  win: 2
+  loss: 1
+  loss_forfeit: 0
+manual_input_required: false
+markers:
+  - at: "8.3"
+    field: rules.timeouts
+    affects_scoring: false
+  - at: "8.7"
+    field: rules.team_foul_bonus
+    affects_scoring: false
+verified: true
+unverified_fields: []
 ---
 
 # 8–9. Basketball (M) dan (W)

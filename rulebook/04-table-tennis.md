@@ -1,5 +1,29 @@
 ---
 sport: table-tennis
+number: 4
+name: Table Tennis (Tenis Meja)
+category: net_raket
+source: "ITTF (International Table Tennis Federation), Laws of Table Tennis"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: rally_point
+unit: game
+points_to_win_game: 11
+win_by: 2
+point_cap: none
+games_to_win_match: null
+deciding_game_points: same
+options:
+  games_to_win_match: [3, 4]
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [head_to_head, game_difference, point_difference]
+league_points:
+  win: 2
+  loss: 0
+manual_input_required: false
+markers: []
+verified: false
+unverified_fields: [games_to_win_match]
 ---
 
 # 4. Table Tennis (Tenis Meja)

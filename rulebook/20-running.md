@@ -1,5 +1,22 @@
 ---
 sport: running
+number: 20
+name: Running (Lari)
+category: individu
+source: "World Athletics, Competition Rules (Technical Rules)"
+rules_checked: 2026-10-16
+result_type: timed
+ranking: lowest_time
+time_precision: null
+distance_m: null
+penalties: []
+status_codes: [DNS, DNF, DQ]
+tiebreakers: [photo_finish]
+league_points: null
+manual_input_required: false
+markers: []
+verified: false
+unverified_fields: [time_precision, distance_m]
 ---
 
 # 20. Running (Lari)

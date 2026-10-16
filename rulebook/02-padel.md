@@ -1,5 +1,44 @@
 ---
 sport: padel
+number: 2
+name: Padel
+category: net_raket
+source: "FIP (International Padel Federation), Rules of Padel"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: tennis_points
+unit: set
+games_per_set: 6
+set_win_by: 2
+sets_to_win_match: 2
+deuce_rule: null
+tiebreak_game:
+  at_games: 6
+  points_to_win: 7
+  win_by: 2
+match_tiebreak:
+  points: 10
+  win_by: 2
+  replaces: deciding_set
+  optional: true
+options:
+  deuce_rule: [golden_point, star_point, advantage]
+  league_points.win: [3, 2]
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [set_difference, game_difference]
+league_points:
+  win: null
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "2.3"
+    field: side_change_interval_seconds
+    affects_scoring: false
+  - at: "2.4"
+    field: deuce_rule
+    affects_scoring: true
+verified: false
+unverified_fields: [deuce_rule, league_points.win]
 ---
 
 # 2. Padel

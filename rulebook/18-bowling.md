@@ -1,5 +1,39 @@
 ---
 sport: bowling
+number: 18
+name: Bowling
+category: presisi
+source: "World Bowling, Playing Rules dan Sport Rules"
+rules_checked: 2026-10-16
+result_type: frames
+scoring_system: standard
+frames: 10
+balls_per_frame: 2
+max_score: 300
+strike_bonus_balls: 2
+spare_bonus_balls: 1
+foul_pins: 0
+tenth_frame:
+  strike_extra_balls: 2
+  spare_extra_balls: 1
+  max_balls: 3
+options:
+  scoring_system: [standard, current_frame]
+extra:
+  current_frame_scoring:
+    strike: 30
+    spare: 10 + first ball of the frame
+    open: pins knocked down
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [head_to_head, highest_player_score, strike_count]
+league_points: null
+manual_input_required: false
+markers:
+  - at: "18.8"
+    field: tiebreakers
+    affects_scoring: true
+verified: false
+unverified_fields: [tiebreakers]
 ---
 
 # 18. Bowling

@@ -1,5 +1,49 @@
 ---
 sport: badminton
+number: 1
+name: Badminton
+category: net_raket
+source: "BWF (Badminton World Federation), Laws of Badminton"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: rally_point
+unit: game
+points_to_win_game: 21
+win_by: 2
+point_cap: 30
+games_to_win_match: 2
+deciding_game_points: same
+variants:
+  - id: bwf_laws_v5
+    effective_from: 2025-04-26
+    effective_to: 2027-01-03
+    overrides:
+      points_to_win_game: 21
+      point_cap: 30
+  - id: bwf_laws_v6
+    effective_from: 2027-01-04
+    effective_to: null
+    overrides:
+      points_to_win_game: 15
+      win_by: null
+      point_cap: null
+      games_to_win_match: null
+    unverified: [win_by, point_cap, games_to_win_match]
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [head_to_head, game_difference, point_difference, draw_lots]
+league_points:
+  win: 2
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "1.2"
+    field: equipment.racket_size
+    affects_scoring: false
+  - at: "1.8"
+    field: league_points.alt_pattern_3_2_1_0
+    affects_scoring: true
+verified: false
+unverified_fields: [league_points.alt_pattern_3_2_1_0]
 ---
 
 # 1. Badminton

@@ -1,5 +1,25 @@
 ---
 sport: swimming
+number: 19
+name: Swimming (Renang)
+category: individu
+source: "World Aquatics, Competition Regulations"
+rules_checked: 2026-10-16
+result_type: timed
+ranking: lowest_time
+time_precision: 0.01
+penalties: []
+stages: [heat, semifinal, final]
+status_codes: [DNS, DNF, DQ]
+tiebreakers: [same_time_same_position, swim_off]
+league_points: null
+manual_input_required: false
+markers:
+  - at: "19.8"
+    field: tiebreakers
+    affects_scoring: true
+verified: false
+unverified_fields: [tiebreakers]
 ---
 
 # 19. Swimming (Renang)

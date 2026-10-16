@@ -1,5 +1,122 @@
 ---
 sport: hyrox
+number: 22
+name: Hyrox
+category: individu
+source: "HYROX, Official Rulebook Single 26/27 (rulebook penyelenggara komersial)"
+rules_checked: 2026-10-16
+result_type: timed
+ranking: lowest_time
+time_precision: null
+laps: 8
+stations:
+  - no: 1
+    name: SkiErg
+    distance_m: 1000
+  - no: 2
+    name: Sled Push
+    distance_m: 50
+  - no: 3
+    name: Sled Pull
+    distance_m: 50
+  - no: 4
+    name: Burpee Broad Jump
+    distance_m: 80
+  - no: 5
+    name: Rowing
+    distance_m: 1000
+  - no: 6
+    name: Farmers Carry
+    distance_m: 200
+  - no: 7
+    name: Sandbag Lunges
+    distance_m: 100
+  - no: 8
+    name: Wall Balls
+    reps: 100
+station_weights:
+  sled_push:
+    women_open_kg: 102
+    men_open_and_women_pro_kg: 152
+    men_pro_kg: 202
+  sled_pull:
+    women_open_kg: 78
+    men_open_and_women_pro_kg: 103
+    men_pro_kg: 153
+  sandbag_lunges:
+    women_open_kg: 10
+    men_open_and_women_pro_kg: 20
+    men_pro_kg: 30
+  farmers_carry:
+    women_open_kg_each: 16
+    men_open_and_women_pro_kg_each: 24
+    men_pro_kg_each: 32
+  wall_balls:
+    women_open_kg: 4
+    men_open_and_women_pro_kg: 6
+    men_pro_kg: 9
+penalties:
+  - code: EXIT_STATION_VIA_IN_GATE
+    seconds: 120
+    per: violation
+  - code: UNASSIGNED_LANE_OR_EQUIPMENT
+    seconds: 120
+    per: violation
+  - code: ROWING_AFTER_FIRST_WARNING
+    seconds: 15
+    per: violation
+    first_is_warning: true
+  - code: SLED_PUSH_AFTER_FIRST_WARNING
+    seconds: 15
+    per: violation
+    first_is_warning: true
+  - code: BURPEE_BROAD_JUMP_AFTER_FIRST_WARNING
+    seconds: 15
+    per: violation
+    first_is_warning: true
+  - code: SANDBAG_REMOVED_FROM_SHOULDERS
+    seconds: 15
+    per: violation
+  - code: FARMERS_CARRY_WRONG_KETTLEBELL_RETURN
+    seconds: 30
+    per: violation
+  - code: CHALK_AT_WALL_BALL_STATION
+    seconds: 120
+    per: violation
+  - code: RUN_SHORT_2_LAPS
+    seconds: 420
+    per: race
+  - code: RUN_SHORT_3_LAPS
+    seconds: 300
+    per: race
+  - code: RUN_SHORT_4_LAPS
+    seconds: 180
+    per: race
+  - code: FIRST_STATION_OUT_OF_ORDER
+    seconds: 180
+    per: race
+  - code: SWAP_ROXZONE_IN_OUT_GATES
+    seconds: 120
+    per: violation
+  - code: OUTSIDE_HELP
+    seconds: 120
+    per: violation
+extra:
+  dq_reasons:
+    - run_short_1_lap
+    - more_than_one_station_out_of_order
+    - skipped_sled_lane_or_farmers_carry_lap
+    - wrong_wave_without_permission
+    - wrong_weight_not_repeated
+    - left_skierg_before_1000m
+  no_chip: DNS
+status_codes: [DNS, DNF, DQ]
+tiebreakers: [same_position]
+league_points: null
+manual_input_required: false
+markers: []
+verified: false
+unverified_fields: [station_weights.sled_push, station_weights.sled_pull, time_precision]
 ---
 
 # 22. Hyrox

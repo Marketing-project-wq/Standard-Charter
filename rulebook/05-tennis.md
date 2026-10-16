@@ -1,5 +1,42 @@
 ---
 sport: tennis
+number: 5
+name: Tennis
+category: net_raket
+source: "ITF (International Tennis Federation), Rules of Tennis"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: tennis_points
+unit: set
+games_per_set: 6
+set_win_by: 2
+sets_to_win_match: 2
+deuce_rule: advantage
+tiebreak_game:
+  at_games: 6
+  points_to_win: 7
+  win_by: 2
+match_tiebreak:
+  points: 10
+  win_by: 2
+  replaces: deciding_set
+  optional: true
+options:
+  deuce_rule: [advantage, golden_point]
+  sets_to_win_match: [2, 1]
+  league_points.win: [3, 2]
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [set_difference, game_difference]
+league_points:
+  win: null
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "5.3"
+    field: side_change_interval_seconds
+    affects_scoring: false
+verified: false
+unverified_fields: [league_points.win]
 ---
 
 # 5. Tennis

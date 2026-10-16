@@ -1,5 +1,28 @@
 ---
 sport: pool
+number: 16
+name: Pool
+category: presisi
+source: "WPA (World Pool-Billiard Association), Pool Playing Rules (8-ball)"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: frame_race
+unit: frame
+frames_to_win_match: null
+extra:
+  three_consecutive_fouls_lose_frame: null
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [head_to_head, frame_difference]
+league_points:
+  win: 2
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "16.6"
+    field: extra.three_consecutive_fouls_lose_frame
+    affects_scoring: true
+verified: false
+unverified_fields: [frames_to_win_match, extra.three_consecutive_fouls_lose_frame]
 ---
 
 # 16. Pool

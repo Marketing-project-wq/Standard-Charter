@@ -1,5 +1,45 @@
 ---
 sport: cricket
+number: 12
+name: Cricket
+category: tim
+source: "MCC dan ICC, Laws of Cricket dan ICC Playing Conditions (T20)"
+rules_checked: 2026-10-16
+result_type: head_to_head_score
+periods: 2
+period_label: innings
+period_minutes: none
+overtime: none
+innings_per_team: 1
+overs_per_innings: 20
+balls_per_over: 6
+wickets_per_innings: 10
+max_overs_per_bowler: 4
+score_events:
+  dot: 0
+  single: 1
+  two: 2
+  four: 4
+  six: 6
+extras:
+  wide: 1
+  no_ball: 1
+  penalty_runs: 5
+super_over:
+  overs: 1
+powerplay:
+  overs: 6
+  max_fielders_outside_circle: 2
+status_codes: [DNS, DNF, DQ, WO]
+tiebreakers: [net_run_rate]
+league_points:
+  win: 2
+  draw: 1
+  loss: 0
+manual_input_required: false
+markers: []
+verified: true
+unverified_fields: []
 ---
 
 # 12. Cricket

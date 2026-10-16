@@ -1,5 +1,33 @@
 ---
 sport: futsal
+number: 7
+name: Futsal
+category: tim
+source: "FIFA, Futsal Laws of the Game"
+rules_checked: 2026-10-16
+result_type: head_to_head_score
+periods: 2
+period_label: half
+period_minutes: null
+overtime: null
+score_events:
+  goal: 1
+extra:
+  min_players_to_continue: null
+  team_fouls_per_half_before_free_kick: 5
+status_codes: [DNS, DNF, DQ, WO]
+tiebreakers: [head_to_head, goal_difference, goals_for]
+league_points:
+  win: 3
+  draw: 1
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "7.7"
+    field: extra.min_players_to_continue
+    affects_scoring: true
+verified: false
+unverified_fields: [period_minutes, overtime, extra.min_players_to_continue]
 ---
 
 # 7. Futsal

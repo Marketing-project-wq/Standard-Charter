@@ -1,5 +1,28 @@
 ---
 sport: darts
+number: 15
+name: Darts
+category: presisi
+source: "WDF (World Darts Federation), Playing Rules"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: x01_countdown
+unit: leg
+start_score: 501
+finish: double_out
+bust: true
+legs_to_win_match: null
+max_visit_score: 180
+max_checkout: 170
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [head_to_head, leg_difference]
+league_points:
+  win: 2
+  loss: 0
+manual_input_required: false
+markers: []
+verified: false
+unverified_fields: [legs_to_win_match]
 ---
 
 # 15. Darts

@@ -29,14 +29,14 @@ Setiap prompt baru adalah versi terbaru yang berlaku. Perlakukan sebagai penggan
 - `rulebook/` — **sumber kebenaran scoring** (lihat bagian Rulebook di bawah). `rulebook/source/` menyimpan HTML asli sebagai arsip.
 - `scripts/` — skrip Node tanpa dependensi untuk konversi, validasi, dan build rulebook. **Jangan tambahkan `package.json` di root**: Railpack akan mendeteksi Node dan merusak deploy statis.
 - `assets/scoring-engine.js` dan `assets/rulebook-data.js` — mesin scoring dan data rulebook hasil generate. `rulebook-data.js` dan halaman `rulebook/*.html` dibuat oleh `node scripts/build-rulebook.mjs`; jangan diedit tangan.
-- `test/` — unit test mesin scoring (`node --test test/`).
+- `test/` — unit test mesin scoring (`node --test`).
 
 ## Rulebook
 
 Rulebook di `rulebook/*.md` adalah sumber kebenaran scoring. Ubah aturan dengan mengedit MD, bukan kode.
 
 - Parameter mesin scoring ada di frontmatter YAML tiap file cabor. Isi hanya dari teks rulebook; kalau tidak disebut, tulis `null` dan masukkan ke `unverified_fields`. Jangan mengarang angka.
-- Setelah mengedit MD: jalankan `node scripts/build-rulebook.mjs` (validasi schema + regenerate), lalu `node --test test/`, lalu commit hasil generate bersama MD-nya.
+- Setelah mengedit MD: jalankan `node scripts/build-rulebook.mjs` (validasi schema + regenerate), lalu `node --test`, lalu commit hasil generate bersama MD-nya.
 - Penanda `⚠️ Verifikasi` di MD jangan dihapus sebelum nilainya benar-benar dicek ke sumber resmi.
 
 ## Alur deploy: SEMUA perubahan wajib lewat staging

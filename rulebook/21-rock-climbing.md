@@ -1,5 +1,58 @@
 ---
 sport: rock-climbing
+number: 21
+name: Rock Climbing (Panjat Tebing)
+category: individu
+source: "IFSC (International Federation of Sport Climbing), IFSC Rules"
+rules_checked: 2026-10-16
+result_type: timed
+ranking: lowest_time
+time_precision: null
+penalties: []
+disciplines:
+  speed:
+    result: lowest_time
+    head_to_head: true
+    wall_height_m: 15
+    false_start: DQ
+    false_start_reaction_seconds: 0.1
+  boulder:
+    result: top_zone_attempts
+    scoring_system: null
+    zone_points: 10
+    zone_attempt_penalty_points: 0.1
+    top_points: null
+  lead:
+    result: highest_hold
+extra:
+  combined_ranking: null
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers:
+  - count_back_previous_round
+  - fewest_attempts_on_tops
+  - fewest_attempts_on_zones
+league_points: null
+manual_input_required: false
+markers:
+  - at: "21.3"
+    field: disciplines.speed.false_start
+    affects_scoring: true
+  - at: "21.4"
+    field: disciplines.boulder.time_minutes
+    affects_scoring: false
+  - at: "21.4"
+    field: disciplines.boulder.scoring_system
+    affects_scoring: true
+  - at: "21.8"
+    field: extra.combined_ranking
+    affects_scoring: true
+verified: false
+unverified_fields:
+  - time_precision
+  - disciplines.speed.false_start
+  - disciplines.boulder.scoring_system
+  - disciplines.boulder.top_points
+  - extra.combined_ranking
 ---
 
 # 21. Rock Climbing (Panjat Tebing)

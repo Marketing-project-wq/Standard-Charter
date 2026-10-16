@@ -1,5 +1,31 @@
 ---
 sport: dragon-boat
+number: 14
+name: Dragon Boat
+category: tim
+source: "IDBF (International Dragon Boat Federation), Competition Regulations dan Rules of Racing"
+rules_checked: 2026-10-16
+result_type: timed
+ranking: lowest_time
+time_precision: 0.01
+penalties:
+  - code: FALSE_START_REPEAT
+    seconds: 5
+    per: violation
+  - code: LANE_INTERFERENCE
+    seconds: null
+    per: violation
+stages: [heat, semifinal, final]
+status_codes: [DNS, DNF, DQ, WO]
+tiebreakers: [photo_finish]
+league_points: null
+manual_input_required: false
+markers:
+  - at: "14.7"
+    field: tiebreakers
+    affects_scoring: true
+verified: false
+unverified_fields: [tiebreakers, penalties.1.seconds]
 ---
 
 # 14. Dragon Boat

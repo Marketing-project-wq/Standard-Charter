@@ -1,5 +1,42 @@
 ---
 sport: netball
+number: 11
+name: Netball (Mixed)
+category: tim
+source: "World Netball, Rules of Netball 2024"
+rules_checked: 2026-10-16
+result_type: head_to_head_score
+periods: 4
+period_label: quarter
+period_minutes: 15
+overtime:
+  periods: 2
+  period_minutes: 3
+score_events:
+  goal: 1
+options:
+  league_points.draw: [2, 1]
+extra:
+  min_players_to_continue: null
+status_codes: [DNS, DNF, DQ, WO]
+tiebreakers: [head_to_head, goal_difference, goals_for]
+league_points:
+  win: 3
+  draw: null
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "11.1"
+    field: extra.mixed_male_player_limit
+    affects_scoring: false
+  - at: "11.4"
+    field: overtime
+    affects_scoring: true
+  - at: "11.8"
+    field: extra.min_players_to_continue
+    affects_scoring: true
+verified: false
+unverified_fields: [overtime, league_points.draw, extra.min_players_to_continue]
 ---
 
 # 11. Netball (Mixed)

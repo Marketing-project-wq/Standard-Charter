@@ -1,5 +1,38 @@
 ---
 sport: volleyball
+number: 10
+name: Volleyball (W)
+category: tim
+source: "FIVB, Official Volleyball Rules"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: rally_point
+unit: set
+points_to_win_game: 25
+win_by: 2
+point_cap: none
+games_to_win_match: 3
+deciding_game_points: 15
+league_points_by_score:
+  "3-0": [3, 0]
+  "3-1": [3, 0]
+  "3-2": [2, 1]
+walkover:
+  score: [3, 0]
+  set_score: [0, 25]
+status_codes: [DNS, DNF, DQ, WO]
+tiebreakers: [wins, points, set_ratio, point_ratio, head_to_head]
+league_points: null
+manual_input_required: false
+markers:
+  - at: "10.3"
+    field: rules.timeouts
+    affects_scoring: false
+  - at: "10.8"
+    field: tiebreakers
+    affects_scoring: true
+verified: false
+unverified_fields: [tiebreakers]
 ---
 
 # 10. Volleyball (W)

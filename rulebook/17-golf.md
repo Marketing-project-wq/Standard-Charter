@@ -1,5 +1,33 @@
 ---
 sport: golf
+number: 17
+name: Golf
+category: presisi
+source: "R&A dan USGA, Rules of Golf"
+rules_checked: 2026-10-16
+result_type: points_total
+formats: [stroke_play, net, stableford, scramble, match_play]
+holes: 18
+strokes:
+  lowest_total_wins: true
+  score_to_par: total_strokes_minus_par
+stableford:
+  double_bogey_or_worse: 0
+  bogey: 1
+  par: 2
+  birdie: 3
+  eagle: 4
+  albatross: 5
+handicap: net = gross - handicap
+extra:
+  match_play_hole_points: 1
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [count_back_last_9, count_back_last_6, count_back_last_3, count_back_last_1]
+league_points: null
+manual_input_required: false
+markers: []
+verified: true
+unverified_fields: []
 ---
 
 # 17. Golf

@@ -1,5 +1,23 @@
 ---
 sport: cage-cricket
+number: 13
+name: Cage Cricket
+category: tim
+source: cagecricket.com (tidak ada rulebook federasi dunia)
+rules_checked: 2026-10-16
+result_type: null
+verified: false
+unverified_fields: [result_type, extra.scoring_rules]
+status_codes: null
+tiebreakers: null
+league_points: null
+manual_input_required: true
+extra:
+  format: individual
+  players_per_cage: 6
+  winners_per_cage: 1
+  scoring_rules: null
+markers: []
 ---
 
 # 13. Cage Cricket

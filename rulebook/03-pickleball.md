@@ -1,5 +1,40 @@
 ---
 sport: pickleball
+number: 3
+name: Pickleball
+category: net_raket
+source: "USA Pickleball dan IPPF, Official Rulebook"
+rules_checked: 2026-10-16
+result_type: head_to_head_sets
+scoring_mode: side_out
+unit: game
+points_to_win_game: 11
+win_by: 2
+point_cap: none
+games_to_win_match: null
+deciding_game_points: same
+options:
+  points_to_win_game: [11, 15, 21]
+  games_to_win_match: [1, 2]
+variants:
+  - id: usap_rally_scoring_provisional
+    effective_from: 2027-01-01
+    effective_to: null
+    optional: true
+    overrides:
+      scoring_mode: rally_point
+status_codes: [DNS, DNF, DQ, WO, RET]
+tiebreakers: [head_to_head, point_difference]
+league_points:
+  win: 2
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "3.5"
+    field: rules.service_let
+    affects_scoring: false
+verified: false
+unverified_fields: [games_to_win_match]
 ---
 
 # 3. Pickleball

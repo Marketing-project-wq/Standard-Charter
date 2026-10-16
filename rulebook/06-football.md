@@ -1,5 +1,36 @@
 ---
 sport: football
+number: 6
+name: Football (Sepak Bola)
+category: tim
+source: "IFAB, Laws of the Game"
+rules_checked: 2026-10-16
+result_type: head_to_head_score
+periods: 2
+period_label: half
+period_minutes: 45
+overtime:
+  periods: 2
+  period_minutes: 15
+  then: penalty_shootout
+score_events:
+  goal: 1
+options:
+  walkover_score:
+    - "3,0"
+status_codes: [DNS, DNF, DQ, WO]
+tiebreakers: [head_to_head, goal_difference, goals_for, fair_play, draw_lots]
+league_points:
+  win: 3
+  draw: 1
+  loss: 0
+manual_input_required: false
+markers:
+  - at: "6.9"
+    field: tiebreakers
+    affects_scoring: true
+verified: false
+unverified_fields: [tiebreakers]
 ---
 
 # 6. Football (Sepak Bola)
