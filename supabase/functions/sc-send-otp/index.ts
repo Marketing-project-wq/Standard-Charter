@@ -2,6 +2,7 @@
 // kode dibuat dengan auth.admin.generateLink (tidak mengirim email), email dikirim dari sini.
 // Secrets: SC_RESEND_API_KEY (atau RESEND_API_KEY bila tidak ada), OTP_FROM (mis. "SC Games 2027 <otp@20fit.id>"). SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY disediakan runtime.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import { OTP_HTML, OTP_TXT } from "./templates.ts";
 
 const ALLOWED_ORIGINS = [
   "https://indonesiascgames2027.20fit.id",
@@ -24,12 +25,14 @@ function cors(origin: string | null) {
   };
 }
 
-async function template(name: "otp.html" | "otp.txt") {
-  return await Deno.readTextFile(new URL(`./${name}`, import.meta.url));
-}
 const fill = (t: string, code: string) => t.replaceAll("{{ .Token }}", code);
 
 Deno.serve(async (req) => {
+  try { return await handle(req); }
+  catch (e) { console.error("sc-send-otp error:", (e as Error).message); return new Response(JSON.stringify({ ok: false, error: "INTERNAL" }), { status: 500, headers: { ...cors(req.headers.get("origin")), "Content-Type": "application/json" } }); }
+});
+
+async function handle(req: Request): Promise<Response> {
   const headers = { ...cors(req.headers.get("origin")), "Content-Type": "application/json" };
   const reply = (status: number, body: Record<string, unknown>) => new Response(JSON.stringify(body), { status, headers });
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers });
@@ -63,11 +66,11 @@ Deno.serve(async (req) => {
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from, to: [email], subject: SUBJECT(code),
-      html: fill(await template("otp.html"), code),
-      text: fill(await template("otp.txt"), code),
+      html: fill(OTP_HTML, code),
+      text: fill(OTP_TXT, code),
     }),
   });
   if (!res.ok) { console.error("Resend gagal:", res.status); return reply(502, { ok: false, error: "SEND_FAILED" }); }
   const sent = await res.json().catch(() => ({}));
   return reply(200, { ok: true, id: sent.id ?? null });
-});
+}
