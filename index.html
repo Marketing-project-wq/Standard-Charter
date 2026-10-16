@@ -428,12 +428,23 @@ a{color:#0473EA;text-decoration:none}a:hover{color:#0359B5}
 input,button{font-family:inherit}
 @keyframes scpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
 @keyframes scpop{0%{transform:translateY(12px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@media (max-width:760px){
+  .scbar{flex-wrap:wrap !important;border-radius:26px !important;padding:10px 12px 8px 16px !important;row-gap:6px !important}
+  .scnav{order:3 !important;flex:1 1 100% !important;justify-content:flex-start !important}
+  .scauth{margin-left:auto !important}
+  .scmy .scmylabel{display:none !important}
+  .scmy{padding:4px !important}
+  .scbar{gap:8px !important}
+  .scauth{gap:6px !important}
+  .scauth > div{padding:8px 13px !important;font-size:13px !important}
+  .scnav > div{padding:8px 9px !important;font-size:13px !important}
+}
 </style>
 </helmet>
 <div style="min-height:100vh;display:flex;flex-direction:column">
 
 <div style="position:sticky;top:0;z-index:30;padding:14px 16px 0">
-  <div style="max-width:1280px;margin:0 auto;background:#05103F;border-radius:999px;display:flex;align-items:center;gap:14px;padding:8px 8px 8px 22px;box-shadow:0 12px 32px rgba(5,16,63,.28)">
+  <div class="scbar" style="max-width:1280px;margin:0 auto;background:#05103F;border-radius:999px;display:flex;align-items:center;gap:14px;padding:8px 8px 8px 22px;box-shadow:0 12px 32px rgba(5,16,63,.28)">
     <div sc-camel-on-click="{{ goHome }}" style="display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0">
       <div style="display:flex;flex-direction:column;gap:3px;transform:skewX(-20deg)">
         <div style="width:20px;height:7px;background:#0473EA;border-radius:2px"></div>
@@ -444,7 +455,7 @@ input,button{font-family:inherit}
         
       </div>
     </div>
-    <div style="flex:1;display:flex;justify-content:safe center;gap:0;overflow-x:auto;min-width:0;scrollbar-width:none">
+    <div class="scnav" style="flex:1;display:flex;justify-content:safe center;gap:0;overflow-x:auto;min-width:0;scrollbar-width:none">
       <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
         <div sc-camel-on-click="{{ n.go }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;padding:10px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:8px;background:{{ n.bg }};color:{{ n.fg }}" style-hover="color:#fff">
           <span>{{ n.label }}</span>
@@ -452,15 +463,15 @@ input,button{font-family:inherit}
         </div>
       </sc-for>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <div class="scauth" style="display:flex;gap:8px;align-items:center;flex-shrink:0">
       <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}">
         <div sc-camel-on-click="{{ goLogin }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:999px;padding:9px 18px;cursor:pointer;white-space:nowrap" style-hover="border-color:#fff">LOGIN</div>
         <div sc-camel-on-click="{{ goRegister }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff;background:#0473EA;border-radius:999px;padding:11px 20px;cursor:pointer;white-space:nowrap;box-shadow:0 6px 18px rgba(4,115,234,.45)" style-hover="background:#0359B5">REGISTER</div>
       </sc-if>
       <sc-if value="{{ user }}" hint-placeholder-val="{{ false }}">
-        <div sc-camel-on-click="{{ goMy }}" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:999px;padding:4px 16px 4px 4px;cursor:pointer" style-hover="background:rgba(255,255,255,.16)">
+        <div class="scmy" sc-camel-on-click="{{ goMy }}" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:999px;padding:4px 16px 4px 4px;cursor:pointer" style-hover="background:rgba(255,255,255,.16)">
           <div style="width:38px;height:38px;border-radius:50%;background:#38D200;color:#05103F;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;overflow:hidden;background-image:url('{{ user.photo }}');background-size:cover;background-position:center">{{ userInitialsIfNoPhoto }}</div>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff">MY REGISTRATIONS</span>
+          <span class="scmylabel" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff">MY REGISTRATIONS</span>
         </div>
       </sc-if>
     </div>
