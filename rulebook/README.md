@@ -8,27 +8,27 @@ Penanda ⚠️ Verifikasi berarti detail itu belum dicek ke sumber resmi. Jangan
 
 | No | Cabor | Kategori | File |
 |---|---|---|---|
-| 1 | Badminton | Net dan raket | [01-badminton.md](01-badminton.md) |
-| 2 | Padel | Net dan raket | [02-padel.md](02-padel.md) |
-| 3 | Pickleball | Net dan raket | [03-pickleball.md](03-pickleball.md) |
-| 4 | Table Tennis (Tenis Meja) | Net dan raket | [04-table-tennis.md](04-table-tennis.md) |
-| 5 | Tennis | Net dan raket | [05-tennis.md](05-tennis.md) |
-| 6 | Football (Sepak Bola) | Tim | [06-football.md](06-football.md) |
-| 7 | Futsal | Tim | [07-futsal.md](07-futsal.md) |
-| 8–9 | Basketball (M) dan (W) | Tim | [08-basketball.md](08-basketball.md) |
-| 10 | Volleyball (W) | Tim | [10-volleyball.md](10-volleyball.md) |
-| 11 | Netball (Mixed) | Tim | [11-netball.md](11-netball.md) |
-| 12 | Cricket | Tim | [12-cricket.md](12-cricket.md) |
-| 13 | Cage Cricket | Tim | [13-cage-cricket.md](13-cage-cricket.md) |
-| 14 | Dragon Boat | Tim | [14-dragon-boat.md](14-dragon-boat.md) |
-| 15 | Darts | Presisi | [15-darts.md](15-darts.md) |
-| 16 | Pool | Presisi | [16-pool.md](16-pool.md) |
-| 17 | Golf | Presisi | [17-golf.md](17-golf.md) |
-| 18 | Bowling | Presisi | [18-bowling.md](18-bowling.md) |
-| 19 | Swimming (Renang) | Individu | [19-swimming.md](19-swimming.md) |
-| 20 | Running (Lari) | Individu | [20-running.md](20-running.md) |
-| 21 | Rock Climbing (Panjat Tebing) | Individu | [21-rock-climbing.md](21-rock-climbing.md) |
-| 22 | Hyrox | Individu | [22-hyrox.md](22-hyrox.md) |
+| 1 | Badminton | Net dan raket | [badminton.md](badminton.md) |
+| 2 | Padel | Net dan raket | [padel.md](padel.md) |
+| 3 | Pickleball | Net dan raket | [pickleball.md](pickleball.md) |
+| 4 | Table Tennis (Tenis Meja) | Net dan raket | [table-tennis.md](table-tennis.md) |
+| 5 | Tennis | Net dan raket | [tennis.md](tennis.md) |
+| 6 | Football (Sepak Bola) | Tim | [football.md](football.md) |
+| 7 | Futsal | Tim | [futsal.md](futsal.md) |
+| 8–9 | Basketball (M) dan (W) | Tim | [basketball.md](basketball.md) |
+| 10 | Volleyball (W) | Tim | [volleyball.md](volleyball.md) |
+| 11 | Netball (Mixed) | Tim | [netball.md](netball.md) |
+| 12 | Cricket | Tim | [cricket.md](cricket.md) |
+| 13 | Cage Cricket | Tim | [cage-cricket.md](cage-cricket.md) |
+| 14 | Dragon Boat | Tim | [dragon-boat.md](dragon-boat.md) |
+| 15 | Darts | Presisi | [darts.md](darts.md) |
+| 16 | Pool | Presisi | [pool.md](pool.md) |
+| 17 | Golf | Presisi | [golf.md](golf.md) |
+| 18 | Bowling | Presisi | [bowling.md](bowling.md) |
+| 19 | Swimming (Renang) | Individu | [swimming.md](swimming.md) |
+| 20 | Running (Lari) | Individu | [running.md](running.md) |
+| 21 | Rock Climbing (Panjat Tebing) | Individu | [rock-climbing.md](rock-climbing.md) |
+| 22 | Hyrox | Individu | [hyrox.md](hyrox.md) |
 
 Basketball putra (8) dan putri (9) memakai satu file: aturan sama, beda ukuran bola dan kategori peserta.
 

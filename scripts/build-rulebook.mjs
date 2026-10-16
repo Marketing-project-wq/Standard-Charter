@@ -18,7 +18,7 @@ const DIR = path.join(ROOT, 'rulebook');
 const CHECK = process.argv.includes('--check');
 
 // ---------------------------------------------------------------- baca dan validasi
-const names = fs.readdirSync(DIR).filter(f => /^\d+-.*\.md$/.test(f)).sort();
+const names = fs.readdirSync(DIR).filter(f => f.endsWith('.md') && f !== 'README.md').sort();
 const files = Object.fromEntries(names.map(f => [f, fs.readFileSync(path.join(DIR, f), 'utf8')]));
 const errors = validateRulebookSet(files);
 if (errors.length) { console.error('Frontmatter rulebook tidak valid:\n' + errors.map(e => '  - ' + e).join('\n')); process.exit(1); }
@@ -144,7 +144,7 @@ const pages = {};
 // halaman indeks (README)
 {
   const body = readme.replace(/^---[\s\S]*?---\n/, '');
-  const { html } = render(body.replace(/\[(\d+)-([\w-]+)\.md\]\(\1-\2\.md\)/g, (m, n, slug) => `[Buka halaman](${slug}.html)`));
+  const { html } = render(body.replace(/\[([\w-]+)\.md\]\(\1\.md\)/g, (m, slug) => `[Buka halaman](${slug}.html)`));
   pages['index.html'] = layout({ title: 'Indeks', current: 'index', content: `<div class="card">${html}</div>` });
 }
 for (const s of sports) {

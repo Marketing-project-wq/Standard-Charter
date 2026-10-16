@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url);
 const S = require('../assets/scoring-engine.js');
 const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../rulebook');
 const rules = slug => {
-  const f = fs.readdirSync(DIR).find(n => n.replace(/^\d+-/, '') === slug + '.md');
+  const f = fs.readdirSync(DIR).find(n => n === slug + '.md');
   return splitFrontmatter(fs.readFileSync(path.join(DIR, f), 'utf8')).data;
 };
 const R = (slug, opts) => S.resolveRules(rules(slug), { date: '2026-10-16', ...opts });

@@ -154,7 +154,6 @@ const SLUG = {
   8: 'basketball', 10: 'volleyball', 11: 'netball', 12: 'cricket', 13: 'cage-cricket', 14: 'dragon-boat',
   15: 'darts', 16: 'pool', 17: 'golf', 18: 'bowling', 19: 'swimming', 20: 'running', 21: 'rock-climbing', 22: 'hyrox',
 };
-const pad2 = n => String(n).padStart(2, '0');
 
 function sectionInfo(sec) {
   const h2 = find(sec, x => x.tag === 'h2')[0];
@@ -259,7 +258,7 @@ function main() {
     const firstNum = info.num ? parseInt(info.num, 10) : null;
     const slug = isGlossary ? null : SLUG[firstNum];
     if (!isGlossary && !slug) throw new Error('Slug tidak dikenal untuk cabor ' + info.num);
-    const fileName = isGlossary ? null : `${pad2(firstNum)}-${slug}.md`;
+    const fileName = isGlossary ? null : `${slug}.md`;
     const display = info.name;
     const title = isGlossary ? `## ${display}` : `# ${info.num}. ${display}`;
     let body = sectionBody(sec, isGlossary ? `## ${display}` : title);

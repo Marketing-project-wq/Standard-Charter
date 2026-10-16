@@ -157,10 +157,8 @@ export function validateRulebookFile(fileName, md) {
   if (!fm) return [`${fileName}: frontmatter tidak ada`];
   const add = e => { if (e) errors.push(...String(e).split('\n').map(l => `${fileName}: ${l}`)); };
 
-  const slug = fileName.replace(/^\d+-/, '').replace(/\.md$/, '');
+  const slug = fileName.replace(/\.md$/, '');
   if (fm.sport !== slug) add(`sport: "${fm.sport}" tidak sama dengan nama file "${slug}"`);
-  const num = parseInt(fileName, 10);
-  if (fm.number !== num) add(`number: ${fm.number} tidak sama dengan awalan nama file ${num}`);
 
   // spesifikasi gabungan
   const spec = { ...COMMON, ...typeSpec(fm) };
