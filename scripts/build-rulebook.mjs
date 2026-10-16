@@ -27,7 +27,7 @@ const readme = fs.readFileSync(path.join(DIR, 'README.md'), 'utf8');
 const sports = names.map(f => {
   const { data, body } = splitFrontmatter(files[f]);
   return { fm: data, body, file: f, slug: data.sport, page: `${data.sport}.html` };
-});
+}).sort((a, b) => a.fm.number - b.fm.number);
 
 // ---------------------------------------------------------------- status hasil dan glosarium dari tabel di MD
 const STATUS_KEY = [[/^DNS$/i, 'DNS'], [/^DNF$/i, 'DNF'], [/^DQ$/i, 'DQ'], [/forfeit|w\/o/i, 'WO'], [/^RET/i, 'RET'], [/^Let$/i, 'LET'], [/^Fault$/i, 'FAULT']];
