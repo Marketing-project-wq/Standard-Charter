@@ -30,6 +30,10 @@ Setiap prompt baru adalah versi terbaru yang berlaku. Perlakukan sebagai penggan
 - `scripts/` — skrip Node tanpa dependensi untuk konversi, validasi, dan build rulebook. **Jangan tambahkan `package.json` di root**: Railpack akan mendeteksi Node dan merusak deploy statis.
 - `assets/scoring-engine.js` dan `assets/rulebook-data.js` — mesin scoring dan data rulebook hasil generate. `rulebook-data.js` dan halaman `rulebook/*.html` dibuat oleh `node scripts/build-rulebook.mjs`; jangan diedit tangan.
 - `test/` — unit test mesin scoring (`node --test`).
+- `assets/registration.js` — lapisan data registrasi (Supabase Auth OTP, profil, divisi, tim, Pendaftaranku, aksi admin), pemetaan kode error DB ke pesan Indonesia, dan validasi roster sisi klien. Aturan cabor (min/max/gender/peran) dibaca dari tabel `sport_divisions`, bukan di-hardcode.
+- `admin/index.html` — dashboard panitia (`/admin`). Hak admin dicek ke tabel `admins` lewat `is_sc_admin()`, tanpa email hardcode.
+- `supabase/migrations/` — SQL skema, seed, dan perbaikan, berurutan. Setiap perubahan database wajib jadi file baru di sini. `supabase/database.types.ts` hasil generate (difilter ke tabel SC Games); jangan diedit tangan.
+- Database SC Games saat ini berada di project Supabase "20FIT ALL DATA" (ref `cpvzwqptzcxnwzfzgrmt`) atas keputusan Ferdinand. Project itu punya trigger auth milik produk lain, jadi login peserta ikut membuat baris di tabel produk lain. Jangan menyentuh tabel di luar daftar di migrasi SC Games.
 
 ## Rulebook
 

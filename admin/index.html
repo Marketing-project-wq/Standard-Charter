@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Panitia · SC Games 2027</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../assets/registration.js"></script>
+<style>
+  :root { --bg:#F4F6FA; --card:#fff; --ink:#0B1430; --mute:#5B6478; --line:#E3E7EF; --blue:#0473EA; --navy:#05103F; --ok:#1E7A00; --bad:#C21F37; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0B1226; --card:#121B36; --ink:#EAF0FF; --mute:#9AA6C4; --line:#24305A; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui, sans-serif; }
+  main { max-width:1280px; margin:0 auto; padding:20px 16px 60px; display:flex; flex-direction:column; gap:16px; }
+  h1 { margin:0; font-size:26px; } h2 { margin:0; font-size:18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  input, select, textarea, button { font:inherit; color:inherit; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:9px 12px; }
+  button { cursor:pointer; } button.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+  button.ok { background:var(--ok); border-color:var(--ok); color:#fff; } button.bad { background:var(--bad); border-color:var(--bad); color:#fff; }
+  table { width:100%; border-collapse:collapse; } th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; color:var(--mute); text-transform:uppercase; letter-spacing:.05em; }
+  .chip { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+  .pending { background:#FFF6E0; color:#7A5300; } .approved { background:#E6F9DC; color:var(--ok); } .rejected { background:#FDE7EA; color:var(--bad); } .waitlist { background:#E3EFFD; color:#0359B5; }
+  .err { color:var(--bad); } .mute { color:var(--mute); font-size:13px; } .scroll { overflow-x:auto; }
+  textarea { width:100%; min-height:60px; }
+</style>
+</head>
+<body>
+<main id="app"><div class="card">Memuat…</div></main>
+<script>
+(function () {
+  'use strict';
+  var R = window.SCReg, api = R.api, app = document.getElementById('app');
+  var S = { rows: [], filter: { q: '', sport: '', status: '', branch: '' }, settings: null, msg: '', email: '', step: 'email', open: null };
+
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function setMsg(m) { S.msg = m; }
+  function who(r) { return r.teams ? r.teams.nama : (r.participants ? r.participants.display_name : ''); }
+
+  function loginView(note) {
+    app.innerHTML = '<div class="card" style="max-width:420px;margin:60px auto;display:flex;flex-direction:column;gap:12px"><h1>Panitia SC Games</h1>' +
+      (S.step === 'email'
+        ? '<label>Email panitia<br><input id="em" type="email" value="' + esc(S.email) + '" style="width:100%"></label><button class="primary" id="send">Kirim kode</button>'
+        : '<label>Kode 6 digit<br><input id="cd" inputmode="numeric" maxlength="6" style="width:100%"></label><button class="primary" id="ver">Masuk</button><button id="back">Ganti email</button>') +
+      (note ? '<div class="err">' + esc(note) + '</div>' : '') + '</div>';
+    var $ = function (id) { return document.getElementById(id); };
+    if ($('send')) $('send').onclick = function () { S.email = $('em').value.trim(); api.sendOtp(S.email).then(function () { S.step = 'code'; loginView(''); }).catch(function (e) { loginView(R.explain(e)); }); };
+    if ($('ver')) $('ver').onclick = function () { api.verifyOtp(S.email, $('cd').value).then(boot).catch(function (e) { loginView(R.explain(e)); }); };
+    if ($('back')) $('back').onclick = function () { S.step = 'email'; loginView(''); };
+  }
+
+  function filtered() {
+    var f = S.filter, q = f.q.toLowerCase();
+    return S.rows.filter(function (r) {
+      var d = r.sport_divisions || {}, sp = d.sports || {}, p = r.participants || {};
+      if (f.sport && sp.slug !== f.sport) return false;
+      if (f.status && r.status !== f.status) return false;
+      if (f.branch && (p.branch || '') !== f.branch && !(r.teams && f.branch === '(tim)')) return false;
+      if (q && ![who(r), p.full_name, p.email, p.display_name, sp.nama, d.nama].join(' ').toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  function csvCell(v) { var s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; }
+  function exportCsv() {
+    var head = ['Cabor', 'Divisi', 'Jenis', 'Nama/Tim', 'Nama tampil', 'Nama lengkap', 'Email', 'Telepon', 'Branch', 'Anggota tim', 'Status', 'Catatan', 'Dibuat'];
+    var lines = [head.map(csvCell).join(',')];
+    filtered().forEach(function (r) {
+      var d = r.sport_divisions || {}, sp = d.sports || {}, p = r.participants || {};
+      var members = r.teams ? (r.teams.team_members || []).map(function (m) { return (m.participants ? m.participants.display_name : m.invited_email) + (m.role ? ' (' + m.role + ')' : '') + (m.is_substitute ? ' [cadangan]' : '') + ' ' + m.status; }).join('; ') : '';
+      lines.push([sp.nama, d.nama, d.entry_type, who(r), p.display_name, p.full_name, p.email, p.phone, p.branch, members, r.status, r.admin_note, r.created_at].map(csvCell).join(','));
+    });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }));
+    a.download = 'pendaftaran-sc-games-' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+  }
+
+  function render() {
+    var sports = {}, branches = {};
+    S.rows.forEach(function (r) { var sp = (r.sport_divisions || {}).sports; if (sp) sports[sp.slug] = sp.nama; if (r.participants && r.participants.branch) branches[r.participants.branch] = 1; });
+    var rows = filtered(), st = S.settings;
+    var counts = { pending: 0, approved: 0, rejected: 0, waitlist: 0 }; S.rows.forEach(function (r) { counts[r.status]++; });
+    var html = '<div class="row" style="justify-content:space-between"><h1>Panitia · Pendaftaran</h1><div class="row"><button id="csv">Ekspor CSV (' + rows.length + ')</button><button id="out">Keluar</button></div></div>';
+    html += '<div class="card row"><b>Pengaturan</b><label><input type="checkbox" id="open"' + (st.registration_open ? ' checked' : '') + '> Pendaftaran dibuka</label>' +
+      '<label>Deadline global <input type="datetime-local" id="dl" value="' + (st.registration_deadline ? new Date(st.registration_deadline).toISOString().slice(0, 16) : '') + '"></label>' +
+      '<label>Domain email diizinkan (koma, kosong = semua) <input id="dom" size="28" value="' + esc((st.allowed_email_domains || []).join(',')) + '"></label><button id="saveset" class="primary">Simpan</button></div>';
+    html += '<div class="row">' + Object.keys(counts).map(function (k) { return '<span class="chip ' + k + '">' + R.STATUS_LABEL[k] + ': ' + counts[k] + '</span>'; }).join('') + '</div>';
+    html += '<div class="card row"><input id="q" placeholder="Cari nama, email, cabor" value="' + esc(S.filter.q) + '" style="min-width:240px">' +
+      '<select id="fs"><option value="">Semua cabor</option>' + Object.keys(sports).map(function (k) { return '<option value="' + esc(k) + '"' + (S.filter.sport === k ? ' selected' : '') + '>' + esc(sports[k]) + '</option>'; }).join('') + '</select>' +
+      '<select id="fst"><option value="">Semua status</option>' + Object.keys(R.STATUS_LABEL).map(function (k) { return '<option value="' + k + '"' + (S.filter.status === k ? ' selected' : '') + '>' + R.STATUS_LABEL[k] + '</option>'; }).join('') + '</select>' +
+      '<select id="fb"><option value="">Semua branch</option>' + Object.keys(branches).sort().map(function (k) { return '<option value="' + esc(k) + '"' + (S.filter.branch === k ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></div>';
+    if (S.msg) html += '<div class="card ' + (/^Gagal/.test(S.msg) ? 'err' : '') + '">' + esc(S.msg) + '</div>';
+    html += '<div class="card scroll"><table><thead><tr><th>Cabor</th><th>Peserta / Tim</th><th>Branch</th><th>Status</th><th>Aksi</th></tr></thead><tbody>';
+    rows.forEach(function (r) {
+      var d = r.sport_divisions || {}, sp = d.sports || {}, p = r.participants || {}, isOpen = S.open === r.id;
+      html += '<tr><td><b>' + esc(sp.nama) + '</b><br><span class="mute">' + esc(d.nama) + ' · ' + (d.entry_type === 'team' ? 'tim' : 'individu') + '</span></td>' +
+        '<td><b>' + esc(who(r)) + '</b>' + (r.teams ? '<br><span class="mute">' + (r.teams.team_members || []).map(function (m) { return esc((m.participants ? m.participants.display_name : m.invited_email) + (m.role ? ' (' + m.role + ')' : '') + (m.is_substitute ? ' [cad]' : '') + (m.status !== 'confirmed' ? ' ?' : '')); }).join(', ') + '</span>' : '<br><span class="mute">' + esc(p.full_name || '') + ' · ' + esc(p.email || '') + (p.phone ? ' · ' + esc(p.phone) : '') + '</span>') + '</td>' +
+        '<td>' + esc(p.branch || '') + '</td><td><span class="chip ' + r.status + '">' + R.STATUS_LABEL[r.status] + '</span>' + (r.admin_note ? '<br><span class="mute">' + esc(r.admin_note) + '</span>' : '') + '</td>' +
+        '<td><button data-open="' + r.id + '">' + (isOpen ? 'Tutup' : 'Proses') + '</button></td></tr>';
+      if (isOpen) html += '<tr><td colspan="5"><textarea id="note" placeholder="Catatan untuk peserta (opsional, tampil di Pendaftaranku)">' + esc(r.admin_note || '') + '</textarea><div class="row">' +
+        ['approved', 'rejected', 'waitlist', 'pending'].map(function (k) { return '<button class="' + (k === 'approved' ? 'ok' : k === 'rejected' ? 'bad' : '') + '" data-set="' + r.id + '|' + k + '">' + R.STATUS_LABEL[k] + '</button>'; }).join('') + '</div></td></tr>';
+    });
+    html += '</tbody></table>' + (rows.length ? '' : '<p class="mute">Tidak ada pendaftaran yang cocok.</p>') + '</div>';
+    app.innerHTML = html;
+    var $ = function (id) { return document.getElementById(id); };
+    $('csv').onclick = exportCsv; $('out').onclick = function () { api.signOut().then(function () { S.step = 'email'; loginView(''); }); };
+    $('q').oninput = function (e) { S.filter.q = e.target.value; var pos = e.target.selectionStart; render(); var n = $('q'); n.focus(); n.setSelectionRange(pos, pos); };
+    $('fs').onchange = function (e) { S.filter.sport = e.target.value; render(); }; $('fst').onchange = function (e) { S.filter.status = e.target.value; render(); }; $('fb').onchange = function (e) { S.filter.branch = e.target.value; render(); };
+    $('saveset').onclick = function () {
+      var dom = $('dom').value.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean);
+      api.adminSetSettings({ registration_open: $('open').checked, registration_deadline: $('dl').value ? new Date($('dl').value).toISOString() : null, allowed_email_domains: dom })
+        .then(function () { setMsg('Pengaturan tersimpan.'); return load(); }).catch(function (e) { setMsg('Gagal: ' + R.explain(e)); render(); });
+    };
+    Array.prototype.forEach.call(app.querySelectorAll('[data-open]'), function (b) { b.onclick = function () { S.open = S.open === b.dataset.open ? null : b.dataset.open; render(); }; });
+    Array.prototype.forEach.call(app.querySelectorAll('[data-set]'), function (b) {
+      b.onclick = function () { var a = b.dataset.set.split('|'); api.adminSetStatus(a[0], a[1], $('note').value.trim()).then(function () { S.open = null; setMsg('Status diperbarui.'); return load(); }).catch(function (e) { setMsg('Gagal: ' + R.explain(e)); render(); }); };
+    });
+  }
+
+  function load() {
+    return Promise.all([api.adminRegistrations(), api.catalog()]).then(function (x) { S.rows = x[0]; S.settings = x[1].settings; render(); });
+  }
+  function boot() {
+    api.session().then(function (s) {
+      if (!s) return loginView('');
+      return api.isAdmin().then(function (ok) {
+        if (!ok) { app.innerHTML = '<div class="card" style="max-width:480px;margin:60px auto"><h1>Akses ditolak</h1><p>Akun ' + esc(s.user.email) + ' bukan panitia. Minta admin menambahkannya ke daftar panitia.</p><button id="out2">Keluar</button></div>'; document.getElementById('out2').onclick = function () { api.signOut().then(function () { S.step = 'email'; loginView(''); }); }; return; }
+        return load();
+      });
+    }).catch(function (e) { app.innerHTML = '<div class="card err">' + esc(R.explain(e)) + '</div>'; });
+  }
+  boot();
+})();
+</script>
+</body></html>

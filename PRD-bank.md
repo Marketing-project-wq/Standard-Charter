@@ -87,30 +87,28 @@ My Races (logged-in athletes)
 ### 4.1 Steps
 
 ```
-1. Email → 2. Verify (OTP) → 3. Sports → 4. Team* → 5. Profile → 6. Done → My Races
-                                              *only if a team sport is selected
+1. Email → 2. Verifikasi (OTP) → 3. Profil → 4. Cabor/divisi → Pendaftaranku
 ```
 
 | # | Step | Fields | Validation | Next |
 |---|---|---|---|---|
-| 1 | **Email** | Work email | Valid email format. Production: restrict to SC domains (e.g. `@sc.com`) | Send OTP → 2 |
-| 2 | **Verify** | 6-digit OTP | Must match the issued code. Expires after 10 minutes. Resend available | Existing user → **My Races**. New user → 3 |
-| 3 | **Sports** | Multi-select from the 20 sports | At least 1 sport | Has a team sport → 4. Otherwise → 5 |
-| 4 | **Team** | Team name for each selected team sport | Required for each team sport. Unique within the sport | → 5 |
-| 5 | **Profile** | Full name, date of birth, branch, division, photo | Name, DOB, branch and division required. Photo optional (recommended) | → 6 |
-| 6 | **Done** | Summary of the athlete card and selected sports | — | **See my race schedule** → My Races |
+| 1 | **Email** | Email | Format valid. Domain dibatasi hanya jika `app_settings.allowed_email_domains` terisi (kosong = terbuka). Dicek di database | Kirim OTP (Supabase Auth) → 2 |
+| 2 | **Verifikasi** | Kode 6 digit | Dicek Supabase Auth. Kirim ulang tersedia | Sudah punya profil → Pendaftaranku. Baru → 3 |
+| 3 | **Profil** | Nama tampil (publik), nama lengkap, tanggal lahir, gender, telepon (opsional), branch | Nama tampil, tanggal lahir, gender, branch wajib | → 4 |
+| 4 | **Cabor/divisi** | Pilih satu atau lebih divisi dari `sport_divisions`; nama tim untuk divisi tim | Divisi yang tidak sesuai gender atau sudah didaftar dinonaktifkan | Individu: pendaftaran langsung dibuat. Tim: tim dibuat, kapten = pendaftar → Pendaftaranku |
 
-### 4.2 Step rules
-- The stepper on the left shows ✓ for completed steps, highlights the current step and dims future steps.
-- The **Team** step is hidden when only individual sports are selected.
-- **Back** keeps everything already entered.
-- **Login** uses the same Email → OTP steps. If the email is already registered, the user goes straight to My Races.
-- **Add sports** (from My Races) reopens the flow at step 3 with the profile pre-filled.
+Pendaftaran ditutup bila `app_settings.registration_open = false` atau lewat deadline (global atau per divisi); ditegakkan oleh trigger database.
 
-### 4.3 Team registration
-- The person who registers a team becomes its **captain**.
-- Each team gets a **team code** (format `SC-####`) for teammates to join. *Joining by code is v1.1. See Open questions.*
-- Team names appear in the schedule, team search, leaderboards and the stage chart.
+### 4.2 Aturan
+- Login hanya untuk mendaftar dan mengelola tim. Live, jadwal, klasemen, dan cheer tetap tanpa login.
+- Profil dipakai ulang untuk semua cabor.
+- Peserta tidak pernah melihat email, telepon, atau tanggal lahir orang lain. Halaman publik hanya memuat nama tampil, nama tim, dan branch (view `public_roster`).
+
+### 4.3 Pendaftaran tim
+- Kapten membuat tim, lalu menambah anggota lewat email, dengan peran (mis. drummer, steersperson untuk dragon boat) dan penanda cadangan.
+- Anggota yang akunnya belum ada menerima undangan; undangan tertaut otomatis saat mereka membuat profil. Anggota harus mengonfirmasi sendiri (kapten tidak bisa mengonfirmasi atas nama orang lain).
+- Kapten mengajukan tim. Trigger database memvalidasi roster dari `sport_divisions` (min/max pemain, cadangan, aturan gender, peran wajib, semua anggota terkonfirmasi) dan mengembalikan kode error yang dipetakan ke pesan Indonesia.
+- Roster dapat diubah kapten selama status `pending` dan sebelum deadline; setelah diproses panitia roster terkunci.
 
 ### 4.4 Branch list (all regions except Europe)
 | Region | Branches |
@@ -123,8 +121,8 @@ My Races (logged-in athletes)
 
 The branch picker has a search box and groups branches by region. Each branch has a 2-letter code (e.g. SG, HK, KE) used as its badge everywhere.
 
-### 4.5 Divisions
-Corporate & Investment Banking · Wealth & Retail Banking · Ventures · Technology & Operations · Risk · Finance · Compliance · Legal · People & Culture · Brand & Marketing · Group Functions
+### 4.5 Status pendaftaran
+`pending` (menunggu review) → `approved` / `rejected` / `waitlist`, dengan catatan panitia yang terlihat peserta. Hanya `approved` yang masuk jadwal dan live.
 
 ---
 
@@ -230,35 +228,35 @@ Every detail view also includes:
 
 ---
 
-## 9. My Races (logged in)
+## 9. Pendaftaranku (logged in)
 
-- **Athlete card:** photo or initials, name, branch code, branch and division.
-- **Your next race:** the next upcoming or live session the user is registered for.
-- **One card per registered sport:**
-  - Type tag, status, team name, sessions and venue.
-  - **Leaderboard position** `#rank / total`, a progress bar, and the gap to the entry above ("X pts behind Y").
-  - CTA: **Track live** (if live) or **View standings**.
-- Actions: **Add sports**, **Log out**.
+- **Kartu peserta:** inisial, nama tampil, branch, email.
+- **Undangan tim** untukmu: terima atau tolak.
+- **Satu kartu per pendaftaran:** tag individu/tim, status (Menunggu review, Disetujui, Ditolak, Daftar tunggu), catatan panitia, nama tim, daftar anggota dengan status konfirmasi, masalah roster, tambah/hapus anggota (kapten, selama pending), Ajukan pendaftaran tim, Cek ulang roster, Batalkan, tautan rulebook cabor, dan Lihat klasemen untuk yang disetujui.
+- Aksi: **Tambah cabor**, **Keluar**.
+
+### 9.1 Dashboard panitia (`/admin`)
+- Login OTP; hak admin dicek ke tabel `admins` (`is_sc_admin()`), tanpa email hardcode.
+- Daftar pendaftaran dengan filter cabor, status, branch, dan pencarian; setujui, tolak, atau daftar tunggu dengan catatan.
+- Pengaturan: buka/tutup pendaftaran, deadline global, domain email yang diizinkan.
+- Ekspor CSV (sel berawalan `=`, `+`, `-`, `@` di-escape).
 
 ---
 
 ## 10. Data model (suggested)
 
 ```ts
-User        { id, email, name, dob, branchCode, division, photoUrl, createdAt }
+// Skema registrasi yang berlaku: supabase/migrations/*.sql dan supabase/database.types.ts
+// (app_settings, admins, sports, sport_divisions, participants, teams, team_members, registrations, cheers)
 Branch      { code, name, region }               // non-Europe only
 Sport       { id, name, type: 'team'|'individual', mode: 'race'|'climb'|'match'|'racket'|'target', venue }
 Session     { id, sportId, day: 'FRI'|'SAT', start, end }
-Team        { id, sportId, name, code, captainUserId, branchCode }
-TeamMember  { teamId, userId, role: 'captain'|'member' }
-Registration{ userId, sportId, teamId? }
 Fixture     { id, sessionId, round, court, startAt, kind: 'vs'|'heat',
               sideA?, sideB?, entrants?[], status: 'UP'|'LIVE'|'DONE', scoreA?, scoreB?, winnerId? }
 LiveState   { fixtureId, payload (mode-specific), updatedAt }
 Standing    { sportId, entrantId, rank, points, record, stageReached, stageStatus: 'adv'|'in'|'out' }
 Cheer       { id, fromUserId?, toBranchCode, type, message?, createdAt }
 Congrats    { resultId, userId, createdAt }
-Otp         { email, codeHash, expiresAt, attempts }
 ```
 
 ### Suggested API

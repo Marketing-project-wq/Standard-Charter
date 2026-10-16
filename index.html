@@ -4,6 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="assets/rulebook-data.js"></script>
 <script src="assets/scoring-engine.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/registration.js"></script>
 <script src="assets/7b1fb203-a601-4d88-9622-4493dd800cda.js"></script>
 <script src="assets/53fe02ec-ff00-40b1-980a-20d2d266fcb2.js"></script>
 <script src="assets/88f5f119-3c2a-4c44-a618-682fa6e4203d.js"></script>
@@ -458,7 +460,7 @@ input,button{font-family:inherit}
       <sc-if value="{{ user }}" hint-placeholder-val="{{ false }}">
         <div sc-camel-on-click="{{ goMy }}" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:999px;padding:4px 16px 4px 4px;cursor:pointer" style-hover="background:rgba(255,255,255,.16)">
           <div style="width:38px;height:38px;border-radius:50%;background:#38D200;color:#05103F;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;overflow:hidden;background-image:url('{{ user.photo }}');background-size:cover;background-position:center">{{ userInitialsIfNoPhoto }}</div>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff">MY RACES</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#fff">PENDAFTARANKU</span>
         </div>
       </sc-if>
     </div>
@@ -1171,7 +1173,7 @@ input,button{font-family:inherit}
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:44px;line-height:.95;text-transform:uppercase;margin-top:8px">{{ regTitle }}</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px">
-      <sc-for list="{{ regSteps }}" as="s" hint-placeholder-count="6">
+      <sc-for list="{{ regSteps }}" as="s" hint-placeholder-count="4">
         <div style="display:flex;align-items:center;gap:12px;padding:8px 0">
           <span style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;background:{{ s.bg }};color:{{ s.fg }}">{{ s.n }}</span>
           <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;text-transform:uppercase;opacity:{{ s.op }}">{{ s.label }}</span>
@@ -1181,47 +1183,53 @@ input,button{font-family:inherit}
   </div>
 
   <div style="flex:2 1 460px;min-width:0;background:#fff;border:1px solid #E3E7EF;border-radius:26px;padding:34px;display:flex;flex-direction:column;gap:22px">
+    <sc-if value="{{ regClosed }}" hint-placeholder-val="{{ false }}"><div style="background:#FDE7EA;color:#C21F37;border-radius:12px;padding:12px 16px;font-size:14px">Pendaftaran sedang ditutup. Kamu masih bisa login untuk melihat status pendaftaranmu.</div></sc-if>
     <sc-if value="{{ step0 }}" hint-placeholder-val="{{ true }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Enter your work email</h2><p style="margin:6px 0 0;color:#5B6478">We'll send a 6-digit code to verify it's you.</p></div>
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Masukkan email kamu</h2><p style="margin:6px 0 0;color:#5B6478">Kami kirim kode 6 digit ke email ini. Tidak perlu password.</p></div>
       <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">EMAIL</span>
-        <input type="email" value="{{ form.email }}" sc-camel-on-change="{{ onEmail }}" placeholder="firstname.lastname@sc.com" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:16px;font-size:17px;outline:none" style-focus="border-color:#0473EA"></label>
-      <div sc-camel-on-click="{{ sendCode }}" style="align-self:flex-start;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn0 }}">SEND CODE →</div>
+        <input type="email" value="{{ form.email }}" sc-camel-on-change="{{ onEmail }}" placeholder="nama@email.com" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none;padding:16px;font-size:17px" style-focus="border-color:#0473EA"></label>
+      <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="color:#D6243A;font-size:14px">{{ err }}</span></sc-if>
+      <div sc-camel-on-click="{{ sendCode }}" style="align-self:flex-start;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn0 }}">{{ busyLabel0 }}</div>
     </sc-if>
 
     <sc-if value="{{ step1 }}" hint-placeholder-val="{{ false }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Check your inbox</h2><p style="margin:6px 0 0;color:#5B6478">Code sent to <b style="color:#0B1430">{{ form.email }}</b>. It expires in 10 minutes.</p></div>
-      <div style="background:#E3EFFD;color:#0359B5;border-radius:12px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px">Prototype inbox · your code is {{ sentCode }}</div>
-      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">6-DIGIT CODE</span>
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Cek inbox kamu</h2><p style="margin:6px 0 0;color:#5B6478">Kode dikirim ke <b style="color:#0B1430">{{ form.email }}</b>. Berlaku beberapa menit.</p></div>
+      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">KODE 6 DIGIT</span>
         <input inputmode="numeric" maxlength="6" value="{{ form.otp }}" sc-camel-on-change="{{ onOtp }}" placeholder="••••••" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:16px;font-size:30px;letter-spacing:.5em;font-family:'JetBrains Mono',monospace;outline:none;max-width:320px" style-focus="border-color:#0473EA"></label>
       <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="color:#D6243A;font-size:14px">{{ err }}</span></sc-if>
       <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-        <div sc-camel-on-click="{{ verify }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn1 }}">VERIFY →</div>
-        <span sc-camel-on-click="{{ sendCode }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;color:#0473EA;cursor:pointer">RESEND CODE</span>
-        <span sc-camel-on-click="{{ backStep }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;color:#5B6478;cursor:pointer">CHANGE EMAIL</span>
+        <div sc-camel-on-click="{{ verify }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn1 }}">{{ busyLabel1 }}</div>
+        <span sc-camel-on-click="{{ sendCode }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#0473EA">KIRIM ULANG KODE</span>
+        <span sc-camel-on-click="{{ backStep }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#5B6478">GANTI EMAIL</span>
       </div>
     </sc-if>
 
     <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Your athlete profile</h2><p style="margin:6px 0 0;color:#5B6478">This appears on leaderboards and your athlete card.</p></div>
-      <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-        <label style="width:104px;height:104px;border-radius:24px;border:2px dashed #C3CBDA;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background-size:cover;background-position:center;background-color:#F7F8FB;background-image:url('{{ form.photo }}')">
-          <input type="file" accept="image/*" sc-camel-on-change="{{ onPhoto }}" style="display:none">
-          <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.1em;color:#5B6478;text-align:center">+ PHOTO</span></sc-if>
-        </label>
-        <div style="font-size:14px;color:#5B6478;max-width:300px">Upload a clear headshot. Square images work best.</div>
-      </div>
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Profil peserta</h2><p style="margin:6px 0 0;color:#5B6478">Hanya nama tampil, nama tim, dan branch yang terlihat publik. Email, telepon, dan tanggal lahir tidak pernah ditampilkan.</p></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
-        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">FULL NAME</span>
-          <input value="{{ form.name }}" sc-camel-on-change="{{ onName }}" placeholder="As on your staff ID" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
-        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">DATE OF BIRTH</span>
-          <input type="date" value="{{ form.dob }}" sc-camel-on-change="{{ onDob }}" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:13px 14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NAMA TAMPIL (PUBLIK)</span>
+          <input value="{{ form.display_name }}" sc-camel-on-change="{{ onDisplayName }}" placeholder="mis. Budi S." style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NAMA LENGKAP</span>
+          <input value="{{ form.full_name }}" sc-camel-on-change="{{ onFullName }}" placeholder="Sesuai identitas" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">TANGGAL LAHIR</span>
+          <input type="date" value="{{ form.dob }}" sc-camel-on-change="{{ onDob }}" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none;padding:13px 14px" style-focus="border-color:#0473EA"></label>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NOMOR TELEPON (OPSIONAL)</span>
+          <input value="{{ form.phone }}" sc-camel-on-change="{{ onPhone }}" placeholder="08xxxxxxxxxx" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">GENDER</span>
+        <div style="display:flex;gap:6px">
+          <sc-for list="{{ genderChips }}" as="g" hint-placeholder-count="2">
+            <div sc-camel-on-click="{{ g.go }}" style="font-size:14px;padding:8px 18px;border-radius:999px;cursor:pointer;border:1px solid {{ g.border }};background:{{ g.bg }};color:{{ g.fg }}">{{ g.label }}</div>
+          </sc-for>
+        </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;position:relative">
         <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">BRANCH</span>
         <div sc-camel-on-click="{{ toggleBranch }}" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;cursor:pointer;display:flex;justify-content:space-between;color:{{ branchFg }}"><span>{{ branchLabel }}</span><span style="color:#0473EA">▾</span></div>
         <sc-if value="{{ branchOpen }}" hint-placeholder-val="{{ false }}">
           <div style="border:1.5px solid #0473EA;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:12px;max-height:320px;overflow-y:auto;background:#fff">
-            <input value="{{ branchQ }}" sc-camel-on-change="{{ onBranchQ }}" placeholder="Search country or city" style="border:1px solid #D5DBE6;border-radius:10px;padding:10px 12px;font-size:15px;outline:none">
+            <input value="{{ branchQ }}" sc-camel-on-change="{{ onBranchQ }}" placeholder="Cari negara atau kota" style="border:1px solid #D5DBE6;border-radius:10px;padding:10px 12px;font-size:15px;outline:none">
             <sc-for list="{{ regionList }}" as="g" hint-placeholder-count="4">
               <div style="display:flex;flex-direction:column;gap:6px">
                 <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5B6478;letter-spacing:.08em">{{ g.name }}</span>
@@ -1235,63 +1243,37 @@ input,button{font-family:inherit}
           </div>
         </sc-if>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">DIVISION</span>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <sc-for list="{{ divisions }}" as="v" hint-placeholder-count="8">
-            <div sc-camel-on-click="{{ v.go }}" style="font-size:14px;padding:8px 14px;border-radius:999px;cursor:pointer;border:1px solid {{ v.border }};background:{{ v.bg }};color:{{ v.fg }}">{{ v.label }}</div>
-          </sc-for>
-        </div>
-      </div>
+      <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="color:#D6243A;font-size:14px">{{ err }}</span></sc-if>
       <div style="display:flex;gap:16px;align-items:center">
-        <div sc-camel-on-click="{{ toSports }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn2 }}">COMPLETE REGISTRATION →</div>
-        <span sc-camel-on-click="{{ backStep }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;color:#5B6478;cursor:pointer">BACK</span>
+        <div sc-camel-on-click="{{ saveProfile }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn2 }}">{{ busyLabel2 }}</div>
       </div>
     </sc-if>
 
     <sc-if value="{{ step3 }}" hint-placeholder-val="{{ false }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Pick your sports</h2><p style="margin:6px 0 0;color:#5B6478">Choose one or more. Check the times so they don't clash.</p></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px">
-        <sc-for list="{{ sportTiles }}" as="s" hint-placeholder-count="12">
-          <div sc-camel-on-click="{{ s.go }}" style="border-radius:16px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:6px;border:1.5px solid {{ s.border }};background:{{ s.bg }};color:{{ s.fg }}">
+      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Pilih cabor</h2><p style="margin:6px 0 0;color:#5B6478">Pilih satu atau lebih divisi. Divisi tim akan membuat timmu dengan kamu sebagai kapten; anggota ditambahkan di halaman Pendaftaranku.</p></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px">
+        <sc-for list="{{ divTiles }}" as="s" hint-placeholder-count="12">
+          <div sc-camel-on-click="{{ s.go }}" style="border-radius:16px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:6px;border:1.5px solid {{ s.border }};background:{{ s.bg }};color:{{ s.fg }};opacity:{{ s.op }}">
             <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;opacity:.8">{{ s.tag }}</span><span style="width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:{{ s.boxBg }};color:#05103F">{{ s.check }}</span></div>
             <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;line-height:1">{{ s.name }}</span>
-            <span style="font-size:12px;opacity:.75">{{ s.when }}</span>
+            <span style="font-size:12px;opacity:.75">{{ s.note }}</span>
           </div>
         </sc-for>
       </div>
-      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-        <div sc-camel-on-click="{{ fromSports }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn3 }}">CONTINUE →</div>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6478">{{ pickedCount }} selected</span>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{ step4 }}" hint-placeholder-val="{{ false }}">
-      <div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;margin:0;text-transform:uppercase">Register your teams</h2><p style="margin:6px 0 0;color:#5B6478">You'll be listed as captain. Share the team code so teammates can join.</p></div>
-      <sc-for list="{{ teamSports }}" as="t" hint-placeholder-count="2">
-        <div style="border:1px solid #E3E7EF;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;background:#FAFBFC">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase">{{ t.name }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478">{{ t.when }}</span></div>
-          <input value="{{ t.val }}" sc-camel-on-change="{{ t.onChange }}" placeholder="Team name, e.g. Marina Bay Ballers" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none;background:#fff" style-focus="border-color:#0473EA">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#0359B5">TEAM CODE · {{ t.code }}</span>
+      <sc-if value="{{ hasPickedTeams }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ teamNameRows }}" as="t" hint-placeholder-count="1">
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5B6478;letter-spacing:.06em">NAMA TIM · {{ t.name }}</span>
+              <input value="{{ t.val }}" sc-camel-on-change="{{ t.onChange }}" placeholder="Nama tim" style="border:1.5px solid #D5DBE6;border-radius:12px;padding:14px;font-size:16px;outline:none" style-focus="border-color:#0473EA"></label>
+          </sc-for>
         </div>
-      </sc-for>
-      <div style="display:flex;gap:16px;align-items:center">
-        <div sc-camel-on-click="{{ toDone }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn4 }}">CONTINUE TO PROFILE →</div>
-        <span sc-camel-on-click="{{ backStep }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;color:#5B6478;cursor:pointer">BACK</span>
+      </sc-if>
+      <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="color:#D6243A;font-size:14px">{{ err }}</span></sc-if>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div sc-camel-on-click="{{ submitPicks }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;border-radius:999px;padding:14px 28px;cursor:pointer;background:{{ btn3 }}">{{ busyLabel3 }}</div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6478">{{ pickedCount }} dipilih</span>
+        <span sc-camel-on-click="{{ skipPicks }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#5B6478">LEWATI</span>
       </div>
-    </sc-if>
-
-    <sc-if value="{{ step5 }}" hint-placeholder-val="{{ false }}">
-      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
-        <div style="width:96px;height:96px;border-radius:24px;background:#38D200;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;color:#05103F;background-size:cover;background-position:center;background-image:url('{{ form.photo }}')">{{ formInitialsIfNoPhoto }}</div>
-        <div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#1E7A00;letter-spacing:.1em">YOU'RE REGISTERED</div><h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;margin:4px 0 0;text-transform:uppercase;line-height:1">{{ form.name }}</h2><div style="color:#5B6478;margin-top:4px">{{ form.branch }} · {{ form.division }}</div></div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <sc-for list="{{ pickedSummary }}" as="p" hint-placeholder-count="2">
-          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px solid #E3E7EF;border-radius:12px;padding:12px 16px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase">{{ p.name }} <span style="color:#0473EA">{{ p.team }}</span></span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#5B6478">{{ p.when }}</span></div>
-        </sc-for>
-      </div>
-      <div sc-camel-on-click="{{ finish }}" style="align-self:flex-start;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;color:#fff;background:#0473EA;border-radius:999px;padding:14px 28px;cursor:pointer">SEE MY RACE SCHEDULE →</div>
     </sc-if>
   </div>
 </div>
@@ -1300,45 +1282,81 @@ input,button{font-family:inherit}
 <sc-if value="{{ isMy }}" hint-placeholder-val="{{ false }}">
 <div style="max-width:1280px;width:100%;margin:0 auto;padding:22px 20px 72px;display:flex;flex-direction:column;gap:24px">
   <div style="background:#05103F;color:#fff;border-radius:26px;padding:28px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;background-image:radial-gradient(circle at 100% 0%,rgba(4,115,234,.5),transparent 50%)">
-    <div style="width:112px;height:112px;border-radius:28px;background:#38D200;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:42px;color:#05103F;background-size:cover;background-position:center;background-image:url('{{ user.photo }}')">{{ userInitialsIfNoPhoto }}</div>
+    <div style="width:112px;height:112px;border-radius:28px;background:#38D200;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:42px;color:#05103F">{{ userInitials }}</div>
     <div style="flex:1;min-width:220px">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#38D200;letter-spacing:.1em">ATHLETE · {{ userCode }}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#38D200;letter-spacing:.1em">PESERTA · {{ userCode }}</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:48px;line-height:1;text-transform:uppercase;margin-top:4px">{{ user.name }}</div>
-      <div style="color:#B8C4E6;margin-top:6px">{{ user.branch }} · {{ user.division }}</div>
+      <div style="color:#B8C4E6;margin-top:6px">{{ user.branch }} · {{ user.email }}</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,.07);border-radius:16px;padding:16px 20px;min-width:220px">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8C4E6;letter-spacing:.1em">YOUR NEXT RACE</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8C4E6;letter-spacing:.1em">LOMBA BERIKUTNYA</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;text-transform:uppercase">{{ myNext.name }}</span>
       <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#38D200">{{ myNext.when }}</span>
     </div>
   </div>
+  <sc-if value="{{ hasInvites }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#E3EFFD;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;color:#0359B5">Undangan tim untukmu</span>
+      <sc-for list="{{ invites }}" as="iv" hint-placeholder-count="1">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#fff;border-radius:12px;padding:12px 16px">
+          <span style="flex:1;min-width:200px;font-size:15px">{{ iv.text }}</span>
+          <span sc-camel-on-click="{{ iv.accept }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#fff;background:#0473EA;border-radius:10px;padding:8px 16px">TERIMA</span>
+          <span sc-camel-on-click="{{ iv.decline }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#C21F37">TOLAK</span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
-    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;margin:0;text-transform:uppercase">My races</h2>
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;margin:0;text-transform:uppercase">Pendaftaranku</h2>
     <div style="display:flex;gap:16px">
-      <span sc-camel-on-click="{{ editSports }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#0473EA;cursor:pointer">ADD SPORTS</span>
-      <span sc-camel-on-click="{{ logout }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;color:#5B6478;cursor:pointer">LOG OUT</span>
+      <span sc-camel-on-click="{{ editSports }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#0473EA">TAMBAH CABOR</span>
+      <span sc-camel-on-click="{{ logout }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#5B6478">KELUAR</span>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
-    <sc-for list="{{ myRaces }}" as="m" hint-placeholder-count="2">
+  <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><div style="background:#FDE7EA;color:#C21F37;border-radius:12px;padding:12px 16px;font-size:14px">{{ err }}</div></sc-if>
+  <sc-if value="{{ noCards }}" hint-placeholder-val="{{ false }}"><div style="color:#5B6478">Kamu belum mendaftar di cabor mana pun. Klik TAMBAH CABOR.</div></sc-if>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px">
+    <sc-for list="{{ myCards }}" as="m" hint-placeholder-count="2">
       <div style="background:#fff;border:1px solid #E3E7EF;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;padding:4px 8px;border-radius:6px;background:{{ m.tagBg }};color:{{ m.tagFg }}">{{ m.tag }}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;padding:4px 8px;border-radius:6px;background:#E3EFFD;color:#0359B5">{{ m.tag }}</span>
           <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;padding:4px 12px;border-radius:999px;background:{{ m.stBg }};color:{{ m.stFg }}">{{ m.st }}</span>
         </div>
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;text-transform:uppercase;line-height:1">{{ m.name }}</div>
-          <sc-if value="{{ m.team }}" hint-placeholder-val="{{ false }}"><div style="font-size:15px;color:#0473EA;font-weight:600;margin-top:4px">Team {{ m.team }}</div></sc-if>
+          <sc-if value="{{ m.team }}" hint-placeholder-val="{{ false }}"><div style="font-size:15px;color:#0473EA;font-weight:600;margin-top:4px">Tim {{ m.team }}</div></sc-if>
         </div>
-        <div style="display:flex;flex-direction:column;gap:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#3B4560">
-          <span>{{ m.when }}</span><span>{{ m.venue }}</span>
+        <sc-if value="{{ m.note }}" hint-placeholder-val="{{ false }}"><div style="background:#FFF6E0;border-radius:12px;padding:12px 14px;font-size:14px;color:#7A5300">Catatan panitia: {{ m.note }}</div></sc-if>
+        <sc-if value="{{ m.isTeam }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ m.members }}" as="mb" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#F7F8FB;border-radius:10px;padding:8px 12px;font-size:14px">
+                <span>{{ mb.label }}</span>
+                <span style="display:flex;gap:8px;align-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ mb.fg }}">{{ mb.st }}</span><sc-if value="{{ mb.canRemove }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ mb.remove }}" style="cursor:pointer;color:#C21F37;font-size:16px">×</span></sc-if></span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ m.issues.length }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#C21F37"><sc-for list="{{ m.issues }}" as="is" hint-placeholder-count="1"><span>• {{ is.t }}</span></sc-for></div></sc-if>
+          <sc-if value="{{ m.canEdit }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #E3E7EF;padding-top:12px">
+              <input value="{{ m.inv.email }}" sc-camel-on-change="{{ m.inv.onEmail }}" placeholder="Email anggota" style="border:1.5px solid #D5DBE6;border-radius:10px;padding:10px 12px;font-size:14px;outline:none">
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <sc-for list="{{ m.inv.roles }}" as="rl" hint-placeholder-count="2"><span sc-camel-on-click="{{ rl.go }}" style="font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;border:1px solid {{ rl.border }};background:{{ rl.bg }};color:{{ rl.fg }}">{{ rl.label }}</span></sc-for>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <span sc-camel-on-click="{{ m.inv.toggleSub }}" style="font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;border:1px solid {{ m.inv.subBorder }};background:{{ m.inv.subBg }};color:{{ m.inv.subFg }}">Cadangan</span>
+                <span sc-camel-on-click="{{ m.inv.add }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#fff;background:#0473EA;border-radius:10px;padding:8px 16px">TAMBAH ANGGOTA</span>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <sc-if value="{{ m.canSubmit }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.submit }}" style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;background:#38D200;color:#05103F;border-radius:12px;padding:12px">AJUKAN PENDAFTARAN TIM</span></sc-if>
+          <sc-if value="{{ m.canRevalidate }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.revalidate }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#0473EA">CEK ULANG ROSTER</span></sc-if>
+          <sc-if value="{{ m.canCancel }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.cancel }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;color:#C21F37">BATALKAN</span></sc-if>
+          <sc-if value="{{ m.canStandings }}" hint-placeholder-val="{{ false }}"><span sc-camel-on-click="{{ m.standings }}" style="flex:1;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;cursor:pointer;letter-spacing:.12em;color:#fff;background:#05103F;border-radius:12px;padding:12px">LIHAT KLASEMEN →</span></sc-if>
         </div>
-        <div style="background:#F7F8FB;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5B6478;letter-spacing:.08em">LEADERBOARD POSITION</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px">#{{ m.rank }}<span style="font-size:15px;color:#5B6478"> / {{ m.of }}</span></span></div>
-          <div style="height:8px;background:#E3E7EF;border-radius:4px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,#0473EA,#38D200);border-radius:4px;width:{{ m.pct }}"></div></div>
-          <span style="font-size:13px;color:#5B6478">{{ m.gap }}</span>
-        </div>
-        <div sc-camel-on-click="{{ m.go }}" style="text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.12em;border-radius:12px;padding:12px;cursor:pointer;background:{{ m.btnBg }};color:{{ m.btnFg }}">{{ m.action }}</div>
+        <a href="{{ m.rulebook }}" style="font-size:13px;color:#0473EA">Baca rulebook {{ m.sportName }}</a>
       </div>
     </sc-for>
   </div>
@@ -1405,7 +1423,6 @@ const REGIONS = [
   { name: 'OCEANIA', items: [['Australia', 'AU']] },
 ];
 const BRANCH_CODE = Object.fromEntries(REGIONS.flatMap(r => r.items));
-const DIVISIONS = ['Corporate & Investment Banking', 'Wealth & Retail Banking', 'Ventures', 'Technology & Operations', 'Risk', 'Finance', 'Compliance', 'Legal', 'People & Culture', 'Brand & Marketing', 'Group Functions'];
 const CHEER_TYPES = [{ id: 'CLAP', sub: 'Big applause' }, { id: 'GO GO GO', sub: 'Push to the line' }, { id: 'LEGEND', sub: 'Pure respect' }, { id: 'MVP', sub: 'Player of the day' }];
 const FANS = ['Priya S.', 'Daniel K.', 'Mei Ling', 'Tomás R.', 'Grace O.', 'Hassan A.', 'Yuki T.', 'Faith W.', 'Ravi P.', 'Sarah L.', 'Ken C.', 'Amara N.'];
 const MSGS = ['', '', 'Let’s go team!', 'So proud of you all', 'Bring it home!', 'Watching from the office', '', 'You’ve got this'];
@@ -1741,8 +1758,9 @@ function standings(sp, user) {
 class Component extends DCLogic {
   state = {
     view: 'home', homeTab: 'all', schedQ: '', schedSports: [], schedOpen: '', schedDay: 'ALL', schedType: 'all', liveId: 'swimming', lbSport: 'overall',
-    step: 0, err: '', sentCode: '', branchOpen: false, branchQ: '',
-    form: { email: '', otp: '', name: '', dob: '', branch: '', division: '', photo: '', sports: [], teams: {} },
+    step: 0, err: '', busy: '', branchOpen: false, branchQ: '',
+    form: { email: '', otp: '', display_name: '', full_name: '', dob: '', gender: '', phone: '', branch: '' },
+    reg: { ready: false, offline: false, catalog: null, session: null, profile: null, indiv: [], teams: [], invites: [] }, pick: [], teamNames: {}, inv: {},
     user: null, live: initLive(), t: 0, operator: false, ov: {},
     cheers: { SG: 1240, HK: 1102, IN: 980, MY: 870, ID: 910, AE: 540, KE: 610, CN: 720, KR: 660, VN: 480 },
     cheerFeed: [
@@ -1760,7 +1778,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    try { const u = JSON.parse(localStorage.getItem('scgames_user') || 'null'); if (u) this.setState({ user: u }); } catch (e) {}
+    this.regInit();
     try { if (/[?&]operator=1/.test(location.search)) lsSet(LS_OPERATOR, true); this.setState({ operator: !!lsGet(LS_OPERATOR, false) }); } catch (e) {}
     this.iv = setInterval(() => this.tick(), 2000);
     this.dot = React.createElement('span', { style: { width: 7, height: 7, borderRadius: '50%', background: '#38D200', display: 'inline-block', flexShrink: 0, animation: 'scpulse 1.2s ease-in-out infinite' } });
@@ -1790,6 +1808,45 @@ class Component extends DCLogic {
     }));
     this.flash(`${type} sent to ${(TEAMS[code] || {}).name || code}`);
   }
+  // ───────── registrasi (Supabase) ─────────
+  appSportId(slug, divNama) { if (slug === 'basketball') return divNama === 'Putra' ? 'basketball-m' : 'basketball-w'; if (slug === 'volleyball') return 'volleyball-w'; return SP[slug] ? slug : null; }
+  // hanya pendaftaran yang disetujui panitia yang masuk ke jadwal dan live
+  deriveUser(reg) {
+    if (!reg.session) return null;
+    const divs = Object.fromEntries(reg.catalog.divisions.map(d => [d.id, d])); const sps = Object.fromEntries(reg.catalog.sports.map(x => [x.id, x]));
+    const sports = []; const teams = {};
+    const add = (divId, teamName) => { const d = divs[divId]; if (!d) return; const id = this.appSportId(sps[d.sport_id].slug, d.nama); if (id && !sports.includes(id)) { sports.push(id); if (teamName) teams[id] = teamName; } };
+    reg.indiv.filter(r => r.status === 'approved').forEach(r => add(r.division_id));
+    reg.teams.filter(t => (t.registrations || []).some(r => r.status === 'approved')).forEach(t => add(t.division_id, t.nama));
+    const p = reg.profile; const em = reg.session.user.email;
+    return { id: reg.session.user.id, email: em, name: p ? p.display_name : em.split('@')[0], branch: p ? p.branch || '' : '', photo: '', sports, teams };
+  }
+  async regInit() {
+    try {
+      const api = SCReg.api; const catalog = await api.catalog();
+      this.setState(s => ({ reg: { ...s.reg, catalog, ready: true } }));
+      api.onAuth(sess => { if (!sess) { this.uid = null; this.setState(s => ({ user: null, reg: { ...s.reg, session: null, profile: null, indiv: [], teams: [], invites: [] } })); } else if (sess.user.id !== this.uid) this.regLoad(sess); });
+      const sess = await api.session(); if (sess) await this.regLoad(sess);
+    } catch (e) { this.setState(s => ({ reg: { ...s.reg, ready: true, offline: true } })); }
+  }
+  async regLoad(sess) {
+    this.uid = sess.user.id; const api = SCReg.api;
+    try {
+      const [profile, indiv, teams, invites] = await Promise.all([api.myProfile(sess.user.id), api.myIndividuals(sess.user.id), api.myTeams(), api.myInvitations(sess.user.email)]);
+      this.setState(s => { const reg = { ...s.reg, session: sess, profile, indiv, teams, invites }; return { reg, user: this.deriveUser(reg) }; });
+      return profile;
+    } catch (e) { this.setState({ err: SCReg.explain(e) }); return null; }
+  }
+  // jalankan aksi dengan penanda sibuk dan pesan error Indonesia
+  async act(label, fn, after) {
+    if (this.state.busy) return;
+    this.setState({ busy: label, err: '' });
+    try { await fn(); if (this.state.reg.session) await this.regLoad(this.state.reg.session); if (after) after(); }
+    catch (e) { this.setState({ err: SCReg.explain(e) }); if (this.state.reg.session) await this.regLoad(this.state.reg.session); }
+    this.setState({ busy: '' });
+  }
+  getInv(tid) { return this.state.inv[tid] || { email: '', role: '', sub: false }; }
+  setInv(tid, patch) { this.setState(s => ({ inv: { ...s.inv, [tid]: { ...(s.inv[tid] || { email: '', role: '', sub: false }), ...patch } } })); }
   setF(k, v) { this.setState(s => ({ form: { ...s.form, [k]: v }, err: '' })); }
 
   ago(t) { const sec = (this.state.t - t) * 2; return sec < 4 ? 'now' : sec < 60 ? `${sec}s ago` : `${Math.floor(sec / 60)}m ago`; }
@@ -2137,42 +2194,63 @@ class Component extends DCLogic {
     const cheerBoard = cheerSorted.map((c, i) => ({ ...c, rank: i + 1, pct: pct(c.n / cmax * 100), bg: s.cheerTo === c.code ? '#E3EFFD' : 'transparent', go: () => this.setState({ cheerTo: c.code }) }));
     const cheerSel = { code: s.cheerTo, name: TEAMS[s.cheerTo].name, n: s.cheers[s.cheerTo] };
 
-    // register
+    // registrasi
+    const cat = s.reg.catalog; const prof = s.reg.profile;
     const emailOk = /\S+@\S+\.\S+/.test(f.email);
-    const profileOk = f.name.trim() && f.dob && f.branch && f.division;
-    const picked = f.sports.map(id => SP[id]);
-    const teamPicked = picked.filter(p => p.type === 'team');
-    const teamsOk = teamPicked.every(p => (f.teams[p.id] || '').trim());
-    const hasTeamStep = teamPicked.length > 0;
-    const labels = ['Email', 'Verify', 'Profile', 'Sports', 'Team', 'Done'];
-    const ORDER = [0, 1, 3, 4, 2, 5].filter(i => i !== 4 || hasTeamStep || f.sports.length === 0);
+    const profileOk = f.display_name.trim().length >= 2 && f.dob && f.gender && f.branch;
+    const labels = ['Email', 'Verifikasi', 'Profil', 'Cabor'];
+    const ORDER = [0, 1, 2, 3];
     const pos = ORDER.indexOf(s.step);
     const regSteps = ORDER.map((id, i) => ({ n: i < pos ? '✓' : i + 1, label: labels[id], bg: i < pos ? '#38D200' : i === pos ? '#0473EA' : 'rgba(255,255,255,.1)', fg: i < pos ? '#05103F' : '#fff', op: i === pos ? 1 : i < pos ? .8 : .45 }));
     const q = s.branchQ.trim().toLowerCase();
     const regionList = REGIONS.map(r => ({ name: r.name, items: r.items.filter(([n]) => !q || n.toLowerCase().includes(q)).map(([n]) => ({ label: n, bg: f.branch === n ? '#0473EA' : '#fff', fg: f.branch === n ? '#fff' : '#0B1430', go: () => { this.setF('branch', n); this.setState({ branchOpen: false, branchQ: '' }); } })) })).filter(r => r.items.length);
-    const divisions = DIVISIONS.map(v => { const on = f.division === v; return { label: v, go: () => this.setF('division', v), bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#D5DBE6' }; });
-    const sportTiles = SPORTS.map(sp => { const on = f.sports.includes(sp.id); return { name: sp.name, tag: sp.type === 'team' ? 'TEAM' : 'INDIVIDUAL', when: sp.sessions.map(([d, t]) => `${d} ${t}`).join(' · '), check: on ? '✓' : '', boxBg: on ? '#38D200' : 'rgba(5,16,63,.08)', bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#E3E7EF',
-      go: () => this.setF('sports', on ? f.sports.filter(x => x !== sp.id) : [...f.sports, sp.id]) }; });
-    const teamSports = teamPicked.map(sp => ({ name: sp.name, when: sessionsLabel(sp), val: f.teams[sp.id] || '', code: 'SC-' + (hash(sp.id + f.email) % 9000 + 1000), onChange: e => { const v = e.target.value; this.setState(st => ({ form: { ...st.form, teams: { ...st.form.teams, [sp.id]: v } } })); } }));
-    const pickedSummary = picked.map(sp => ({ name: sp.name, team: sp.type === 'team' && f.teams[sp.id] ? '· ' + f.teams[sp.id] : '', when: sessionsLabel(sp) }));
+    const genderChips = [['male', 'Putra'], ['female', 'Putri']].map(([v, l]) => { const on = f.gender === v; return { label: l, go: () => this.setF('gender', v), bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#D5DBE6' }; });
+    const sportById = cat ? Object.fromEntries(cat.sports.map(x => [x.id, x])) : {};
+    const divById = cat ? Object.fromEntries(cat.divisions.map(d => [d.id, d])) : {};
+    const takenDiv = new Set([...s.reg.indiv.map(r => r.division_id), ...s.reg.teams.filter(t => t.captain_id === (s.user && s.user.id)).map(t => t.division_id)]);
+    const genderOk = d => d.gender_rule === 'open' || d.gender_rule === 'mixed' || d.gender_rule === f.gender;
+    const divNote = d => d.entry_type === 'individual' ? 'Individu' : `Tim ${d.min_players}${d.max_players !== d.min_players ? '–' + d.max_players : ''} pemain${d.max_substitutes ? ` + ${d.max_substitutes} cadangan` : ''}`;
+    const divTiles = cat ? cat.divisions.map(d => {
+      const sp = sportById[d.sport_id]; const on = s.pick.includes(d.id); const taken = takenDiv.has(d.id); const ok = genderOk(d) && !taken;
+      return { name: SCReg.divisionLabel(sp, d), tag: d.entry_type === 'team' ? 'TIM' : 'INDIVIDU', note: taken ? 'Sudah terdaftar' : !genderOk(d) ? 'Tidak sesuai gender' : divNote(d), check: on ? '✓' : '', boxBg: on ? '#38D200' : 'rgba(5,16,63,.08)', bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#E3E7EF', op: ok ? 1 : .45,
+        go: () => ok && this.setState(st => ({ pick: on ? st.pick.filter(x => x !== d.id) : [...st.pick, d.id], err: '' })) };
+    }) : [];
+    const pickedTeamDivs = s.pick.map(id => divById[id]).filter(d => d && d.entry_type === 'team');
+    const teamNameRows = pickedTeamDivs.map(d => ({ name: SCReg.divisionLabel(sportById[d.sport_id], d), val: s.teamNames[d.id] || '', onChange: e => { const v = e.target.value; this.setState(st => ({ teamNames: { ...st.teamNames, [d.id]: v } })); } }));
+    const teamsOk = pickedTeamDivs.every(d => (s.teamNames[d.id] || '').trim().length >= 2);
+    const regClosed = !!(cat && !cat.settings.registration_open);
+    const lbl = (key, txt, busyTxt) => s.busy === key ? busyTxt : txt;
     const isLogin = s.mode === 'login';
 
-    // my races
-    const myRaces = user ? user.sports.map(id => {
-      const sp = SP[id]; const tg = tagOf(sp); const rows = standings(sp, user); const me = rows.find(r => r.you) || rows[0];
-      const sess = rowsAll.filter(r => r.sp.id === id); const cur = sess.find(r => r.st === 'LIVE') || sess.find(r => r.st === 'UP') || sess[0];
-      const st = ST[cur.st]; const le = liveFor(id); const isLive = cur.st === 'LIVE' && le;
-      const above = rows[me.rank - 2];
-      return { name: sp.name, team: sp.type === 'team' ? user.teams[id] : '', tag: tg[0], tagBg: tg[1], tagFg: tg[2], st: st[0], stBg: st[1], stFg: st[2], when: sessionsLabel(sp), venue: sp.venue, rank: me.rank, of: rows.length, pct: pct((rows.length - me.rank + 1) / rows.length * 100),
-        gap: above ? `${above.pts - me.pts} pts behind ${above.name} (#${above.rank})` : 'Top of the table',
-        action: isLive ? 'TRACK LIVE →' : 'VIEW STANDINGS →', btnBg: isLive ? '#38D200' : '#05103F', btnFg: isLive ? '#05103F' : '#fff',
-        go: () => isLive ? this.go('live', { liveId: le.id }) : this.go('leaderboard', { lbSport: id }) };
-    }) : [];
+    // pendaftaranku
+    const uid = s.user && s.user.id; const regCards = []; const stOf = r => r ? SCReg.STATUS_LABEL[r.status] : 'Belum diajukan';
+    const stCol = r => !r ? ['#EEF0F4', '#5B6478'] : { pending: ['#FFF6E0', '#7A5300'], approved: ['#E6F9DC', '#1E7A00'], rejected: ['#FDE7EA', '#C21F37'], waitlist: ['#E3EFFD', '#0359B5'] }[r.status];
+    const rulebookOf = sp => sp.rulebook_path || ('rulebook/' + sp.slug + '.html');
+    const stand = (sp, d) => { const id = this.appSportId(sp.slug, d.nama); return id ? () => this.go('leaderboard', { lbSport: id }) : null; };
+    if (cat) {
+      s.reg.indiv.forEach(r => { const d = divById[r.division_id]; if (!d) return; const sp = sportById[d.sport_id]; const c = stCol(r); const go = stand(sp, d);
+        regCards.push({ tag: 'INDIVIDU', st: stOf(r), stBg: c[0], stFg: c[1], name: SCReg.divisionLabel(sp, d), team: '', note: r.admin_note || '', isTeam: false, members: [], issues: [], canEdit: false, inv: null, canSubmit: false, canRevalidate: false,
+          canCancel: r.status === 'pending', cancel: () => this.act('cancel', () => SCReg.api.cancelRegistration(r.id)), canStandings: r.status === 'approved' && !!go, standings: go || (() => {}), rulebook: rulebookOf(sp), sportName: sp.nama }); });
+      s.reg.teams.forEach(t => { const d = divById[t.division_id]; if (!d) return; const sp = sportById[d.sport_id]; const r = (t.registrations || [])[0]; const c = stCol(r); const cap = t.captain_id === uid; const go = stand(sp, d);
+        const members = (t.members || []).map(m => ({ ...m, gender: m.gender }));
+        const issues = cap && (!r || r.status === 'pending') ? SCReg.rosterIssues(d, members).map(x => ({ t: x })) : [];
+        const edit = cap && (!r || r.status === 'pending'); const iv = this.getInv(t.id); const roleList = d.required_roles || [];
+        regCards.push({ tag: 'TIM', st: stOf(r), stBg: c[0], stFg: c[1], name: SCReg.divisionLabel(sp, d), team: t.nama, note: r ? (r.admin_note || '') : '', isTeam: true,
+          members: members.map(m => ({ label: (m.display_name || m.invited_email) + (m.is_captain ? ' (kapten)' : '') + (m.role ? ' · ' + m.role : '') + (m.is_substitute ? ' · cadangan' : ''), st: { confirmed: 'Terkonfirmasi', invited: 'Menunggu konfirmasi', declined: 'Menolak' }[m.status], fg: { confirmed: '#1E7A00', invited: '#B7791F', declined: '#C21F37' }[m.status], canRemove: edit && !m.is_captain, remove: () => this.act('rm', () => SCReg.api.removeMember(m.member_id)) })),
+          issues, canEdit: edit,
+          inv: { email: iv.email, onEmail: e => this.setInv(t.id, { email: e.target.value }), roles: roleList.map(role => { const on = iv.role === role; return { label: role, go: () => this.setInv(t.id, { role: on ? '' : role }), bg: on ? '#05103F' : '#fff', fg: on ? '#fff' : '#0B1430', border: on ? '#05103F' : '#D5DBE6' }; }),
+            toggleSub: () => this.setInv(t.id, { sub: !iv.sub }), subBg: iv.sub ? '#05103F' : '#fff', subFg: iv.sub ? '#fff' : '#0B1430', subBorder: iv.sub ? '#05103F' : '#D5DBE6',
+            add: () => { if (!/\S+@\S+\.\S+/.test(iv.email)) return this.setState({ err: 'Masukkan email anggota yang valid.' }); this.act('add', () => SCReg.api.addMember(t.id, iv.email, iv.role, iv.sub), () => this.setInv(t.id, { email: '', role: '', sub: false })); } },
+          canSubmit: cap && !r, submit: () => this.act('submit', () => SCReg.api.submitTeam(t.id, t.division_id), () => this.flash('Pendaftaran tim diajukan')),
+          canRevalidate: edit && !!r, revalidate: () => this.act('reval', () => SCReg.api.revalidate(r.id), () => this.flash('Roster valid')),
+          canCancel: cap && (!r || r.status === 'pending'), cancel: () => this.act('delteam', () => SCReg.api.deleteTeam(t.id)),
+          canStandings: !!r && r.status === 'approved' && !!go, standings: go || (() => {}), rulebook: rulebookOf(sp), sportName: sp.nama }); });
+    }
+    const invites = s.reg.invites.map(iv => { const t = iv.teams; const d = t && divById[t.division_id]; return { text: t ? `Tim ${t.nama}${d ? ' · ' + SCReg.divisionLabel(sportById[d.sport_id], d) : ''}${iv.role ? ' · peran ' + iv.role : ''}` : 'Undangan tim', accept: () => this.act('inv', () => SCReg.api.respondInvitation(iv.id, 'confirmed')), decline: () => this.act('inv', () => SCReg.api.respondInvitation(iv.id, 'declined')) }; });
 
     return {
       liveDot: dot, user, loggedOut: !user,
-      userInitialsIfNoPhoto: user && !user.photo ? initials(user.name) : '',
-      formInitialsIfNoPhoto: f.photo ? '' : initials(f.name),
+      userInitials: user ? initials(user.name) : '', userInitialsIfNoPhoto: user ? initials(user.name) : '',
       userCode: user ? (BRANCH_CODE[user.branch] || '') : '',
       navItems,
       isHome: s.view === 'home', isLive: s.view === 'live', isSchedule: s.view === 'schedule', isLeaderboard: s.view === 'leaderboard', isCheer: s.view === 'cheer', isRegister: s.view === 'register', isMy: s.view === 'my' && !!user,
@@ -2205,41 +2283,35 @@ class Component extends DCLogic {
       cheerMsg: s.cheerMsg, onCheerMsg: e => this.setState({ cheerMsg: e.target.value }),
       sendCheerMsg: () => { this.cheer(s.cheerTo, 'CLAP', s.cheerMsg); this.setState({ cheerMsg: '' }); },
       toast: s.toast,
-      // register
-      regKicker: isLogin ? 'WELCOME BACK' : 'ATHLETE REGISTRATION',
-      regTitle: isLogin ? 'Log in to SC Games' : 'Join SC Games 2026',
-      regSteps, form: f, err: s.err, sentCode: s.sentCode,
-      step0: s.step === 0, step1: s.step === 1, step2: s.step === 2, step3: s.step === 3, step4: s.step === 4, step5: s.step === 5,
+      // registrasi
+      regKicker: isLogin ? 'SELAMAT DATANG KEMBALI' : 'PENDAFTARAN PESERTA', regTitle: isLogin ? 'Masuk ke SC Games' : 'Gabung SC Games 2027',
+      regSteps, form: f, err: s.err, regClosed,
+      step0: s.step === 0, step1: s.step === 1, step2: s.step === 2, step3: s.step === 3,
       onEmail: e => this.setF('email', e.target.value),
       onOtp: e => this.setF('otp', e.target.value.replace(/\D/g, '').slice(0, 6)),
-      onName: e => this.setF('name', e.target.value),
+      onDisplayName: e => this.setF('display_name', e.target.value),
+      onFullName: e => this.setF('full_name', e.target.value),
       onDob: e => this.setF('dob', e.target.value),
-      onPhoto: e => { const file = e.target.files && e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = () => this.setF('photo', r.result); r.readAsDataURL(file); },
-      noPhoto: !f.photo,
-      btn0: emailOk ? '#0473EA' : '#AEB6C6', btn1: f.otp.length === 6 ? '#0473EA' : '#AEB6C6', btn2: profileOk ? '#0473EA' : '#AEB6C6', btn3: f.sports.length ? '#0473EA' : '#AEB6C6', btn4: teamsOk ? '#0473EA' : '#AEB6C6',
-      sendCode: () => { if (!emailOk) return this.setState({ err: 'Enter a valid email' }); this.setState({ sentCode: String(100000 + Math.floor(Math.random() * 900000)), step: 1, err: '' }); this.setF('otp', ''); },
-      verify: () => {
-        if (f.otp !== s.sentCode) return this.setState({ err: 'That code doesn’t match. Try again or resend.' });
-        let saved = null; try { saved = JSON.parse(localStorage.getItem('scgames_user') || 'null'); } catch (e) {}
-        if (saved && saved.email.toLowerCase() === f.email.toLowerCase()) { this.setState({ user: saved }); return this.go('my'); }
-        this.setState({ step: 3, err: '' });
-      },
-      backStep: () => this.setState({ step: s.step === 4 ? 3 : s.step === 2 ? (hasTeamStep ? 4 : 3) : 0, err: '' }),
+      onPhone: e => this.setF('phone', e.target.value),
+      btn0: emailOk ? '#0473EA' : '#AEB6C6', btn1: f.otp.length === 6 ? '#0473EA' : '#AEB6C6', btn2: profileOk ? '#0473EA' : '#AEB6C6', btn3: s.pick.length && teamsOk ? '#0473EA' : '#AEB6C6',
+      busyLabel0: lbl('otp', 'KIRIM KODE →', 'MENGIRIM…'), busyLabel1: lbl('verify', 'VERIFIKASI →', 'MEMERIKSA…'), busyLabel2: lbl('profile', 'SIMPAN PROFIL →', 'MENYIMPAN…'), busyLabel3: lbl('picks', 'DAFTAR →', 'MENDAFTAR…'),
+      sendCode: () => { if (!emailOk) return this.setState({ err: 'Masukkan email yang valid.' }); this.act('otp', () => SCReg.api.sendOtp(f.email), () => { this.setState({ step: 1 }); this.setF('otp', ''); }); },
+      verify: () => { if (f.otp.length !== 6) return this.setState({ err: 'Masukkan 6 digit kode.' }); this.act('verify', async () => { const r = await SCReg.api.verifyOtp(f.email, f.otp); const profile = await this.regLoad(r.session); if (profile) { this.go('my'); this.flash('Berhasil masuk'); } else this.setState({ step: 2 }); }); },
+      backStep: () => this.setState({ step: 0, err: '' }),
       toggleBranch: () => this.setState({ branchOpen: !s.branchOpen }),
       branchOpen: s.branchOpen, branchQ: s.branchQ, onBranchQ: e => this.setState({ branchQ: e.target.value }),
-      branchLabel: f.branch || 'Select your branch', branchFg: f.branch ? '#0B1430' : '#8A93A6',
-      regionList, divisions,
-      toSports: () => profileOk && this.setState({ step: 5 }),
-      sportTiles, pickedCount: f.sports.length,
-      fromSports: () => f.sports.length && this.setState({ step: hasTeamStep ? 4 : 2 }),
-      teamSports, toDone: () => teamsOk && this.setState({ step: 2 }),
-      pickedSummary,
-      finish: () => { const u = { email: f.email, name: f.name.trim(), dob: f.dob, branch: f.branch, division: f.division, photo: f.photo, sports: f.sports, teams: f.teams }; try { localStorage.setItem('scgames_user', JSON.stringify(u)); } catch (e) { try { localStorage.setItem('scgames_user', JSON.stringify({ ...u, photo: '' })); } catch (e2) {} } this.setState({ user: u }); this.go('my'); this.flash('Welcome to SC Games 2026'); },
-      // my
-      myRaces,
-      myNext: myUp ? { name: myUp.sp.name, when: `${myUp.day === 'FRI' ? 'Fri 16' : 'Sat 17'} Oct · ${myUp.time}` } : { name: 'All done', when: 'No upcoming races' },
-      editSports: () => this.go('register', { step: 3, mode: 'register', form: { ...f, ...(user || {}), otp: '' } }),
-      logout: () => { try { localStorage.removeItem('scgames_user'); } catch (e) {} this.setState({ user: null, form: { email: '', otp: '', name: '', dob: '', branch: '', division: '', photo: '', sports: [], teams: {} } }); this.go('home'); },
+      branchLabel: f.branch || 'Pilih branch', branchFg: f.branch ? '#0B1430' : '#8A93A6',
+      regionList, genderChips,
+      saveProfile: () => { if (!profileOk) return this.setState({ err: 'Lengkapi nama tampil, tanggal lahir, gender, dan branch.' }); this.act('profile', () => SCReg.api.saveProfile(s.reg.session.user.id, s.reg.session.user.email, { display_name: f.display_name, full_name: f.full_name, phone: f.phone, birth_date: f.dob, gender: f.gender, branch: f.branch }), () => this.setState({ step: 3 })); },
+      divTiles, pickedCount: s.pick.length, hasPickedTeams: pickedTeamDivs.length > 0, teamNameRows,
+      submitPicks: () => { if (!s.pick.length || !teamsOk) return this.setState({ err: s.pick.length ? 'Isi nama tim untuk setiap divisi tim.' : 'Pilih minimal satu divisi.' });
+        this.act('picks', async () => { const uidNow = s.reg.session.user.id; for (const id of s.pick) { const d = divById[id]; if (d.entry_type === 'team') await SCReg.api.createTeam(uidNow, id, s.teamNames[id]); else await SCReg.api.registerIndividual(uidNow, id); } }, () => { this.setState({ pick: [], teamNames: {} }); this.go('my'); this.flash('Tersimpan. Cek statusnya di Pendaftaranku'); }); },
+      skipPicks: () => this.go('my'),
+      // pendaftaranku
+      myCards: regCards, noCards: !regCards.length, invites, hasInvites: invites.length > 0,
+      myNext: myUp ? { name: myUp.sp.name, when: `${myUp.day === 'FRI' ? 'Fri 16' : 'Sat 17'} Oct · ${myUp.time}` } : { name: 'Belum ada', when: 'Menunggu persetujuan panitia' },
+      editSports: () => this.go('register', { step: 3, mode: 'register', err: '', pick: [] }),
+      logout: () => { SCReg.api.signOut(); this.uid = null; this.setState({ user: null, form: { email: '', otp: '', display_name: '', full_name: '', dob: '', gender: '', phone: '', branch: '' } }); this.go('home'); },
     };
   }
 }
