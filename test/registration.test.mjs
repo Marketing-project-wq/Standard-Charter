@@ -48,3 +48,10 @@ test('semua kode error trigger di migrasi punya pesan', async () => {
   const codes = [...sql.matchAll(/raise exception '([A-Z_]+)'/g)].map(m => m[1]);
   for (const c of new Set(codes)) assert.ok(MESSAGES[c], 'tidak ada pesan untuk ' + c);
 });
+
+test('explain: error pengiriman OTP dari Edge Function', () => {
+  assert.match(explain(new Error('OTP_COOLDOWN')), /30 detik/);
+  assert.match(explain(new Error('OTP_RATE_LIMIT')), /satu jam/);
+  assert.match(explain(new Error('OTP_NOT_CONFIGURED')), /belum aktif/);
+  assert.match(explain(new Error('OTP_SEND_FAILED')), /gagal dikirim/);
+});

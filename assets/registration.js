@@ -26,6 +26,12 @@
     DIVISION_MISMATCH: () => 'Tim ini terdaftar di divisi yang berbeda.',
     ENTRY_TYPE_MISMATCH: () => 'Divisi ini tidak cocok dengan jenis pendaftaran (individu atau tim).',
     TEAM_NOT_FOUND: () => 'Tim tidak ditemukan.',
+    OTP_EMAIL_INVALID: () => 'Format email tidak valid.',
+    OTP_COOLDOWN: () => 'Kode baru saja dikirim. Tunggu 30 detik sebelum meminta lagi.',
+    OTP_RATE_LIMIT: () => 'Terlalu banyak permintaan kode. Coba lagi dalam satu jam.',
+    OTP_NOT_CONFIGURED: () => 'Pengiriman kode belum aktif. Hubungi panitia.',
+    OTP_CODE_FAILED: () => 'Gagal membuat kode. Coba lagi.',
+    OTP_SEND_FAILED: () => 'Email kode gagal dikirim. Coba lagi sebentar lagi.',
     CHEER_COOLDOWN: () => 'Tunggu beberapa detik sebelum mengirim cheer lagi.',
     CHEER_RATE_LIMIT: () => 'Terlalu banyak cheer dalam satu menit. Coba lagi sebentar lagi.',
   };
@@ -94,7 +100,14 @@
 
   const api = {
     client,
-    sendOtp: email => client().auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: true } }).then(ok),
+    // Kode dibuat dan dikirim oleh Edge Function sc-send-otp (Resend); verifikasinya tetap lewat Supabase Auth.
+    async sendOtp(email) {
+      let r;
+      try { r = await fetch(CONFIG.url + '/functions/v1/sc-send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: CONFIG.key }, body: JSON.stringify({ email: email.trim() }) }); }
+      catch (e) { throw new Error('Failed to fetch'); }
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) throw new Error('OTP_' + (j.error || 'SEND_FAILED'));
+    },
     verifyOtp: (email, token) => client().auth.verifyOtp({ email: email.trim(), token: token.trim(), type: 'email' }).then(ok),
     signOut: () => client().auth.signOut(),
     session: () => client().auth.getSession().then(r => r.data.session),
